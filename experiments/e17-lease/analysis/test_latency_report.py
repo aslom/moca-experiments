@@ -130,3 +130,93 @@ def test_cli_writes_json_and_md(tmp_path):
     assert "| pycache | 1 | lease-120 | py_analyze |" in md
     assert "0.40" in md
     assert "warm share" in md.lower() and "first call after idle" in md.lower()
+
+
+def with_shmem(d, key, log_line, at):
+    """Insert a py_shmem call after each of key's calls numbered in `at`, its exec line right after
+    that call's own (key's calls run one Exec each, in order: the k-th exec line of key is its k-th call)."""
+    calls = [json.loads(l) for l in open(os.path.join(d, "calls.jsonl"))]
+    mine = sorted(c["call"] for c in calls if c["session"] == key)
+    out_c = []
+    for c in calls:
+        out_c.append(c)
+        if c["session"] == key and c["call"] in at:
+            out_c.append(call(key, c["call"] + 0.5, cls="py_shmem", ms=50))
+    out_l, k = [], 0
+    for line in open(os.path.join(d, "worker.log")):
+        out_l.append(line)
+        if 'vmpool: exec ' in line and 'workspace_key="%s"' % key in line:
+            if mine[k] in at:
+                out_l.append(log_line)
+            k += 1
+    with open(os.path.join(d, "calls.jsonl"), "w") as f:
+        f.writelines(json.dumps(c) + "\n" for c in out_c)
+    with open(os.path.join(d, "worker.log"), "w") as f:
+        f.writelines(out_l)
+    return d
+
+
+def test_py_shmem_excluded_from_gates(tmp_path):
+    # py_shmem is reported only: never a per-class median, never in the gain (the latency gates read
+    # it), the counts, the warm share or the first call after idle; its calls are reported apart.
+    plain = L.build([lease_rung(tmp_path, name="l0"), sbx_rung(tmp_path, name="s0")], baseline_arm="sbx")
+    lease = with_shmem(lease_rung(tmp_path, name="l1"), "A", exec_line("A", "vm-1"), at={1, 2})
+    sbx = with_shmem(sbx_rung(tmp_path, name="s1"), "S", exec_line("S", "vm-9"), at={1})
+    rep = L.build([lease, sbx], baseline_arm="sbx")
+    for arm in ("lease-120", "sbx"):
+        g, p = group(rep, arm), group(plain, arm)
+        assert "py_shmem" not in g["classes"]
+        for k in ("classes", "counts", "warm_share", "first_after_idle"):
+            assert g[k] == p[k], (arm, k)
+        assert g["reported_only"]["py_shmem"]["all"]["n"] == {"lease-120": 2, "sbx": 1}[arm]
+        assert g["reported_only"]["py_shmem"]["all"]["median_ms"] == 50
+    assert "py_shmem" not in L.markdown(rep).split("## Warm share")[0]
+
+
+def test_one_reported_only_definition():
+    import warmcold_lease as WL
+    assert L.REPORTED_ONLY is WL.REPORTED_ONLY
+
+
+def test_first_lease_py_shmem_still_reports_the_first_lease_cost(tmp_path):
+    # A session drawn to start at a py_shmem call: that call carries the first-lease walk, so it is
+    # filed under first_lease (before the reported-only check), not under reported_only.
+    from test_warmcold_lease import ev, exec_line as xl, start_line
+    log = [start_line("A", "vm-1"), xl("A", "vm-1"), xl("A", "vm-1", req=2), xl("A", "vm-1", req=3)]
+    calls = [call("A", 1, cls="py_shmem", ms=900, first_lease=True, lease_events=[ev("start")]),
+             call("A", 2, ms=5000), call("A", 3, cls="py_shmem", ms=40)]
+    d = rung(tmp_path, calls, log)
+    with open(os.path.join(d, "params.json"), "w") as f:
+        json.dump({"arm": "ship-300", "n": 1, "point": "pycache", "seed": 1}, f)
+    g = L.build([d])["groups"][0]
+    assert g["first_lease"]["calls"] == 1 and g["first_lease"]["by_class"]["py_shmem"]["median_ms"] == 900
+    assert g["reported_only"]["py_shmem"]["all"]["n"] == 1  # only the later reading
+    assert set(g["classes"]) == {"py_analyze"}
+
+
+def by_tmpfs_rung(tmp_path, name="sbx-t", tmpfs=True):
+    # sbx: S is a flagged session, T is not; py_short 500/700 ms (S) and 300 ms (T), py_import 2500 (S) and 2000 (T)
+    log = [exec_line(k, "vm-%d" % i) for i, k in enumerate("SSSTT", 1)]
+    flag = {"tmpfs": True} if tmpfs else {}
+    calls = [call("S", 1, cls="py_short", ms=500, **flag), call("S", 2, cls="py_short", ms=700, **flag),
+             call("S", 3, cls="py_import", ms=2500, **flag),
+             call("T", 1, cls="py_short", ms=300), call("T", 2, cls="py_import", ms=2000)]
+    d = rung(tmp_path, calls, log, name=name)
+    with open(os.path.join(d, "params.json"), "w") as f:
+        json.dump({"arm": "sbx", "n": 1, "point": "pycache", "seed": 1}, f)
+    return d
+
+
+def test_gated_classes_split_by_tmpfs(tmp_path):
+    # R26: per group, py_short and py_import medians by the session's tmpfs flag, reported only (the
+    # gain and the per-class medians are unchanged).
+    g = group(L.build([by_tmpfs_rung(tmp_path)]), "sbx")
+    bt = g["by_tmpfs"]
+    assert set(bt) == {"py_short", "py_import"}
+    assert bt["py_short"]["flagged"]["all"]["median_ms"] == 600 and bt["py_short"]["flagged"]["all"]["n"] == 2
+    assert bt["py_short"]["unflagged"]["all"]["median_ms"] == 300
+    assert bt["py_import"]["flagged"]["all"]["median_ms"] == 2500 and bt["py_import"]["unflagged"]["all"]["n"] == 1
+    assert bt["py_short"]["flagged"]["warm"]["n"] == 0  # sbx is never warm
+    assert g["classes"]["py_short"]["all"]["n"] == 3  # the class median still pools both
+    # no flagged session at all (E15/E16/E17a rungs): the group keeps its exact shape
+    assert "by_tmpfs" not in group(L.build([by_tmpfs_rung(tmp_path, name="plain", tmpfs=False)]), "sbx")

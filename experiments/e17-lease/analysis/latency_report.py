@@ -23,6 +23,15 @@ each D, e.g. the gain-against-D runs, in its own invocation).
   - first_after_idle: the calls whose previous Exec on the key was followed by an idle-destroy
     (warmcold cold_reason "idle-destroy"): the cold start a user pays after the lease timed out.
   - warm_share = warm / (warm + cold) over the used calls.
+  - Reported-only classes (REPORTED_ONLY: py_shmem, E17b's guest Shmem reading, PLAN-E17B Task 10) are
+    in none of the above: not a class, not in the counts, the warm share, the first call after idle or
+    the gain, so never in a latency gate or a per-class median. Their in-window ok calls are
+    reported apart, under reported_only[class].all. A reported-only call tagged first_lease (a session
+    drawn to start at its py_shmem) is filed under first_lease like any first call: it carries the walk.
+  - by_tmpfs (E17B-R26, reported only, never gated): py_short and py_import warm and all {n, median_ms,
+    p95_ms}, split by the session's tmpfs flag (calls.jsonl `tmpfs`) into flagged and unflagged, so the
+    report shows whether flagged sessions' bytecode recompiles slowed the gated classes. Only in a group
+    with a flagged session (an E15/E16/E17a group keeps its exact shape).
 """
 import argparse
 import json
@@ -40,11 +49,18 @@ if not os.path.isdir(_E15):
 sys.path.insert(0, _E15)
 import holds as H  # noqa: E402
 import warmcold as W  # noqa: E402
+import warmcold_lease as WL  # noqa: E402
 
 
 def stats(ms):
     return {"n": len(ms), "median_ms": H.median(ms), "p95_ms": H.percentile(ms, 95)}
 
+
+# Classes that are measured only for what they print (py_shmem: the guest's Shmem after a turn's
+# last py_analyze), never for their latency: warmcold_lease's one definition.
+REPORTED_ONLY = WL.REPORTED_ONLY
+# E17B-R26: the gated classes' medians split by the session's tmpfs flag (reported only).
+BY_TMPFS_CLASSES = ("py_short", "py_import")
 
 # Rungs of one (point, N, arm) pool only if these agree: the gain-against-D runs (SPEC §10) share a
 # point, N and arm with the default D = 256 MiB runs and differ only in the dataset size.
@@ -59,7 +75,28 @@ def read_params(d):
         return json.load(f)
 
 
+def join_rung(d, arm):
+    """The arm map: the shipped-lease arms (ship-*) are joined on the shipped worker's lease log
+    (warmcold_lease); every other arm, E17a's included, on warmcold.join, unchanged."""
+    return (WL if str(arm).startswith("ship-") else W).join(d)
+
+
 def summarize(rows):
+    # Calls tagged first_lease (the first-lease ownership walk, Review Focus 6) are reported on their
+    # own and kept out of the counts and the warm/cold classes. Rows of other arms never carry the tag.
+    firsts, rest, reported = [], [], {}
+    for r in rows:
+        if r["warm"] == "set_mode_failed":
+            continue  # never sent: reported by the join's set_mode_failed count, in no class
+        if r.get("first_lease"):  # before the reported-only check: a first py_shmem carries the walk
+            firsts.append(r)
+        elif r["class"] in REPORTED_ONLY:
+            reported.setdefault(r["class"], [])
+            if r["in_window"] and r["status"] == "ok":
+                reported[r["class"]].append(r["observed_ms"])
+        else:
+            rest.append(r)
+    rows = rest
     counts = {"calls": len(rows), "used": 0, "unknown": 0, "not_in_window": 0, "not_ok": 0}
     by_class, after = {}, []
     for r in rows:
@@ -77,43 +114,82 @@ def summarize(rows):
             continue
         counts["used"] += 1
         c["warm" if r["warm"] else "cold"].append(r["observed_ms"])
-        if r["cold_reason"] == "idle-destroy":
+        if r["cold_reason"] in ("idle-destroy", "idle"):
             after.append(r)
     classes = {k: {"warm": stats(v["warm"]), "cold": stats(v["cold"]), "all": stats(v["all"]),
                    "unknown": v["unknown"]} for k, v in sorted(by_class.items())}
+    split = {}
+    for r in rows:
+        if r["class"] in BY_TMPFS_CLASSES and r["in_window"] and r["status"] == "ok":
+            s = split.setdefault(r["class"], {"flagged": {"warm": [], "all": []},
+                                               "unflagged": {"warm": [], "all": []}})["flagged" if r.get("tmpfs") else "unflagged"]
+            s["all"].append(r["observed_ms"])
+            if r["warm"] is True:
+                s["warm"].append(r["observed_ms"])
     n_warm = sum(len(v["warm"]) for v in by_class.values())
     after_by = {}
     for r in after:
         after_by.setdefault(r["class"], []).append(r["observed_ms"])
-    return {
+    fl = [r["observed_ms"] for r in firsts if r["in_window"] and r["status"] == "ok"]
+    fl_by = {}
+    for r in firsts:
+        if r["in_window"] and r["status"] == "ok":
+            fl_by.setdefault(r["class"], []).append(r["observed_ms"])
+    out = {
         "counts": counts,
         "classes": classes,
         "warm_share": (n_warm / float(counts["used"])) if counts["used"] else None,
         "first_after_idle": {"all": stats([r["observed_ms"] for r in after]),
                              "by_class": {k: stats(v) for k, v in sorted(after_by.items())}},
     }
+    if firsts:  # only ship arms: an E17a group keeps its exact shape
+        out["first_lease"] = {"calls": len(firsts), "all": stats(fl),
+                              "by_class": {k: stats(v) for k, v in sorted(fl_by.items())}}
+    if reported:  # only E17b corpora have py_shmem: an E17a group keeps its exact shape
+        out["reported_only"] = {k: {"all": stats(v)} for k, v in sorted(reported.items())}
+    if any(r.get("tmpfs") for r in rows):  # only E17b corpora flag sessions: the same
+        out["by_tmpfs"] = {k: {f: {"warm": stats(v[f]["warm"]), "all": stats(v[f]["all"])} for f in v}
+                           for k, v in sorted(split.items())}
+    return out
 
 
-def build(rung_dirs, baseline_arm="sbx"):
+def build(rung_dirs, baseline_arm="sbx", arms=None):
     pooled = {}
     for d in rung_dirs:
         p = read_params(d)
+        if arms and p.get("arm") not in arms and p.get("arm") != baseline_arm:
+            continue
         gk = (p.get("point"), p.get("n"), p.get("arm"))
         g = pooled.setdefault(gk, {"rows": [], "rungs": [], "params": p, "dir": d})
         for f in MUST_MATCH:
             if p.get(f) != g["params"].get(f):
                 raise SystemExit("latency_report.py: will not pool point %s N %s arm %s: %s %r in %s, %r in %s"
                                  % (gk + (f, g["params"].get(f), g["dir"], p.get(f), d)))
-        rows, summary = W.join(d)
+        rows, summary = join_rung(d, p.get("arm"))
+        # E17B-R26: a row's session flag (the driver writes tmpfs on every row of a flagged session)
+        flagged = {c.get("session") for c in W.read_calls(d) if c.get("tmpfs")}
+        for r in rows:
+            if r["session"] in flagged:
+                r["tmpfs"] = True
+        keys = ("warm", "cold", "unknown", "unknown_keys", "dropped_end_session_execs")
+        if str(p.get("arm")).startswith("ship-"):
+            # A ship rung the join cannot vouch for is listed, never pooled (E17B-R9).
+            why = [k + "=%s" % summary[k] for k in ("disagreements", "set_mode_failed") if summary[k]]
+            if why or not summary["valid"] or not summary["countable"]:
+                g.setdefault("excluded", []).append({"dir": d, "reason": ", ".join(why) or "not valid"})
+                continue
+            keys += ("valid", "countable", "disagreements", "set_mode_failed", "failed_no_vm")
         g["rows"].extend(rows)
-        g["rungs"].append({"dir": d, "warmcold": {k: summary[k] for k in (
-            "warm", "cold", "unknown", "unknown_keys", "dropped_end_session_execs")}})
+        g["rungs"].append({"dir": d, "warmcold": {k: summary[k] for k in keys}})
     groups, first_dir = [], {}
     for (point, n, arm), g in pooled.items():
         first_dir[(point, n, arm)] = g["dir"]
         s = summarize(g["rows"])
+        extra = {}
+        if str(arm).startswith("ship-"):
+            extra = {"excluded_rungs": g.get("excluded", []), "countable": not g.get("excluded")}
         groups.append(dict(point=point, n=n, arm=arm, rungs=g["rungs"],
-                           **{f: g["params"].get(f) for f in MUST_MATCH}, **s))
+                           **{f: g["params"].get(f) for f in MUST_MATCH}, **extra, **s))
     base = {(g["point"], g["n"]): g for g in groups if g["arm"] == baseline_arm}
     for g in groups:
         if g["arm"] == baseline_arm:
@@ -170,9 +246,10 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("rungs", nargs="+")
     ap.add_argument("--baseline-arm", default="sbx")
+    ap.add_argument("--arms", help="comma-separated arms to report besides the baseline (default: all)")
     ap.add_argument("--out", default=".", help="directory for latency.json and latency.md")
     a = ap.parse_args(argv)
-    rep = build(a.rungs, baseline_arm=a.baseline_arm)
+    rep = build(a.rungs, baseline_arm=a.baseline_arm, arms=a.arms.split(",") if a.arms else None)
     os.makedirs(a.out, exist_ok=True)
     with open(os.path.join(a.out, "latency.json"), "w") as f:
         json.dump(rep, f, indent=2, sort_keys=True)

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -36,6 +37,26 @@ type callRecord struct {
 	FailedRC     *int    `json:"failed_rc,omitempty"`   // that step's own exit status (128+sig when killed), from the script's stderr marker
 	InWindow     bool    `json:"in_window"`
 	Msg          string  `json:"msg,omitempty"`
+	// Lease mode only (omitted otherwise): every LeaseEvent the call's stream carried that the
+	// session had not recorded yet (failed calls too); first_lease, the session's first call that ran
+	// an Exec (the lease's first); first_refused, a call before it that the worker or the relay refused
+	// (E17B-R30: it ran nothing, so it is not the one checked); and, from the first call that ran on,
+	// on every row of a session whose first call that ran carried no start event, not_lease.
+	LeaseEvents  []leaseEvent `json:"lease_events,omitempty"`
+	FirstLease   bool         `json:"first_lease,omitempty"`
+	FirstRefused bool         `json:"first_refused,omitempty"`
+	NotLease     bool         `json:"not_lease,omitempty"`
+	// Refused (lease mode only) is the class of a refusal that came before the call ran (refusalOf): load
+	// (memory-budget, host-memory, max-runs, queue-full, relay-busy) or configuration (configRefusal; E17B-R42).
+	Refused string `json:"refused,omitempty"`
+	// --record-stdout only (omitted otherwise): for a call of a listed class, the Exec's stdout, its
+	// first stdoutMax bytes cut on a UTF-8 rune boundary ("" when it wrote none), and
+	// stdout_truncated when more was written.
+	Stdout          *string `json:"stdout,omitempty"`
+	StdoutTruncated bool    `json:"stdout_truncated,omitempty"`
+	// Tmpfs: on every row of a session the corpus flags tmpfs (E17b; omitted otherwise, so every
+	// E15/E16/E17a row is unchanged). freed_from_shmem.py judges only unflagged sessions (E17B-R23).
+	Tmpfs bool `json:"tmpfs,omitempty"`
 }
 
 // sessionRecord is one sessions.jsonl line, over the session's in-window calls only.
@@ -105,6 +126,7 @@ func (j *jsonl) write(v any) error {
 // Recorder holds one shared buffered writer per output file.
 type Recorder struct {
 	calls, sessions, cpu *jsonl
+	leaseTail            *jsonl // lease mode only; nil otherwise
 	errMu                sync.Mutex
 	err                  error
 }
@@ -130,10 +152,25 @@ func (r *Recorder) CPU(c cpuRecord)         { r.keep(r.cpu.write(c)) }
 func (r *Recorder) CPUHeader(h cpuHeader)   { r.keep(r.cpu.write(h)) }
 func (r *Recorder) CPUFooter(f cpuFooter)   { r.keep(r.cpu.write(f)) }
 
+// SetLeaseTail attaches lease-tail.jsonl's writer (lease mode).
+func (r *Recorder) SetLeaseTail(w io.Writer) {
+	r.leaseTail = &jsonl{w: bufio.NewWriterSize(w, bufSize)}
+}
+
+// LeaseTail writes one end-of-run status row; without SetLeaseTail it is dropped.
+func (r *Recorder) LeaseTail(row leaseTailRow) {
+	if r.leaseTail != nil {
+		r.keep(r.leaseTail.write(row))
+	}
+}
+
 // Flush writes out every buffer and returns the first write error seen during the run.
 func (r *Recorder) Flush() error {
 	var errs []error
-	for _, j := range []*jsonl{r.calls, r.sessions, r.cpu} {
+	for _, j := range []*jsonl{r.calls, r.sessions, r.cpu, r.leaseTail} {
+		if j == nil {
+			continue
+		}
 		j.mu.Lock()
 		errs = append(errs, j.w.Flush())
 		j.mu.Unlock()
@@ -169,4 +206,44 @@ func parseProcStat(line string) (utimeMs, stimeMs int64, err error) {
 		return 0, 0, fmt.Errorf("proc stat stime: %w", err)
 	}
 	return u * 1000 / clkTck, s * 1000 / clkTck, nil
+}
+
+// ParseRecordStdout parses --record-stdout: comma-separated class names, nil when empty (off). A
+// name is not checked against the library: a class a point's library does not have simply never
+// matches (rung.sh passes py_shmem on every E17b rung, whose E15 points have no such class).
+func ParseRecordStdout(classes string) (map[string]bool, error) {
+	if classes == "" {
+		return nil, nil
+	}
+	out := map[string]bool{}
+	for _, c := range strings.Split(classes, ",") {
+		if c == "" || strings.TrimSpace(c) != c {
+			return nil, fmt.Errorf("--record-stdout %q: want comma-separated class names, no empty or padded name", classes)
+		}
+		out[c] = true
+	}
+	return out, nil
+}
+
+// recordStdoutWarnings is one warning line per --record-stdout class that no replayable call of
+// the corpus has (the driver logs them at start; rung.sh passes py_shmem on every E17b rung, so a
+// point without it is not an error, but a misspelt class is then visible).
+func recordStdoutWarnings(sessions []Session, classes map[string]bool) []string {
+	planned := map[string]bool{}
+	for _, s := range sessions {
+		if len(s.Calls) < minCalls {
+			continue // the sampler never draws it
+		}
+		for _, c := range s.Calls {
+			planned[c.Class] = true
+		}
+	}
+	var out []string
+	for c := range classes {
+		if !planned[c] {
+			out = append(out, fmt.Sprintf("e15-driver: warning: --record-stdout class %q never appears in the corpus's replayable calls; no call will record its stdout", c))
+		}
+	}
+	sort.Strings(out)
+	return out
 }

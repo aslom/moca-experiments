@@ -9,7 +9,7 @@
 # The seeded runs do not depend on the cap (only the probe does), so they are reused, not re-run.
 #
 # Run by the controller only, as the rig's login user, after sync.sh:
-#   bash /srv/e15/src/e17/rig/reprobe.sh ARM      (ARM: sbx resident-300 lease-30 lease-120)
+#   bash /srv/e15/src/e17/rig/reprobe.sh ARM      (ARM: sbx resident-300 lease-30 lease-120; under E17B=1 sbx or a ship-* arm)
 #
 #   0. refuses while a rung's worker (e15-worker.service) runs: it never preempts one
 #   1. checks, before anything moves (a refusal leaves the arm as it was):
@@ -48,14 +48,14 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # repo has it at $HERE/../../../experiments/e15-session-density/rig. Use whichever exists.
 E15_RIG=$HERE/../../e15/rig
 [ -f "$E15_RIG/lib.sh" ] || E15_RIG=$HERE/../../../experiments/e15-session-density/rig
-# shellcheck source=SCRIPTDIR/../../experiments/e15-session-density/rig/lib.sh
+# shellcheck source=SCRIPTDIR/../../e15-session-density/rig/lib.sh
 . "$E15_RIG/lib.sh"
-# shellcheck source=SCRIPTDIR/../../experiments/e15-session-density/rig/points.sh
+# shellcheck source=SCRIPTDIR/../../e15-session-density/rig/points.sh
 . "$E15_RIG/points.sh"
 
 POINT=pycache
 usage() {
-  echo "usage: reprobe.sh ARM   (ARM: one of point $POINT's: sbx resident-300 lease-30 lease-120)" >&2
+  echo "usage: reprobe.sh ARM   (ARM: one of point $POINT's: sbx resident-300 lease-30 lease-120 with E17B unset; with E17B=1: sbx ship-30 ship-120 ship-300 only)" >&2
   exit 2
 }
 [ "$E15_HOST_PROFILE" = fresh-metal ] || die "E15_HOST_PROFILE=$E15_HOST_PROFILE: E17 runs on fresh-metal only"

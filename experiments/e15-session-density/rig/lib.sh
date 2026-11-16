@@ -77,6 +77,44 @@ E15_SHARED=/opt/serverless-harness
 E15_MOCA_PIN=c13d55649777e69ec7649d6fa8c08f4acb1f4e2e
 E15_MOCA_URL=${E15_MOCA_URL:-https://github.com/rossoctl/moca.git}
 
+# E17b profile (experiments/e17-lease/PLAN-E17B.md): with E17B=1 every arm runs from E17B_MOCA_PIN
+# (experiments/e17-lease/rig/e17b-pins.sh) in its own checkout, $E15_ROOT/moca-e17b (set below), so
+# setup.sh's clone, build stamps, snapshot key, relay, microvm-worker and guest agent all follow it.
+# With E17B unset (or anything but 1) nothing here runs and the sealed E15/E16/E17a procedures resolve
+# as before. rig.test.sh only: a fixture pin file (E15_TEST_PINS) is applied last, as for pins.sh.
+if [ "${E17B:-}" = 1 ]; then
+  _e17b_here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+  # The repo layout (experiments/e17-lease) and the rig's staged one (/srv/e15/src/e17, sync.sh).
+  for _e17b_f in "$_e17b_here/../../e17-lease/rig/e17b-pins.sh" "$_e17b_here/../../e17/rig/e17b-pins.sh"; do
+    [ -f "$_e17b_f" ] && break
+  done
+  [ -f "$_e17b_f" ] || {
+    printf 'lib.sh: E17B=1 but no e17b-pins.sh at %s or %s\n' "$_e17b_here/../../e17-lease/rig/e17b-pins.sh" "$_e17b_here/../../e17/rig/e17b-pins.sh" >&2
+    exit 3
+  }
+  # shellcheck disable=SC1090
+  . "$_e17b_f"
+  case "$E15_ROOT" in
+  */e15-rig-test.*)
+    # shellcheck disable=SC1090
+    [ -n "${E15_TEST_PINS:-}" ] && [ "${E15_TEST_ROOT:-}" = "$E15_ROOT" ] && . "$E15_TEST_PINS"
+    ;;
+  esac
+  # shellcheck disable=SC2153 # assigned by the pin file sourced above
+  E15_MOCA_PIN=$E17B_MOCA_PIN
+fi
+# e17b_require_pin: refuse an E17B_MOCA_PIN that is not a full 40-hex sha or is the all-zero placeholder.
+# setup.sh and rung.sh call it when E17B=1; teardown.sh does not (it must always be able to undo).
+e17b_require_pin() {
+  case "${E17B_MOCA_PIN:-}" in
+  0000000000000000000000000000000000000000)
+    die "E17B_MOCA_PIN is still the placeholder (all zeros) in e17b-pins.sh; replace it with the upstream/main sha before any rig run"
+    ;;
+  esac
+  printf '%s' "${E17B_MOCA_PIN:-}" | grep -qE '^[0-9a-f]{40}$' ||
+    die "E17B_MOCA_PIN '${E17B_MOCA_PIN:-}' is not a full 40-hex sha (e17b-pins.sh)"
+}
+
 # Ports (SPEC §4): relay attach, relay exec, null-responder (control arm), worker /stats, Redis.
 E15_PORT_ATTACH=9643
 E15_PORT_EXEC=9644
@@ -120,6 +158,9 @@ E15_ARMS=(sbx resident-inf resident-300 control)
 # E17 (experiments/e17-lease/SPEC.md, fresh-metal only): the lease arms, the resident worker with a 30 s or 120 s idle
 # lease (worker_env); otherwise as resident-300. aws-prelim: the sealed arm list above.
 [ "$E15_HOST_PROFILE" != fresh-metal ] || E15_ARMS+=(lease-30 lease-120)
+# E17b (E17B=1, fresh-metal only): ship-30/120/300 are the shipped lease at idle timeout 30/120/300 s (the stock worker at
+# E17B_MOCA_PIN, depth 0; worker_env). With E17B unset the arm list above stands.
+if [ "$E15_HOST_PROFILE" = fresh-metal ] && [ "${E17B:-}" = 1 ]; then E15_ARMS+=(ship-30 ship-120 ship-300); fi
 E15_LADDER=(1 8 16 24 32 40 48 56 64 80 96 128)
 # fresh-metal (SPEC §13, user decision 2026-11-04): the ladder extends past 128 until one arm fails,
 # resident arms warm up 1200 s (their VMs are still growing at 600 s), and footprint drift is judged
@@ -138,6 +179,7 @@ e15_default_warmup() {
   case "$E15_HOST_PROFILE:$1" in
   fresh-metal:sbx | fresh-metal:resident-inf | fresh-metal:resident-300) echo 1200 ;;
   fresh-metal:lease-30 | fresh-metal:lease-120) echo 1200 ;; # E17: as resident-300
+  fresh-metal:ship-30 | fresh-metal:ship-120 | fresh-metal:ship-300) echo 1200 ;; # E17b: as the lease arms
   *) echo 600 ;;
   esac
 }
@@ -172,8 +214,19 @@ unset _e15_env_committed _e15_env_runs _e15_v
 
 # Points (SPEC §10.3): points.sh (sourced after this file).
 
+# e15_e17a_arm_refused ARM: under E17B=1 (the E17b profile) the E17a arms resident-* and lease-* are refused, naming
+# why, on stderr (PR #34): E17B=1 only adds ship-* to E15_ARMS / points.sh, but those arms' worker is
+# microvm-worker-resident, the old-pin build, which would run against the E17b relay and guest agent and be recorded at
+# E17B_MOCA_PIN. Returns 1 (not refused) otherwise; with E17B unset nothing changes.
+e15_e17a_arm_refused() {
+  [ "${E17B:-}" = 1 ] || return 1
+  case "$1" in resident-* | lease-*) ;; *) return 1 ;; esac
+  printf '%s: %s is an E17a arm: its worker is microvm-worker-resident, the old-pin build; under E17B=1 it would run against the E17b relay and guest agent and be recorded at E17B_MOCA_PIN. Run it with E17B unset\n' "${E15_PROG:-e15}" "$1" >&2
+}
+
 e15_is_arm() {
   local a
+  ! e15_e17a_arm_refused "$1" || return 1
   for a in "${E15_ARMS[@]}"; do [ "$a" = "$1" ] && return 0; done
   return 1
 }
@@ -266,10 +319,22 @@ refuse_outside_root() {
 refuse_units() {
   local a
   if [ "$E15_HOST_PROFILE" = fresh-metal ]; then
-    # Every argument is an option, a systemctl verb, or one of E15's own units.
+    # Every argument is an option, a systemctl verb, or one of E15's own units. set-property is for e15.slice's
+    # MemoryMax/MemoryHigh only (the E17b squeeze rung, e15_slice_squeeze): any other unit or property is refused.
+    case " $* " in *" set-property "*)
+      for a in "$@"; do
+        case "$a" in -* | set-property | e15.slice | MemoryMax=* | MemoryHigh=*) ;; *)
+          printf 'refuse_units: set-property %s: only e15.slice MemoryMax/MemoryHigh (fresh-metal rule)\n' "$a" >&2
+          exit 3
+          ;;
+        esac
+      done
+      ;;
+    esac
     for a in "$@"; do
       case "$a" in
       -* | start | stop | restart | reset-failed | daemon-reload | is-active | is-failed | status | show | e15.slice | e15-*) ;;
+      set-property | MemoryMax=* | MemoryHigh=*) ;; # the set-property rule above
       *)
         printf 'refuse_units: %s is not an E15 unit (fresh-metal rule: E15 touches only its own)\n' "$a" >&2
         exit 3
@@ -652,6 +717,7 @@ E15_SECRETS=$E15_ROOT/secrets
 E15_STATE=$E15_ROOT/state
 E15_LOGS=$E15_ROOT/logs
 E15_MOCA=$E15_ROOT/moca
+[ "${E17B:-}" != 1 ] || E15_MOCA=$E15_ROOT/moca-e17b # E17b profile (above): its own checkout
 E15_SNAPDIR=$E15_ROOT/snapshots
 E15_SNAPIMG=e15
 E15_TEMPLATE=$E15_ROOT/template/workspace.img
@@ -664,6 +730,21 @@ E15_VMCG=$E15_CG/e15-vms.slice
 
 # stamp_ok NAME KEY / stamp_set NAME KEY: a build step is skipped when its stamp holds KEY.
 stamp_ok() { [ -f "$E15_STATE/$1" ] && [ "$(cat "$E15_STATE/$1")" = "$2" ]; }
+stamp_get() { cat "$E15_STATE/$1" 2>/dev/null; }
+# refuse_driver_rebuild STAMP BIN KEY (setup.sh with E17B unset; ruling E17B-R37): die rather than overwrite an EXISTING
+# sealed driver binary whose stamp records another driver source key, unless E15_ACK_DRIVER_REBUILD=1. A fresh rig (no
+# binary, or no stamp) builds as before.
+refuse_driver_rebuild() {
+  local stamp=$1 bin=$2 key=$3 old
+  [ -e "$bin" ] || return 0
+  old=$(stamp_get "$stamp") || old=""
+  if [ -z "$old" ] || [ "$old" = "$key" ]; then return 0; fi
+  if [ "${E15_ACK_DRIVER_REBUILD:-0}" = 1 ]; then
+    log "E15_ACK_DRIVER_REBUILD=1: rebuilding $bin (stamp $stamp $old -> $key)"
+    return 0
+  fi
+  die "refusing to rebuild the existing $bin: its stamp $stamp is $old, the driver source is now $key. The sealed rungs that ran it record its sha256. This checkout's driver changes are opt-in flags and the default path is golden-tested unchanged (driver TestDefaultPathUnchanged), but a rebuild still replaces the binary: keep it (E17B=1 builds its own -e17b drivers), or set E15_ACK_DRIVER_REBUILD=1 to rebuild it knowingly"
+}
 stamp_set() {
   mkdir -p "$E15_STATE"
   printf '%s\n' "$2" >"$E15_STATE/$1"
@@ -692,6 +773,77 @@ e15_slice_limits() {
   local mib=$(($1 / 1024))
   local max=$(((mib - 3072) * 1024 * 1024))
   printf '%s %s\n' "$max" "$((max - 1024 * 1024 * 1024))"
+}
+
+# e15_squeeze_limits MB (E17b squeeze rungs): "MEMORYMAX MEMORYHIGH" in bytes for e15.slice lowered to MB MiB,
+# MemoryHigh = MemoryMax - 1 GiB as in e15_slice_limits.
+e15_squeeze_limits() {
+  local max=$(($1 * 1024 * 1024))
+  printf '%s %s\n' "$max" "$((max - 1024 * 1024 * 1024))"
+}
+
+# e15_slice_squeeze MB WHY (rung.sh, E15_SQUEEZE_MEMMAX_MB): lower e15.slice to MB MiB for one rung with
+# `systemctl set-property --runtime` (a /run drop-in: gone at reboot). The values to restore are read first with
+# `systemctl show`, never recomputed, into E15_SQUEEZE_ORIG_MAX/E15_SQUEEZE_ORIG_HIGH; a squeeze only lowers
+# MemoryMax. One manifest line (m_change) whose UNDO restores them is written before the change, and
+# E15_SQUEEZE_ACTIVE=1 is set before it too (a failed set-property may have applied one property), so
+# e15_slice_unsqueeze restores on every path. Dies on a refusal or a failure.
+e15_slice_squeeze() {
+  local mb=$1 why=$2 cur max high
+  cur=$(sctl show "$E15_SLICE" --property=MemoryMax,MemoryHigh) || die "systemctl show $E15_SLICE failed: the values to restore are unknown, nothing changed"
+  E15_SQUEEZE_ORIG_MAX=$(printf '%s\n' "$cur" | sed -n 's/^MemoryMax=//p')
+  E15_SQUEEZE_ORIG_HIGH=$(printf '%s\n' "$cur" | sed -n 's/^MemoryHigh=//p')
+  [[ "$E15_SQUEEZE_ORIG_MAX" =~ ^[0-9]+$ ]] ||
+    die "$E15_SLICE MemoryMax is '$E15_SQUEEZE_ORIG_MAX', not a byte count (setup.sh sets one): refusing to squeeze it"
+  [[ "$E15_SQUEEZE_ORIG_HIGH" =~ ^([0-9]+|infinity)$ ]] ||
+    die "$E15_SLICE MemoryHigh is '$E15_SQUEEZE_ORIG_HIGH', not a byte count or infinity: refusing to squeeze it"
+  read -r max high < <(e15_squeeze_limits "$mb")
+  [ "$max" -le "$E15_SQUEEZE_ORIG_MAX" ] ||
+    die "E15_SQUEEZE_MEMMAX_MB=$mb ($max bytes) is above $E15_SLICE's MemoryMax $E15_SQUEEZE_ORIG_MAX: a squeeze only lowers it"
+  E15_SQUEEZE_MAX=$max
+  E15_SQUEEZE_HIGH=$high
+  m_init
+  m_change "$E15_SLICE MemoryMax=$max MemoryHigh=$high (runtime, $why; was MemoryMax=$E15_SQUEEZE_ORIG_MAX MemoryHigh=$E15_SQUEEZE_ORIG_HIGH)" \
+    "sudo -n systemctl set-property --runtime $E15_SLICE MemoryMax=$E15_SQUEEZE_ORIG_MAX MemoryHigh=$E15_SQUEEZE_ORIG_HIGH; sudo -n rm -f -- $(e15_slice_dropins | paste -sd' ' -); sudo -n systemctl daemon-reload"
+  E15_SQUEEZE_ACTIVE=1
+  sctl set-property --runtime "$E15_SLICE" "MemoryMax=$max" "MemoryHigh=$high" ||
+    die "systemctl set-property --runtime $E15_SLICE MemoryMax=$max MemoryHigh=$high failed"
+  log "$E15_SLICE squeezed: MemoryMax=$max MemoryHigh=$high (was $E15_SQUEEZE_ORIG_MAX / $E15_SQUEEZE_ORIG_HIGH)"
+}
+
+# e15_slice_dropins: the two runtime drop-ins `set-property --runtime` writes for e15.slice (systemd's system.control
+# directory). The restore removes exactly these two files; nothing else under /run is ever deleted. (A function, not a
+# variable: lib.sh defines no new E15_* variable for the sealed procedures.)
+e15_slice_dropins() { printf '%s\n' /run/systemd/system.control/e15.slice.d/50-MemoryMax.conf /run/systemd/system.control/e15.slice.d/50-MemoryHigh.conf; }
+
+# e15_slice_unsqueeze: restore what e15_slice_squeeze read (a no-op when nothing was squeezed), then remove the two
+# runtime drop-ins and daemon-reload, so the slice is back to its unit file only. Never dies, so a trap can call it:
+# returns 1 when the restore failed (logged with the command; the manifest's UNDO line has it too).
+e15_slice_unsqueeze() {
+  [ "${E15_SQUEEZE_ACTIVE:-0}" = 1 ] || return 0
+  local dmax dhigh
+  { read -r dmax && read -r dhigh; } < <(e15_slice_dropins)
+  if sctl set-property --runtime "$E15_SLICE" "MemoryMax=$E15_SQUEEZE_ORIG_MAX" "MemoryHigh=$E15_SQUEEZE_ORIG_HIGH"; then
+    E15_SQUEEZE_ACTIVE=0
+    m_note "$E15_SLICE restored: MemoryMax=$E15_SQUEEZE_ORIG_MAX MemoryHigh=$E15_SQUEEZE_ORIG_HIGH"
+    log "$E15_SLICE restored: MemoryMax=$E15_SQUEEZE_ORIG_MAX MemoryHigh=$E15_SQUEEZE_ORIG_HIGH"
+    case "$dmax $dhigh" in
+    "/run/systemd/system.control/e15.slice.d/50-MemoryMax.conf /run/systemd/system.control/e15.slice.d/50-MemoryHigh.conf") ;;
+    *)
+      log "WARNING: refusing to remove drop-ins other than e15.slice's 50-MemoryMax.conf/50-MemoryHigh.conf"
+      return 1
+      ;;
+    esac
+    if sudo -n rm -f -- "$dmax" "$dhigh" && sctl daemon-reload; then
+      E15_SQUEEZE_RESTORED=1
+      m_note "$E15_SLICE runtime drop-ins removed ($dmax, $dhigh), daemon-reload"
+      return 0
+    fi
+    log "WARNING: $E15_SLICE values restored, but removing its runtime drop-ins or daemon-reload failed; run: sudo -n rm -f -- $dmax $dhigh; sudo -n systemctl daemon-reload"
+    return 1
+  fi
+  log "WARNING: could not restore $E15_SLICE; run: sudo -n systemctl set-property --runtime $E15_SLICE MemoryMax=$E15_SQUEEZE_ORIG_MAX MemoryHigh=$E15_SQUEEZE_ORIG_HIGH (the manifest's UNDO line)"
+  return 1
 }
 
 # memavail_kb: MemAvailable in kB from $E15_MEMINFO (empty if unreadable).
@@ -760,13 +912,37 @@ stop_rung_units() {
 # worker_env ARM OUT [IMAGE_MB]: write the worker's non-secret environment for ARM (SPEC §7.1-§7.2).
 # IMAGE_MB is the point's workspace image size (points.sh E15_P_IMAGE_MB; default 256).
 worker_env() {
-  local arm=$1 out=$2 image_mb=${3:-256} depth
+  local arm=$1 out=$2 image_mb=${3:-256} depth committed=$E15_MAX_COMMITTED_MB slots=256 snap ram
+  snap=$(worker_snapimg) || exit 1
+  ram=$(worker_guest_ram_mb) || exit 1
   case "$arm" in
   sbx) depth=2 ;;
   resident-inf | resident-300) depth=0 ;;
   lease-30 | lease-120) depth=0 ;; # E17 (fresh-metal only; E15_ARMS)
+  ship-30 | ship-120 | ship-300)
+    # E17b (E17B=1): the shipped lease. Admission is bounded by host RAM less 8 GiB (spec §6) and the slots sit above the
+    # ladder's top N; the lease knobs (SH_LEASE_*) are left unset, so the worker's defaults stand and its banner prints them.
+    [ "${E17B:-}" = 1 ] || die "worker_env: arm $arm exists only under E17B=1"
+    depth=0
+    local mem_kb top=0 n
+    mem_kb=$(awk '/^MemTotal:/{print $2}' "$E15_MEMINFO" 2>/dev/null)
+    [[ "$mem_kb" =~ ^[1-9][0-9]*$ ]] || die "worker_env: no MemTotal in $E15_MEMINFO: the lease admission budget (host RAM - 8192 MiB) cannot be derived"
+    committed=$((mem_kb / 1024 - 8192))
+    [ "$committed" -gt 0 ] || die "worker_env: host RAM $((mem_kb / 1024)) MiB leaves no admission budget above 8192 MiB"
+    for n in "${E15_LADDER[@]}"; do [ "$n" -le "$top" ] || top=$n; done
+    slots=$((top + 256))
+    ;;
   *) die "worker_env: no worker for arm $arm" ;;
   esac
+  # E17b squeeze (E17B-R20; rung.sh allows E15_SQUEEZE_MEMMAX_MB at POINT squeeze only): the worker never reads
+  # e15.slice's MemoryMax. Its memory_reclaim fires on the committed budget (admission) or on host MemAvailable below
+  # its reclaim floor, so the no-overcommit rule is applied to the squeezed host: every arm at the point (ship-300 and
+  # sbx alike) gets SH_MAX_COMMITTED_MB = MemoryMax - 8192. The host-MemAvailable reclaim trigger is not exercised by
+  # the squeeze (the host itself stays large).
+  if [ "${E17B:-}" = 1 ] && [ -n "${E15_SQUEEZE_MEMMAX_MB:-}" ]; then
+    committed=$((E15_SQUEEZE_MEMMAX_MB - 8192))
+    [ "$committed" -gt 0 ] || die "worker_env: E15_SQUEEZE_MEMMAX_MB=$E15_SQUEEZE_MEMMAX_MB leaves no committed budget (MemoryMax - 8192 MiB)"
+  fi
   {
     echo "RELAY_ADDR=127.0.0.1:$E15_PORT_ATTACH"
     echo "RELAY_TLS=false"
@@ -775,15 +951,15 @@ worker_env() {
     echo "SH_JAILER_BIN=$E15_JAILER"
     echo "SH_FIRECRACKER_BIN=$E15_FIRECRACKER"
     echo "SH_SNAPSHOT_DIR=$E15_SNAPDIR"
-    echo "SH_SNAPSHOT_IMAGE=$E15_SNAPIMG"
+    echo "SH_SNAPSHOT_IMAGE=$snap"
     echo "SH_WORKSPACE_ROOT=$E15_WORKSPACES"
     echo "SH_CHROOT_BASE=$E15_JAIL"
     echo "SH_PARENT_CGROUP=$E15_PARENT_CGROUP"
-    echo "SH_GUEST_RAM_MB=1024"
+    echo "SH_GUEST_RAM_MB=$ram"
     echo "SH_STANDBY_DEPTH=$depth"
-    echo "WORKER_MAX_CONCURRENT=256"
+    echo "WORKER_MAX_CONCURRENT=$slots"
     echo "SH_MAX_RUNS=$E15_MAX_RUNS"
-    echo "SH_MAX_COMMITTED_MB=$E15_MAX_COMMITTED_MB"
+    echo "SH_MAX_COMMITTED_MB=$committed"
     echo "SH_HOST_MEM_FLOOR_MB=$E15_FLOOR_MB"
     echo "SH_WORKSPACE_IMAGE_MB=$image_mb"
     echo "SH_WORKSPACE_IDLE=24h"
@@ -799,9 +975,94 @@ worker_env() {
   } >"$out"
 }
 
+# E17b (E17B=1, ruling E17B-R3): the stock worker and null-responder are built to their own binaries
+# and stamp, so the sealed E15/E16/E17a binaries are never overwritten. Unchanged with E17B unset.
+stock_worker_bin() { if [ "${E17B:-}" = 1 ]; then echo "$E15_BIN/microvm-worker-e17b"; else echo "$E15_BIN/microvm-worker"; fi; }
+null_bin() { if [ "${E17B:-}" = 1 ]; then echo "$E15_BIN/null-responder-e17b"; else echo "$E15_BIN/null-responder"; fi; }
+stock_stamp() { if [ "${E17B:-}" = 1 ]; then echo go-stock-e17b; else echo go-stock; fi; }
+# e17b_require_build: under E17B=1 the stock binaries must have been built at E15_MOCA_PIN (rung.sh).
+e17b_require_build() {
+  stamp_ok go-stock-e17b "$E15_MOCA_PIN" ||
+    die "E17B=1 but the go-stock-e17b build stamp in $E15_STATE is not for $E15_MOCA_PIN; run setup.sh with E17B=1"
+}
+# e17b_lease_arm ARM: true for an E17b shipped-lease arm (ship-*) under E17B=1.
+e17b_lease_arm() { [ "${E17B:-}" = 1 ] && case "$1" in ship-30 | ship-120 | ship-300) true ;; *) false ;; esac; }
+# e17b_idle_timeout_s ARM: the lease idle timeout of a ship arm (the token's idle_timeout_s claim).
+e17b_idle_timeout_s() { e17b_lease_arm "$1" || die "e17b_idle_timeout_s: $1 is not a ship arm (E17B=1)"; echo "${1#ship-}"; }
+# E17b snapshot leaf (ruling E17B-R17): under E17B=1 every arm's worker runs on snapshot-e17b.sh's leaf
+# e17b-<first 8 of E15_MOCA_PIN>-<E17B_GUEST_RAM_MB> (1024 by default; 256 for the 256 MiB stages) with that guest RAM,
+# never on the sealed e15 leaf. With E17B unset: $E15_SNAPIMG and 1024 MiB, as before.
+e17b_guest_ram_mb() {
+  case "${E17B_GUEST_RAM_MB:-1024}" in
+  1024 | 256) echo "${E17B_GUEST_RAM_MB:-1024}" ;;
+  *) die "E17B_GUEST_RAM_MB=${E17B_GUEST_RAM_MB} is not 1024 or 256 (the guest RAMs snapshot-e17b.sh builds)" ;;
+  esac
+}
+worker_snapimg() {
+  if [ "${E17B:-}" = 1 ]; then
+    local ram
+    ram=$(e17b_guest_ram_mb) || exit 1
+    echo "e17b-${E15_MOCA_PIN:0:8}-$ram"
+  else
+    echo "$E15_SNAPIMG"
+  fi
+}
+worker_guest_ram_mb() { if [ "${E17B:-}" = 1 ]; then e17b_guest_ram_mb; else echo 1024; fi; }
+# e17b_require_snapshot: under E17B=1, the selected leaf must hold a manifest.json (rung.sh before any host change,
+# start_worker before the worker starts); a no-op with E17B unset.
+e17b_require_snapshot() {
+  [ "${E17B:-}" = 1 ] || return 0
+  local leaf ram
+  leaf=$(worker_snapimg) || exit 1
+  ram=$(e17b_guest_ram_mb) || exit 1
+  [ -f "$E15_SNAPDIR/$leaf/manifest.json" ] ||
+    die "no E17b snapshot $E15_SNAPDIR/$leaf (manifest.json): build it with experiments/e17-lease/rig/snapshot-e17b.sh --ram-mb $ram --leaf $leaf"
+}
+# e17b_token_iss: the token issuer the relay's SH_SANDBOX_TOKEN_ISSUER and the driver's --token-iss share.
+e17b_token_iss() { echo e17b-driver; }
+# e17b_token_dir_ok DIR: DIR is one token-<run> leaf directly under $E15_SECRETS ([A-Za-z0-9._-], no ..), lexically.
+e17b_token_dir_ok() {
+  local leaf=${1#"$E15_SECRETS"/}
+  [ "$leaf" != "$1" ] || return 1
+  case "$leaf" in token-?*) ;; *) return 1 ;; esac
+  case "$leaf" in */* | *..*) return 1 ;; esac
+  [[ "$leaf" =~ ^token-[A-Za-z0-9._-]+$ ]]
+}
+# e17b_token_dir_remove DIR: remove a rung's key directory (mint-key's token.key and token.pub, then the empty dir).
+# Only a checked token-<run> leaf of $E15_SECRETS that is a real directory (not a symlink), inside $E15_ROOT; never
+# rm -rf: an unexpected file keeps the dir (logged). Returns 1 on a refusal or a leftover.
+e17b_token_dir_remove() {
+  local d=$1
+  e17b_token_dir_ok "$d" || {
+    log "refusing to remove $d: not a token-<run> leaf of $E15_SECRETS"
+    return 1
+  }
+  [ -e "$d" ] || [ -L "$d" ] || return 0
+  if [ -L "$d" ] || [ ! -d "$d" ]; then
+    log "refusing to remove $d: not a directory (or a symlink)"
+    return 1
+  fi
+  refuse_outside_root "$d"
+  rm -f -- "$d/token.key" "$d/token.pub"
+  rmdir -- "$d" 2>/dev/null || {
+    log "WARNING: $d holds more than token.key/token.pub; the keys are removed, the directory is left"
+    return 1
+  }
+}
+
 worker_bin() {
+  ! e15_e17a_arm_refused "$1" || exit 1
   case "$1" in
-  sbx) echo "$E15_BIN/microvm-worker" ;;
+  sbx | ship-30 | ship-120 | ship-300)
+    # ship-* exist only in the E17b profile
+    if [ "${E17B:-}" = 1 ]; then
+      stock_worker_bin
+    elif [ "$1" = sbx ]; then
+      echo "$E15_BIN/microvm-worker"
+    else
+      die "worker_bin: no worker for arm $1"
+    fi
+    ;;
   resident-inf | resident-300) echo "$E15_BIN/microvm-worker-resident" ;;
   lease-30 | lease-120) echo "$E15_BIN/microvm-worker-resident" ;; # E17
   *) die "worker_bin: no worker for arm $1" ;;
@@ -814,6 +1075,7 @@ start_worker() {
   local arm=$1 dir=$2 image_mb=${3:-256} bin
   bin=$(worker_bin "$arm")
   [ -x "$bin" ] || die "no worker binary $bin (run setup.sh)"
+  e17b_require_snapshot
   unit_active "$E15_UNIT_WORKER" && die "$E15_UNIT_WORKER is already running"
   refuse_ports "$E15_PORT_STATS"
   worker_env "$arm" "$dir/worker.env" "$image_mb"
@@ -839,7 +1101,7 @@ start_null() {
   refuse_ports "$E15_PORT_NULL"
   sudo -n systemd-run --quiet --unit="$E15_UNIT_NULL" --slice="$E15_SLICE" \
     -p User="$(id -un)" -p StandardOutput="file:$dir/null.log" \
-    "$E15_BIN/null-responder" --listen "127.0.0.1:$E15_PORT_NULL" >/dev/null ||
+    "$(null_bin)" --listen "127.0.0.1:$E15_PORT_NULL" >/dev/null ||
     die "systemd-run $E15_UNIT_NULL failed"
   wait_for 30 port_listening "$E15_PORT_NULL" || die "null-responder did not listen on $E15_PORT_NULL"
 }
@@ -850,7 +1112,11 @@ start_null() {
 # so it patches the same @grpc/grpc-js instance main.ts imports.
 E15_RELAY_PRELOAD="data:text/javascript,import{createRequire}from'node:module';const g=createRequire(process.cwd()+'/package.json')('@grpc/grpc-js');const b=g.Server.prototype.bindAsync;g.Server.prototype.bindAsync=function(a,...r){return b.call(this,String(a).replace('0.0.0.0:','127.0.0.1:'),...r)};"
 
+# start_relay [EXTRA_ENV_FILE]: E15's relay. E17b lease arms pass the per-rung file holding the token keyset and issuer;
+# with no argument the command line is the sealed one.
 start_relay() {
+  local extra=()
+  [ -z "${1:-}" ] || extra=(-p EnvironmentFile="$1")
   refuse_ports "$E15_PORT_ATTACH" "$E15_PORT_EXEC"
   mkdir -p "$E15_LOGS"
   # systemd creates the file as root; rotate it so this start's lines are the only ones checked.
@@ -860,7 +1126,7 @@ start_relay() {
   [ "$E15_HOST_PROFILE" != fresh-metal ] || envp=(-p Environment="PATH=$(e15_path)")
   sudo -n systemd-run --quiet --unit="$E15_UNIT_RELAY" --slice="$E15_SLICE" \
     -p User="$(id -un)" -p WorkingDirectory="$E15_MOCA/packages/sandbox-relay" \
-    -p EnvironmentFile="$E15_SECRETS/relay.env" \
+    -p EnvironmentFile="$E15_SECRETS/relay.env" "${extra[@]}" \
     -p IPAddressDeny=any -p IPAddressAllow=localhost \
     -p MemoryAccounting=yes -p CPUAccounting=yes \
     -p StandardOutput="append:$E15_LOGS/relay.log" "${envp[@]}" \

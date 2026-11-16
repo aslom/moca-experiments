@@ -3,10 +3,12 @@
 # sampler, record.
 #
 #   ARM    sbx | resident-inf | resident-300 | control | lease-30 | lease-120   (lease-*: E17, fresh-metal)
+#          | ship-30 | ship-120 | ship-300   (E17b: E17B=1, fresh-metal; the shipped lease at that idle timeout)
 #   N      session population (>= 1)
 #   POINT  default | short | long | no-infra | no-chains | smoke | mem512 | lowduty   (points.sh: corpus
 #          /srv/e15/corpora/<its corpus>, library, workspace template, image size)
 #          | pycache | pycache-low | pycache-d64 | pycache-d768   (E17, fresh-metal)
+#          | squeeze | squeeze-256   (E17b: E17B=1, fresh-metal; arms ship-300 and sbx; 1024 and 256 MiB guests)
 #
 # Environment (defaults are SPEC §10.2's):
 #   E15_WARMUP_S 600 (fresh-metal resident arms 1200; lib.sh e15_default_warmup)   E15_WINDOW_S 900   E15_SPREAD_S 60   E15_GRACE_S 300   E15_SEED 1
@@ -14,6 +16,10 @@
 #   E15_CORPUS_OVERRIDE  a probe corpus.jsonl to replay instead of POINT's (classprobe.sh)
 #   E15_START_ZERO     1: every session starts at its first call (probe runs)
 #   E15_MAX_SESSIONS   start at most this many sessions, then end the run early (probe runs)
+#   E15_SQUEEZE_MEMMAX_MB  POINT squeeze or squeeze-256 only (E17b): lower e15.slice to MemoryMax=MB MiB, MemoryHigh 1 GiB below,
+#                      with `systemctl set-property --runtime` before the worker starts; the slice's own values
+#                      (read with `systemctl show` first) are restored at the rung's end and on any error or signal
+#                      (EXIT trap). One manifest line, its UNDO the restore. Recorded in params.json.
 # The N=1 baseline is the pooled N1/baseline.json that baseline.sh writes (see "the N=1 baseline").
 #
 # Steps:
@@ -46,6 +52,8 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/lib.sh"
 # shellcheck source=points.sh
 . "$HERE/points.sh"
+# E17b profile: refuse the placeholder or a malformed E17B_MOCA_PIN before any host change.
+[ "${E17B:-}" != 1 ] || { e17b_require_pin && e17b_require_build; }
 
 usage() {
   echo "usage: rung.sh ARM N POINT   (ARM: ${E15_ARMS[*]})" >&2
@@ -72,6 +80,29 @@ case " $E15_P_ARMS " in *" $ARM "*) ;; *)
   exit 2
   ;;
 esac
+
+# E17b squeeze knob (points.sh squeeze): validated here, before any host change.
+SQUEEZE_MB=${E15_SQUEEZE_MEMMAX_MB:-}
+if [ -n "$SQUEEZE_MB" ]; then
+  e15_is_squeeze "$POINT" || {
+    echo "rung.sh: E15_SQUEEZE_MEMMAX_MB is for POINT squeeze or squeeze-256 only (got POINT $POINT)" >&2
+    exit 2
+  }
+  [[ "$SQUEEZE_MB" =~ ^[1-9][0-9]*$ ]] && [ "$SQUEEZE_MB" -gt 8192 ] || {
+    echo "rung.sh: E15_SQUEEZE_MEMMAX_MB must be an integer above 8192 (the committed budget is MemoryMax - 8192 MiB, E17B-R20), got '$SQUEEZE_MB'" >&2
+    exit 2
+  }
+fi
+
+# The squeeze points' D is for one guest RAM (E17B-R21): squeeze 1024 MiB (D=768), squeeze-256 256 MiB (D=192).
+if e15_is_squeeze "$POINT"; then
+  want_ram=1024
+  [ "$POINT" != squeeze-256 ] || want_ram=256
+  [ "$(worker_guest_ram_mb)" = "$want_ram" ] || {
+    echo "rung.sh: POINT $POINT runs at E17B_GUEST_RAM_MB=$want_ram (its D keeps the dataset-to-RAM ratio), got ${E17B_GUEST_RAM_MB:-1024}" >&2
+    exit 2
+  }
+fi
 
 WARMUP=${E15_WARMUP_S:-$(e15_default_warmup "$ARM")}
 K_MULT=${E15_K_MULT:-1}
@@ -109,6 +140,12 @@ DRIVER=$E15_BIN/e15-driver
 BASE_DRIVER=$DRIVER
 if [ "$E15_HOST_PROFILE" = fresh-metal ] && [ "${E15_END_SESSION_DEFER:-0}" = 1 ]; then
   DRIVER=$E15_BIN/e15-driver-defer
+fi
+# E17b (E17B=1, ruling E17B-R4): every arm runs the -e17b driver binaries (setup.sh builds them); the sealed
+# e15-driver and e15-driver-defer are never run, so their sha256 in the sealed records stay valid.
+if [ "${E17B:-}" = 1 ]; then
+  DRIVER=${DRIVER}-e17b
+  BASE_DRIVER=${BASE_DRIVER}-e17b
 fi
 [ -f "$CORPUS" ] || die "no corpus $CORPUS"
 [ -f "$LIBRARY" ] || die "no library $LIBRARY"
@@ -168,6 +205,8 @@ fi
 # end baseline resolution
 [ -f "$TEMPLATE" ] || die "no workspace template $TEMPLATE for point $POINT (run setup.sh)"
 if [ "$ARM" != control ]; then
+  # E17b (E17B-R17): the arm's snapshot leaf must exist before anything is stopped, wiped or restarted.
+  e17b_require_snapshot
   unit_active "$E15_UNIT_RELAY" || die "$E15_UNIT_RELAY is not running (run setup.sh)"
 fi
 
@@ -185,11 +224,37 @@ fi
 RUN_ID="$POINT-$ARM-n$N${TAG:+-$TAG}-$(date -u +%s)"
 log "rung $ARM N=$N point=$POINT warmup=${WARMUP}s window=${WINDOW}s -> $DIR"
 
+# rung_host_restore: undo this rung's own host state once its worker is stopped -- the squeezed e15.slice
+# (E15_SQUEEZE_MEMMAX_MB) and the per-rung token key directory (E17b lease arms). Idempotent; never dies. Returns 1
+# only when the slice could not be restored (a rig error at the rung's end); a key directory left with an unexpected
+# file is logged (its token.key is removed first) and does not fail the rung.
+#
+# The key directory needs no manifest line: it is created and removed by this rung on every exit path (the end,
+# die, a signal: the EXIT trap), inside $E15_ROOT/secrets (0700, the login user's), like the rung's workspaces,
+# which rung.sh also creates and wipes without one. A rung killed with SIGKILL leaves it under $E15_SECRETS, which
+# teardown.sh --purge removes with $E15_ROOT. relay-lease.env (the public keyset only) stays for the relay.
+TOKEN_DIR=""
+# Never from the caller's environment: only e15_slice_squeeze in this rung marks the slice squeezed.
+E15_SQUEEZE_ACTIVE=0
+E15_SQUEEZE_RESTORED=0
+unset E15_SQUEEZE_ORIG_MAX E15_SQUEEZE_ORIG_HIGH E15_SQUEEZE_MAX E15_SQUEEZE_HIGH
+rung_host_restore() {
+  local rc=0
+  e15_slice_unsqueeze || rc=1
+  if [ -n "$TOKEN_DIR" ]; then
+    e17b_token_dir_remove "$TOKEN_DIR" || true
+    TOKEN_DIR=""
+  fi
+  return "$rc"
+}
+# The trap runs under set -e: a kill of a process that already exited, or a failing stop, must not end it before
+# rung_host_restore (each step is guarded).
 cleanup() {
-  [ -n "${sampler_pid:-}" ] && kill "$sampler_pid" 2>/dev/null
-  [ -n "${watchdog_pid:-}" ] && kill "$watchdog_pid" 2>/dev/null
-  [ -n "${driver_pid:-}" ] && kill "$driver_pid" 2>/dev/null
-  stop_rung_units
+  [ -z "${sampler_pid:-}" ] || kill "$sampler_pid" 2>/dev/null || true
+  [ -z "${watchdog_pid:-}" ] || kill "$watchdog_pid" 2>/dev/null || true
+  [ -z "${driver_pid:-}" ] || kill "$driver_pid" 2>/dev/null || true
+  stop_rung_units || true
+  rung_host_restore || true
 }
 trap cleanup EXIT
 
@@ -283,7 +348,21 @@ if [ "$ARM" != control ]; then
     die "no grpcurl on PATH ($PATH): rung.sh's relay attach check needs it (fresh-metal: run bootstrap.sh; aws-prelim: start the ladder with grpcurl on PATH); the relay was not touched"
   [ -f "$E15_LOGS/relay.log" ] && sudo -n cp "$E15_LOGS/relay.log" "$DIR/relay.before-restart.log"
   stop_e15_unit "$E15_UNIT_RELAY"
-  start_relay
+  # E17b lease arms: a fresh Ed25519 key per rung, minted by the -e17b driver; its public keyset and the fixed issuer
+  # go to the relay in a per-rung env file, the private key stays in $E15_SECRETS for the driver's --token-key.
+  relay_extra=""
+  if e17b_lease_arm "$ARM"; then
+    e17b_token_dir_ok "$E15_SECRETS/token-$RUN_ID" ||
+      die "the key directory $E15_SECRETS/token-$RUN_ID is not a token-<run> leaf of $E15_SECRETS (E15_TAG '$TAG'?); nothing minted"
+    TOKEN_DIR=$E15_SECRETS/token-$RUN_ID # removed by rung_host_restore at the rung's end or on any exit
+    (umask 077 && "$DRIVER" mint-key --out "$TOKEN_DIR") >"$DIR/mint-key.log" 2>&1 ||
+      die "e15-driver mint-key --out $TOKEN_DIR failed; see $DIR/mint-key.log"
+    [ -s "$TOKEN_DIR/token.key" ] && [ -s "$TOKEN_DIR/token.pub" ] || die "mint-key left no token.key/token.pub in $TOKEN_DIR"
+    relay_extra=$E15_SECRETS/relay-lease.env
+    (umask 077 && printf 'SH_SANDBOX_TOKEN_PUBLIC_KEYS=%s\nSH_SANDBOX_TOKEN_ISSUER=%s\n' "$(cat "$TOKEN_DIR/token.pub")" "$(e17b_token_iss)" >"$relay_extra")
+    log "lease token key minted for this rung ($TOKEN_DIR); relay trusts it (issuer $(e17b_token_iss))"
+  fi
+  start_relay "$relay_extra"
   sleep 3
   if grep -qs 'redis client error' "$E15_LOGS/relay.log"; then
     die "the restarted relay cannot reach Redis on 127.0.0.1:$E15_PORT_REDIS; see $E15_LOGS/relay.log"
@@ -294,8 +373,22 @@ if [ "$ARM" = control ]; then
   start_null "$DIR"
   TARGET=127.0.0.1:$E15_PORT_NULL
 else
+  [ -z "$SQUEEZE_MB" ] || e15_slice_squeeze "$SQUEEZE_MB" "squeeze rung $RUN_ID"
   start_worker "$ARM" "$DIR" "$E15_P_IMAGE_MB"
   TARGET=127.0.0.1:$E15_PORT_EXEC
+  # E17b (E17B=1): every arm runs on the lease-v1 snapshot at the pin (the ship arms need it; sbx must run on the
+  # same one). The worker's startup banner (moca remote-worker/cmd/microvm-worker/main.go, leaseBanner) says lease=on
+  # only when the snapshot advertises lease-v1 under firecracker, lease=off otherwise. Checked before the attach
+  # probe and the driver, so a rung on the wrong snapshot measures nothing.
+  if [ "${E17B:-}" = 1 ]; then
+    banner=$(grep -m1 'microvm-worker: relay=' "$DIR/worker.log" || true)
+    [ -n "$banner" ] || die "no startup banner ('microvm-worker: relay=...') in $DIR/worker.log: lease=on cannot be confirmed (E17B=1); the driver was not started"
+    case " $banner " in
+    *" lease=on "*) log "worker banner: lease=on (${banner#*lease=on})" ;;
+    *" lease=off "*) die "the worker's banner says lease=off: the snapshot $E15_SNAPDIR/$(worker_snapimg) does not advertise lease-v1 (or the VMM is not firecracker); E17b arms need the snapshot-e17b.sh leaf. The driver was not started. Banner: $banner" ;;
+    *) die "the worker's banner has no lease= field (a worker without lease mode?): $banner; the driver was not started" ;;
+    esac
+  fi
   # Attach check: the worker's own "attached" line is not enough (a refused duplicate Hello still
   # logs it). One probe Exec through the relay must reach this worker within E15_ATTACH_TIMEOUT_S
   # (60) before the driver starts; otherwise this is a rig error (exit 1, no record), not a
@@ -320,6 +413,19 @@ if [ "$E15_HOST_PROFILE" = fresh-metal ] && [ "${E15_END_SESSION_DEFER:-0}" = 1 
   END_DEFER=1
   end_flag+=(--end-session-defer --end-session-rate "${E15_END_SESSION_RATE:-50}")
 fi
+# E17b lease arms: the driver authenticates with per-session sandbox tokens signed by this rung's key and runs the
+# shipped lease at the arm's idle timeout (non-keepalive; leases end by idle timeout, reclaim or the worker's stop).
+lease_flag=()
+if e17b_lease_arm "$ARM"; then
+  IDLE_S=$(e17b_idle_timeout_s "$ARM")
+  lease_flag=(--lease-mode --token-key "$TOKEN_DIR/token.key" --idle-timeout-s "$IDLE_S" --token-wrk e15 --token-iss "$(e17b_token_iss)")
+fi
+# E17b (E17B-R22): every E17b rung (ship-* and sbx) records py_shmem's stdout, the guest's Shmem in kB, for
+# freed_from_shmem.py; a point whose library has no py_shmem simply records nothing. The sealed driver never gets it.
+stdout_flag=()
+if [ "${E17B:-}" = 1 ]; then
+  stdout_flag=(--record-stdout py_shmem)
+fi
 launch_ts=$(date +%s.%N)
 # The sampler starts with the driver, its origin the epoch just before the driver is exec'd
 # (rung_start_ts as first taken). See "time origin" below for the re-base onto the driver's t0.
@@ -330,7 +436,7 @@ sampler_pid=$!
 MOCA_RELAY_EXEC_TOKEN=$(cat "$E15_SECRETS/exec.token") "$DRIVER" \
   --corpus "$CORPUS" --library "$LIBRARY" --seed "$SEED" --n "$N" \
   --warmup-s "$WARMUP" --window-s "$WINDOW" --spread-s "$SPREAD" --grace-s "$GRACE" \
-  --target "$TARGET" --sandbox-id e15 --run-id "$RUN_ID" --out "$DIR" "${end_flag[@]}" "${start_flag[@]}" "${scan_flag[@]}" \
+  --target "$TARGET" --sandbox-id e15 --run-id "$RUN_ID" --out "$DIR" "${end_flag[@]}" "${start_flag[@]}" "${scan_flag[@]}" "${lease_flag[@]}" "${stdout_flag[@]}" \
   >"$DIR/driver.log" 2>&1 &
 driver_pid=$!
 # Memory watchdog (Task 8 mem512 OOM incident): host MemAvailable below E15_MEMAVAIL_FLOOR_MIB
@@ -393,10 +499,43 @@ print(repr(t0))
 PY
 )
 log "driver exit $driver_exit"
+# E17b lease arms: the rung fails if the driver exited non-zero (a session ran outside a lease, or any other driver
+# failure) or any call failed on set_mode (the driver exits 0 for those). A failed rung is recorded as a driver exit
+# that is not 0, which record.py reads as aborted (a rig error: the ladder stops).
+rung_failed=null
+set_mode_failed=0
+if e17b_lease_arm "$ARM"; then
+  set_mode_failed=$(python3 - "$DIR/calls.jsonl" <<'PY'
+import json, sys
+n = 0
+try:
+    for line in open(sys.argv[1]):
+        try:
+            if json.loads(line).get("cause") == "set_mode_failed":
+                n += 1
+        except ValueError:
+            pass
+except OSError:
+    pass
+print(n)
+PY
+  )
+  # A memory-watchdog abort killed the driver: that is the host's verdict (record.py: not aborted), not a failure.
+  if [ "$driver_exit" != 0 ] && [ "$memory_abort" = null ]; then
+    rung_failed=\"driver_exit=$driver_exit\"
+    log "$ARM rung failed: driver exit $driver_exit"
+  elif [ "$set_mode_failed" != 0 ]; then
+    rung_failed=\"set_mode_failed=$set_mode_failed\"
+    driver_exit=1
+    log "$ARM rung failed: $set_mode_failed call(s) with cause set_mode_failed (the driver exited 0 for them)"
+  fi
+fi
 
 # --- 5. stop the backend, normalise the log --------------------------------------------------
 oom_after=$(oom_count)
 stop_rung_units
+restore_failed=0
+rung_host_restore || restore_failed=1
 trap - EXIT
 if [ -f "$DIR/worker.log" ]; then
   sudo -n chown "$(id -un):$(id -gn)" "$DIR/worker.log"
@@ -409,7 +548,11 @@ fi
 # --- 6. params + record ----------------------------------------------------------------------
 
 commit_file=$E15_ROOT/src/COMMIT
-python3 - "$DIR" <<PY
+# The ship-* entries of params.json's worker map (PR #34): resolved only under E17B=1, so a sealed rung (E17B unset)
+# never calls worker_bin for an arm it does not have (no stderr lines; its params.json is unchanged).
+ship_wbin=""
+[ "${E17B:-}" != 1 ] || ship_wbin="\"ship-30\": \"$(worker_bin ship-30)\", \"ship-120\": \"$(worker_bin ship-120)\", \"ship-300\": \"$(worker_bin ship-300)\","
+E15_LEASE_BANNER=$(grep -m1 'microvm-worker: relay=' "$DIR/worker.log" 2>/dev/null || true) python3 - "$DIR" <<PY
 import hashlib, json, os, sys
 d = sys.argv[1]
 def sha(p):
@@ -449,13 +592,15 @@ for line in (readf(os.path.join(d, "worker.env")) or "").splitlines():
 report = json.load(open("$CORPUS_DIR/corpus-report.json"))
 snap = None
 try:
-    snap = json.load(open("$E15_SNAPDIR/$E15_SNAPIMG/manifest.json"))
+    snap = json.load(open("$E15_SNAPDIR/$(worker_snapimg)/manifest.json"))
 except (OSError, ValueError):
     pass
 arm = "$ARM"
-wbin = {"sbx": "$E15_BIN/microvm-worker", "resident-inf": "$E15_BIN/microvm-worker-resident",
+# PR #34: the ship-* arms' worker paths come from the shell (ship_wbin), resolved only under E17B=1.
+wbin = {"sbx": "$(worker_bin sbx)", "resident-inf": "$E15_BIN/microvm-worker-resident",
         "resident-300": "$E15_BIN/microvm-worker-resident",
-        "lease-30": "$E15_BIN/microvm-worker-resident", "lease-120": "$E15_BIN/microvm-worker-resident"}.get(arm)
+        "lease-30": "$E15_BIN/microvm-worker-resident", "lease-120": "$E15_BIN/microvm-worker-resident",
+        $ship_wbin}.get(arm)
 baseline_path = json.loads('$baseline_path')
 p = {
     "arm": arm, "n": $N, "point": "$POINT", "seed": $SEED, "run_id": run,
@@ -494,11 +639,23 @@ p = {
     **({"end_session_defer": True, "end_session_rate": int("${E15_END_SESSION_RATE:-50}"),
         "end_session_defer_note": "E16 supplementary (not the sealed procedure): run-end end-session Execs sent after end+grace, paced"}
        if "$END_DEFER" == "1" else {}),
-    "host_mem_total_kb": int([l.split()[1] for l in open("/proc/meminfo") if l.startswith("MemTotal:")][0]),
+    **({"idle_timeout_s": int("${IDLE_S:-0}"), "lease_banner": os.environ.get("E15_LEASE_BANNER") or None,
+        "set_mode_failed_calls": int("$set_mode_failed"), "rung_failed": json.loads('$rung_failed'),
+        "token_issuer": "$(e17b_lease_arm "$ARM" && e17b_token_iss)"}
+       if arm.startswith("ship-") else {}),
+    **({"snapshot_image": "$(worker_snapimg)", "guest_ram_mb": int("$(worker_guest_ram_mb)")} if "${E17B:-}" == "1" else {}),
+    **({"squeeze_memmax_mb": int("$SQUEEZE_MB"), "committed_mb": int(env.get("SH_MAX_COMMITTED_MB", "0")),
+        "squeeze_slice": {"MemoryMax": int("${E15_SQUEEZE_MAX:-0}"), "MemoryHigh": int("${E15_SQUEEZE_HIGH:-0}"),
+                          "original_MemoryMax": "${E15_SQUEEZE_ORIG_MAX:-}", "original_MemoryHigh": "${E15_SQUEEZE_ORIG_HIGH:-}",
+                          "restored": "${E15_SQUEEZE_RESTORED:-0}" == "1"}}
+       if "$SQUEEZE_MB" else {}),
+    "host_mem_total_kb": int([l.split()[1] for l in open("$E15_MEMINFO") if l.startswith("MemTotal:")][0]),
     "slice_memory_max": readf("$E15_CG/memory.max"),
 }
 json.dump(p, open(os.path.join(d, "params.json"), "w"), indent=2, sort_keys=True)
 PY
+[ "$restore_failed" = 0 ] ||
+  die "e15.slice was not restored (see the WARNING above; params.json written, no record): rig error"
 holds=$(python3 "$E15_SRC/analysis/record.py" "$DIR" --params "$DIR/params.json") ||
   die "record.py failed for $DIR"
 log "rung $ARM N=$N: holds=$holds ($DIR/record.json)"

@@ -25,6 +25,8 @@
 #   6. builds: stock microvm-worker, null-responder, e15-driver; resident build (resident/apply.sh)
 #   7. rootfs = /srv/snapshots/default's rootfs tree + pytest wheels; build-snapshot.sh
 #      --guest-ram-mb 1024 --image e15 --out /srv/e15/snapshots/e15; pytest checked in a VM
+#      (E17B=1: skipped with a log line; the E17b leaves are experiments/e17-lease/rig/snapshot-e17b.sh's, and step
+#      10 checks the selected E17b leaf, or is skipped until it exists: ruling E17B-R32)
 #   8. workspace templates (commands/build_workspace.sh, points.sh): /srv/e15/template/workspace.img
 #      (256 MiB) and /srv/e15/template-mem512/workspace.img (1024 MiB, 512 MiB data.bin, seed 1)
 #   8b. disk_read_max_mbs in /srv/e15/state: dd iflag=direct read of a 2 GiB file, once
@@ -59,6 +61,8 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/lib.sh"
 # shellcheck source=points.sh
 . "$HERE/points.sh"
+# E17b profile: refuse the placeholder or a malformed E17B_MOCA_PIN before any host change.
+[ "${E17B:-}" != 1 ] || e17b_require_pin
 
 [ "$(id -u)" != 0 ] || die "run as the login user, not root (sudo -n is used per step)"
 sudo -n true 2>/dev/null || die "needs passwordless sudo"
@@ -214,7 +218,9 @@ if [ ! -d "$E15_MOCA/.git" ]; then
 fi
 [ "$(git -C "$E15_MOCA" rev-parse HEAD)" = "$E15_MOCA_PIN" ] || die "$E15_MOCA is not at $E15_MOCA_PIN"
 mapfile -t GOENV_USER < <(e15_goenv user)
-if ! stamp_ok node "$E15_MOCA_PIN"; then
+NODE_STAMP=node
+[ "${E17B:-}" = 1 ] && NODE_STAMP=node-e17b # its own stamp: the sealed checkout's "node" stamp is never overwritten
+if ! stamp_ok "$NODE_STAMP" "$E15_MOCA_PIN"; then
   log "moca: pi-fork submodule + npm ci + build, pnpm install --frozen-lockfile (logs in $E15_LOGS)"
   git -C "$E15_MOCA" submodule update --init --quiet pi-fork
   (cd "$E15_MOCA/pi-fork" && npm ci --no-audit --no-fund >"$E15_LOGS/pi-npm.log" 2>&1 &&
@@ -222,37 +228,57 @@ if ! stamp_ok node "$E15_MOCA_PIN"; then
     die "pi-fork build failed; see $E15_LOGS/pi-*.log"
   (cd "$E15_MOCA" && pnpm install --frozen-lockfile --store-dir "$E15_ROOT/pnpm-store" >"$E15_LOGS/pnpm.log" 2>&1) ||
     die "pnpm install failed; see $E15_LOGS/pnpm.log"
-  stamp_set node "$E15_MOCA_PIN"
+  stamp_set "$NODE_STAMP" "$E15_MOCA_PIN"
   m_note "moca node deps installed (pnpm store $E15_ROOT/pnpm-store)"
 fi
 
 # --- 6. Go builds ----------------------------------------------------------------------------
 src_key() { (cd "$E15_SRC" && find "$@" -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -c1-16); }
-if ! stamp_ok go-stock "$E15_MOCA_PIN"; then
+# E17b (E17B=1): stock_worker_bin / null_bin / stock_stamp name the -e17b binaries and stamp (lib.sh), so the
+# sealed microvm-worker and null-responder are never overwritten; with E17B unset they are the old names.
+if ! stamp_ok "$(stock_stamp)" "$E15_MOCA_PIN"; then
   log "building stock microvm-worker and null-responder at $E15_MOCA_PIN"
-  (cd "$E15_MOCA/remote-worker" && env "${GOENV_USER[@]}" go build -o "$E15_BIN/microvm-worker" ./cmd/microvm-worker &&
-    env "${GOENV_USER[@]}" go build -o "$E15_BIN/null-responder" ./cmd/null-responder) >"$E15_LOGS/go-stock.log" 2>&1 ||
+  (cd "$E15_MOCA/remote-worker" && env "${GOENV_USER[@]}" go build -o "$(stock_worker_bin)" ./cmd/microvm-worker &&
+    env "${GOENV_USER[@]}" go build -o "$(null_bin)" ./cmd/null-responder) >"$E15_LOGS/go-stock.log" 2>&1 ||
     die "stock build failed; see $E15_LOGS/go-stock.log"
-  stamp_set go-stock "$E15_MOCA_PIN"
-  m_note "built $E15_BIN/microvm-worker (sha256 $(sha256_of "$E15_BIN/microvm-worker"))"
+  stamp_set "$(stock_stamp)" "$E15_MOCA_PIN"
+  m_note "built $(stock_worker_bin) (sha256 $(sha256_of "$(stock_worker_bin)"))"
 fi
 k=$(src_key driver)
 # E16 (fresh-metal): once e15-driver exists, a changed driver source (E16's opt-in
 # --end-session-defer) is built as e15-driver-defer instead, so the binary every sealed rung and
 # baseline ran (and whose sha256 they record) is never replaced. E16_REBUILD_DRIVER=1 overrides.
-if [ "$METAL" = 1 ] && [ -x "$E15_BIN/e15-driver" ] && ! stamp_ok go-driver "$k" && [ "${E16_REBUILD_DRIVER:-0}" != 1 ]; then
+# PR #34 (ruling E17B-R37): with E17B unset, an EXISTING e15-driver or e15-driver-defer whose stamp records another
+# source key is not rebuilt (refuse_driver_rebuild dies naming both keys) unless E15_ACK_DRIVER_REBUILD=1; a fresh rig
+# has no stamp and builds as before.
+if [ "${E17B:-}" = 1 ]; then
+  # E17b (ruling E17B-R4): the driver and its defer variant go to their own -e17b binaries and stamp; the sealed
+  # e15-driver, e15-driver-defer and their stamps are never written, whatever their state.
+  if ! stamp_ok go-driver-e17b "$k"; then
+    (cd "$E15_SRC/driver" && env "${GOENV_USER[@]}" go build -o "$E15_BIN/e15-driver-e17b" . &&
+      env "${GOENV_USER[@]}" go build -o "$E15_BIN/e15-driver-defer-e17b" .) >"$E15_LOGS/go-driver-e17b.log" 2>&1 ||
+      die "driver (e17b) build failed; see $E15_LOGS/go-driver-e17b.log"
+    stamp_set go-driver-e17b "$k"
+    m_note "built $E15_BIN/e15-driver-e17b and e15-driver-defer-e17b (src $k; E17b). PURGE: rm -f $E15_BIN/e15-driver-e17b $E15_BIN/e15-driver-defer-e17b"
+  fi
+elif [ "$METAL" = 1 ] && [ -x "$E15_BIN/e15-driver" ] && ! stamp_ok go-driver "$k" && [ "${E16_REBUILD_DRIVER:-0}" != 1 ]; then
   if ! stamp_ok go-driver-defer "$k"; then
+    refuse_driver_rebuild go-driver-defer "$E15_BIN/e15-driver-defer" "$k"
     (cd "$E15_SRC/driver" && env "${GOENV_USER[@]}" go build -o "$E15_BIN/e15-driver-defer" .) >"$E15_LOGS/go-driver-defer.log" 2>&1 ||
       die "driver (defer) build failed; see $E15_LOGS/go-driver-defer.log"
     stamp_set go-driver-defer "$k"
     m_note "built $E15_BIN/e15-driver-defer (src $k; E16 supplementary; e15-driver kept, sha256 $(sha256_of "$E15_BIN/e15-driver")). PURGE: rm -f $E15_BIN/e15-driver-defer"
   fi
 elif ! stamp_ok go-driver "$k"; then
+  refuse_driver_rebuild go-driver "$E15_BIN/e15-driver" "$k"
   (cd "$E15_SRC/driver" && env "${GOENV_USER[@]}" go build -o "$E15_BIN/e15-driver" .) >"$E15_LOGS/go-driver.log" 2>&1 ||
     die "driver build failed; see $E15_LOGS/go-driver.log"
   stamp_set go-driver "$k"
   m_note "built $E15_BIN/e15-driver (src $k)"
 fi
+# E17b (E17B=1): the shipped worker runs from its own pin; the resident patch does not apply to it and is not built.
+# (The guarded block is deliberately not re-indented: rig.test.sh greps it by its original text.)
+if [ "${E17B:-}" != 1 ]; then
 k=$(src_key resident)
 if ! stamp_ok go-resident "$k"; then
   log "resident build: resident/apply.sh (patch tests run here; log $E15_LOGS/apply.log)"
@@ -267,6 +293,7 @@ if ! stamp_ok go-resident "$k"; then
     >"$E15_LOGS/apply.log" 2>&1 || die "resident/apply.sh failed; see $E15_LOGS/apply.log"
   stamp_set go-resident "$k"
   m_note "built $E15_BIN/microvm-worker-resident (patch sha256 $(sha256_of "$E15_SRC/resident/resident.patch"))"
+fi
 fi
 
 # --- 7. rootfs + snapshot --------------------------------------------------------------------
@@ -283,7 +310,11 @@ else
   KERNEL=$E15_BASE_SNAPSHOT/kernel
   snap_key="$E15_MOCA_PIN-$wheels_key-$(sha256_of "$E15_BASE_SNAPSHOT/rootfs" | cut -c1-16)"
 fi
-if ! stamp_ok snapshot "$snap_key" || [ ! -f "$E15_SNAPDIR/$E15_SNAPIMG/manifest.json" ]; then
+if [ "${E17B:-}" = 1 ]; then # step 7 under the E17b profile (rulings E17B-R3, R32)
+  # Never build, delete or replace a snapshot here: the sealed leaf stays, and the E17b leaves are snapshot-e17b.sh's
+  # (new leaves). Skipped, not a die, so the steps after it (templates, Redis, the relay, the end-to-end check) run.
+  log "E17B=1: step 7 (snapshot) skipped: setup.sh builds no snapshot under the E17b profile; the E17b leaves are built by experiments/e17-lease/rig/snapshot-e17b.sh --ram-mb 1024 and --ram-mb 256, never over $E15_SNAPIMG"
+elif ! stamp_ok snapshot "$snap_key" || [ ! -f "$E15_SNAPDIR/$E15_SNAPIMG/manifest.json" ]; then
   tree=$E15_ROOT/rootfs-build/tree
   if [ "$METAL" = 1 ]; then
   log "rootfs: moca v0.9.0 build-rootfs.sh over $E15_SANDBOX_IMAGE + pytest wheels (log $E15_LOGS/build-rootfs.log)"
@@ -482,6 +513,7 @@ if ! unit_active "$E15_UNIT_RELAY"; then
   # UNDO recorded BEFORE the start: a check that fails after systemd-run leaves a recorded unit.
   m_change "starting $E15_UNIT_RELAY (127.0.0.1:$E15_PORT_ATTACH attach, 127.0.0.1:$E15_PORT_EXEC exec)" \
     "sudo -n systemctl stop $E15_UNIT_RELAY 2>/dev/null; sudo -n systemctl reset-failed $E15_UNIT_RELAY 2>/dev/null; true"
+  # shellcheck disable=SC2119 # start_relay's optional $1 is the E17b token-keyset env file; setup starts it without
   start_relay
   sleep 3
   if grep -q 'redis client error' "$E15_LOGS/relay.log"; then
@@ -497,8 +529,28 @@ if [ "$already_up" = 0 ]; then
 fi
 
 # --- 10. end-to-end check: a stock worker, one Exec per tool the library leans on ------------
-check_key="$(sha256_of "$E15_SNAPDIR/$E15_SNAPIMG/manifest.json" | cut -c1-16)-$(cat "$E15_STATE/template")"
-if ! stamp_ok e2e "$check_key"; then
+# E17b profile (ruling E17B-R32): the check runs on the selected E17b leaf (lib.sh worker_snapimg) with its own stamp,
+# after a relay restart from the E17b checkout (rung.sh restarts it per rung the same way); with no leaf yet it is
+# skipped and the operator is told to build the leaves and re-run. E17B unset: the sealed leaf and stamp, as before.
+e2e_leaf=$E15_SNAPIMG e2e_stamp=e2e e2e_pending=0
+if [ "${E17B:-}" = 1 ]; then
+  e2e_leaf=$(worker_snapimg) || exit 1
+  e2e_stamp=e2e-e17b
+  if [ ! -f "$E15_SNAPDIR/$e2e_leaf/manifest.json" ]; then
+    log "E17B=1: no E17b snapshot $E15_SNAPDIR/$e2e_leaf: the end-to-end check is skipped. Build the leaves with experiments/e17-lease/rig/snapshot-e17b.sh --ram-mb 1024 (and --ram-mb 256), then re-run E17B=1 setup.sh for the check"
+    e2e_pending=1
+  fi
+fi
+if [ "$e2e_pending" = 0 ]; then
+check_key="$(sha256_of "$E15_SNAPDIR/$e2e_leaf/manifest.json" | cut -c1-16)-$(cat "$E15_STATE/template")"
+if ! stamp_ok "$e2e_stamp" "$check_key"; then
+  if [ "${E17B:-}" = 1 ]; then
+    # the relay running may be the sealed checkout's (the first, sealed setup started it): restart it from E15_MOCA
+    stop_e15_unit "$E15_UNIT_RELAY"
+    # shellcheck disable=SC2119 # start_relay's optional $1 is the E17b token-keyset env file; the check needs none
+    start_relay
+    m_note "E17B=1: $E15_UNIT_RELAY restarted from $E15_MOCA for the end-to-end check (the UNDO recorded at its first start stops it)"
+  fi
   d=$E15_ROOT/logs/e2e
   rm -rf "$d"
   mkdir -p "$d"
@@ -519,9 +571,12 @@ if ! stamp_ok e2e "$check_key"; then
   stop_rung_units
   sudo -n rm -rf "$E15_WORKSPACES/e15-e2e"
   [ "$e2e_ok" = 1 ] || die "end-to-end check failed; see $d/e2e.log"
-  stamp_set e2e "$check_key"
-  m_note "end-to-end check passed in a booted VM: $(head -2 "$d/e2e.log" | tail -1)"
+  stamp_set "$e2e_stamp" "$check_key"
+  # the sealed note text unchanged; under E17B=1 it names the leaf checked
+  m_note "end-to-end check passed in a booted VM$([ "$e2e_stamp" = e2e ] || printf ' (%s)' "$e2e_leaf"): $(head -2 "$d/e2e.log" | tail -1)"
+fi
 fi
 
+[ "$e2e_pending" = 0 ] || log "setup: E17B=1: the end-to-end check is pending (snapshot-e17b.sh first, then E17B=1 setup.sh again)"
 log "setup: done. relay $(ss -ltnH | awk '{print $4}' | grep -E ":($E15_PORT_ATTACH|$E15_PORT_EXEC)\$" | tr '\n' ' ')"
 m_note "setup complete"

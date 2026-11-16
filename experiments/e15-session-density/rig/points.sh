@@ -45,6 +45,16 @@
 # Probe cap 120000 ms (E17 Task 5b): pycache's py_test runs ~62 s whatever it is planned at, so
 # E15's 30 000 ms cap made its probe median +31 s. The cap is in these points' settings, so a
 # baseline probed under another cap has another point_sig and rung.sh refuses it.
+#
+# squeeze (E17b, experiments/e17-lease/PLAN-E17B.md Task 9; E17B=1 and fresh-metal only, else returns 1):
+# pycache-d768's workload (corpus pycache, D=768, the 1536 MiB template-pycache-d768, the E17 library,
+# the 120000 ms probe cap) with arms ship-300 and sbx. Only the point name differs in its settings, so it
+# has its own point_sig and baselines (baseline.sh squeeze ARM). Its rungs lower e15.slice's MemoryMax
+# with E15_SQUEEZE_MEMMAX_MB (rung.sh; refused at every other point), and its ladder stops on the
+# reclaim rate, not on condition 4 (ladder.sh, experiments/e17-lease/analysis/squeeze_rule.py).
+# squeeze-256 (ruling E17B-R21): the same at 256 MiB guests (rung.sh requires E17B_GUEST_RAM_MB=256 there, and 1024
+# at squeeze) with D scaled to keep the dataset-to-RAM ratio: 768 x 256/1024 = 192 (template-pycache-d192, built by
+# experiments/e17-lease/rig/bringup.sh under E17B=1). e15_is_squeeze POINT is true for both.
 
 E15_MEM512_SCAN_CLASSES=read,shell_read,search,test,interpreter,lint_check
 E15_MEM512_SCAN_CMD='cat /workspace/data.bin >/dev/null'
@@ -90,15 +100,20 @@ e15_point() {
     E15_P_SCAN_CMD=$E15_MEM512_SCAN_CMD
     E15_P_FALLBACK=0
     ;;
-  pycache | pycache-low | pycache-d64 | pycache-d768)
+  pycache | pycache-low | pycache-d64 | pycache-d768 | squeeze | squeeze-256)
     [ "$E15_HOST_PROFILE" = fresh-metal ] || return 1
     E15_P_ARMS="sbx resident-300 lease-30 lease-120"
+    if e15_is_squeeze "$1"; then
+      [ "${E17B:-}" = 1 ] || return 1
+      E15_P_ARMS="ship-300 sbx"
+    fi
     E15_P_CORPUS=pycache
     [ "$1" != pycache-low ] || E15_P_CORPUS=pycache-low
     E15_P_LIBRARY=$E15_ROOT/src/e17/workload/library.json
     case "$1" in
     pycache-d64) E15_P_DATASET_MIB=64 ;;
-    pycache-d768) E15_P_DATASET_MIB=768 ;;
+    pycache-d768 | squeeze) E15_P_DATASET_MIB=768 ;;
+    squeeze-256) E15_P_DATASET_MIB=192 ;;
     *) E15_P_DATASET_MIB=256 ;;
     esac
     E15_P_DATASET_SEED=1
@@ -110,11 +125,19 @@ e15_point() {
     ;;
   *) return 1 ;;
   esac
+  # E17b (E17B=1, fresh-metal): the shipped-lease arms run the points sbx runs for criteria 1 and 2 (default, smoke, pycache*).
+  if [ "$E15_HOST_PROFILE" = fresh-metal ] && [ "${E17B:-}" = 1 ]; then
+    case "$1" in default | smoke | pycache | pycache-low | pycache-d64 | pycache-d768) E15_P_ARMS+=" ship-30 ship-120 ship-300" ;; esac
+  fi
   E15_P_SETTINGS="point=$1 corpus=$E15_P_CORPUS library=${E15_P_LIBRARY#"$E15_ROOT"/} template=${E15_P_TEMPLATE#"$E15_ROOT"/}"
   E15_P_SETTINGS+=" image_mb=$E15_P_IMAGE_MB dataset_mib=$E15_P_DATASET_MIB dataset_seed=$E15_P_DATASET_SEED"
   E15_P_SETTINGS+=" scan_classes=$E15_P_SCAN_CLASSES scan_cmd=$E15_P_SCAN_CMD"
   [ -z "${E15_P_PROBE_CAP_MS:-}" ] || E15_P_SETTINGS+=" probe_cap_ms=$E15_P_PROBE_CAP_MS"
 }
+
+# e15_is_squeeze POINT: one of the E17b squeeze points (their rungs take E15_SQUEEZE_MEMMAX_MB; their ladder stops
+# on the squeeze rule).
+e15_is_squeeze() { case "$1" in squeeze | squeeze-256) true ;; *) false ;; esac; }
 
 e15_point_sig() {
   e15_point "$1" || return 1

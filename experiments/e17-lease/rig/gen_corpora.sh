@@ -6,6 +6,10 @@
 # each with --sessions 400 --seed 1 --min-turns 4 and the gaps of the E15 default corpus
 # (E17_GAPS, default /tmp/kagenti/e16-corpus-default/corpus.jsonl, the rig's own by sha256).
 # E17_CORPORA defaults to /tmp/kagenti/e17-corpora; E17_PYTHON (default python3) runs the generator.
+# E17_TMPFS_SHARE (PLAN-E17B Task 10) is --tmpfs-share: that fraction of the sessions keeps its
+# py_analyze/py_test caches in guest tmpfs, and every turn ends with a py_shmem reading. Its default follows the
+# profile (final review M3): 0.5 under E17B=1 (the E17b corpora), 0 with E17B unset, so the sealed command still
+# writes the E17a corpora byte for byte (corpus_sha256 of results/corpus/*-report.json).
 #
 #   bash experiments/e17-lease/rig/gen_corpora.sh [--durations-from CAL.json]
 #
@@ -21,6 +25,7 @@ W="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 PC=${E17_CORPORA:-/tmp/kagenti/e17-corpora}
 GAPS=${E17_GAPS:-/tmp/kagenti/e16-corpus-default/corpus.jsonl}
 PY=${E17_PYTHON:-python3}
+if [ "${E17B:-}" = 1 ]; then SHARE=${E17_TMPFS_SHARE:-0.5}; else SHARE=${E17_TMPFS_SHARE:-0}; fi
 cal=()
 case "${1:-}" in
 "") ;;
@@ -46,7 +51,7 @@ for spec in pycache:0.095 pycache-low:0.015; do
   duty=${spec#*:}
   tmp=$(mktemp -d "$PC/.$p.XXXXXX")
   if ! "$PY" "$W/experiments/e17-lease/extract/pycache_corpus.py" --gaps-from "$GAPS" --duty "$duty" --sessions 400 \
-    --seed 1 --min-turns 4 "${cal[@]}" --out "$tmp"; then
+    --seed 1 --min-turns 4 "${cal[@]}" --tmpfs-share "$SHARE" --out "$tmp"; then
     rm -rf -- "$tmp"
     echo "gen_corpora.sh: pycache_corpus.py failed for $p" >&2
     exit 1
@@ -54,7 +59,7 @@ for spec in pycache:0.095 pycache-low:0.015; do
   # Only the corpus directory itself is replaced: $PC/pycache or $PC/pycache-low, nothing above.
   rm -rf -- "${PC:?}/$p"
   mv "$tmp" "$PC/$p"
-  "$PY" -c 'import json,sys; r=json.load(open(sys.argv[1])); print("%s: duty %.4f (target %s), %d sessions, durations_ms %s, corpus_sha256 %s" % (sys.argv[2], r["duty_achieved"]["mean"], r["duty_target"], r["sessions"], r["durations_ms"], r["corpus_sha256"]))' \
+  "$PY" -c 'import json,sys; r=json.load(open(sys.argv[1])); print("%s: duty %.4f (target %s), %d sessions (%d tmpfs, share %s), durations_ms %s, corpus_sha256 %s" % (sys.argv[2], r["duty_achieved"]["mean"], r["duty_target"], r["sessions"], r["tmpfs_sessions"], r["tmpfs_share"], r["durations_ms"], r["corpus_sha256"]))' \
     "$PC/$p/corpus-report.json" "$p"
 done
 [ ${#cal[@]} -gt 0 ] || echo "gen_corpora.sh: note: placeholder durations (no --durations-from); re-run with the calibration's before the measured rungs" >&2

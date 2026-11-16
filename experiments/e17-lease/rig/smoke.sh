@@ -10,6 +10,8 @@
 #      check, not a measured rung, and a drawn start index misses py_analyze about 35% of the time):
 #        E15_WARMUP_S=60 E15_WINDOW_S=120 E15_TAG=smoke E15_START_ZERO=1 bash experiments/e15-session-density/rig/rung.sh ARM 1 pycache
 #      for ARM in sbx resident-300 lease-30 lease-120 -> /srv/e15/runs/pycache/ARM/N1-smoke/
+#      (E17B=1: sbx and the shipped-lease arms instead; the resident and E17a lease arms need the resident
+#      build, which the E17b profile skips)
 #      (other E15_* environment passes through to rung.sh; E15_RUNG overrides the rung command)
 #   2. the sbx rung: every py_analyze call in calls.jsonl has status ok and exit 0, except a call
 #      the run's end cut (cause cut_at_end: not a failure, experiments/e15-session-density/driver/exec.go), and at least one
@@ -22,7 +24,8 @@
 #      be 0 and its sha256= must equal template-pycache-d256/BUILD's dataset_sha256 (bringup.sh).
 #      Log: /srv/e15/runs/pycache/sbx/N1-smoke/analyze-check.log (the worker's in analyze-check/);
 #      the workspace copy is removed after, and the relay left running, as after a rung.
-#   4. experiments/e17-lease/analysis/warmcold.py on each rung: its warm/cold/unknown counts, printed (and
+#   4. experiments/e17-lease/analysis/warmcold.py on each rung (warmcold_lease.py on a ship-* rung: E17a's
+#      join cannot read the shipped worker's log; final review M2): its warm/cold/unknown counts, printed (and
 #      warmcold.jsonl, warmcold-report.json in the rung directory). Run before step 3, so a rig
 #      error there (lib.sh die: the worker does not attach) still leaves the counts printed.
 # Exit 0 when every rung wrote its record and steps 2-3 pass; 1 otherwise.
@@ -33,9 +36,9 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # repo has it at $HERE/../../../experiments/e15-session-density/rig. Use whichever exists.
 E15_RIG=$HERE/../../e15/rig
 [ -f "$E15_RIG/lib.sh" ] || E15_RIG=$HERE/../../../experiments/e15-session-density/rig
-# shellcheck source=SCRIPTDIR/../../experiments/e15-session-density/rig/lib.sh
+# shellcheck source=SCRIPTDIR/../../e15-session-density/rig/lib.sh
 . "$E15_RIG/lib.sh"
-# shellcheck source=SCRIPTDIR/../../experiments/e15-session-density/rig/points.sh
+# shellcheck source=SCRIPTDIR/../../e15-session-density/rig/points.sh
 . "$E15_RIG/points.sh"
 
 [ "$E15_HOST_PROFILE" = fresh-metal ] || die "E15_HOST_PROFILE=$E15_HOST_PROFILE: E17 runs on fresh-metal only"
@@ -43,6 +46,10 @@ E17_SRC=$E15_ROOT/src/e17
 case "$HERE" in "$E17_SRC"/rig) ;; *) die "run the staged copy: $E17_SRC/rig/smoke.sh (not $HERE)" ;; esac
 POINT=pycache
 ARMS=(sbx resident-300 lease-30 lease-120)
+# E17b (E17B=1): sbx and the shipped-lease arms only. E17B=1 adds ship-* to E15_ARMS / points.sh and keeps the E17a
+# arms listed, but e15_is_arm and worker_bin refuse resident-* and lease-* under E17B=1: their worker,
+# microvm-worker-resident, is the old-pin build (setup.sh does not build it under E17B=1).
+[ "${E17B:-}" != 1 ] || ARMS=(sbx ship-30 ship-120 ship-300)
 RUNG=${E15_RUNG:-$E15_SRC/rig/rung.sh}
 START_ZERO=${E15_START_ZERO:-1}
 # Never preempt a rung someone else started (each rung.sh and the analyze check below stop E15's
@@ -104,7 +111,9 @@ fi
 
 # --- 4. warm/cold per rung (before step 3, whose rig errors die) ---------------------------------
 for d in "${dirs[@]}"; do
-  wc_out=$(python3 "$E17_SRC/analysis/warmcold.py" "$d" 2>&1) || fails+=("warmcold.py failed on $d: $wc_out")
+  wc=warmcold.py
+  case "${d%/*}" in */ship-*) wc=warmcold_lease.py ;; esac
+  wc_out=$(python3 "$E17_SRC/analysis/$wc" "$d" 2>&1) || fails+=("$wc failed on $d: $wc_out")
   holds=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1])).get("holds"))' "$d/record.json" 2>/dev/null || echo "?")
   printf 'smoke %s: %s (holds=%s)\n' "${d#"$E15_RUNS"/}" "$wc_out" "$holds"
 done
@@ -122,6 +131,7 @@ if [ -d "$SBX" ]; then
   refuse_running_rung
   stop_rung_units
   stop_e15_unit "$E15_UNIT_RELAY"
+  # shellcheck disable=SC2119 # start_relay's optional $1 is the E17b lease arms' token-keyset env file; not here
   start_relay
   sleep 3
   ! grep -qs 'redis client error' "$E15_LOGS/relay.log" ||
