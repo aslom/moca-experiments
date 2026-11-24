@@ -1,0 +1,53 @@
+{
+  "users": [
+    {
+      "user": 1,
+      "subject": null,
+      "sandbox_name": null,
+      "ok": true,
+      "total_ms": 803.1749579822645,
+      "ops": [
+        {
+          "user": 1,
+          "op": "create",
+          "ms": 177.53329197876155,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "run_id",
+          "ms": 162.87737502716482,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "run_uname",
+          "ms": 161.10787499928847,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "ls",
+          "ms": 149.2957909940742,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "rm",
+          "ms": 152.27325004525483,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

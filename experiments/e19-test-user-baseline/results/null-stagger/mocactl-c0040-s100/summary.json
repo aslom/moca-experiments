@@ -1,0 +1,87 @@
+{
+  "users": 40,
+  "users_ok": 40,
+  "users_failed": 0,
+  "concurrency": 40,
+  "null_tier": "mocactl",
+  "peak_live_processes": 34,
+  "sleep_s": 1.0,
+  "stagger_ms": 100.0,
+  "last_start_ms": 4072.9,
+  "gil_enabled": false,
+  "python": "3.14.10",
+  "cluster": "driver host: 18 cores, 64 GB, macOS arm64",
+  "control_plane_profile": null,
+  "control_plane_version": null,
+  "wall_ms": 8889.6,
+  "per_user_total_ms": {
+    "min": 1271.2,
+    "p50": 5069.0,
+    "p90": 6462.6,
+    "p99": 6667.5,
+    "max": 6667.5,
+    "mean": 4827.7
+  },
+  "ops": {
+    "login": {
+      "n": 0,
+      "failed": 0,
+      "min_ms": null,
+      "p50_ms": null,
+      "p90_ms": null,
+      "p99_ms": null,
+      "max_ms": null,
+      "mean_ms": null
+    },
+    "create": {
+      "n": 40,
+      "failed": 0,
+      "min_ms": 160.1,
+      "p50_ms": 683.1,
+      "p90_ms": 1975.9,
+      "p99_ms": 4017.7,
+      "max_ms": 4017.7,
+      "mean_ms": 997.4
+    },
+    "run_sleep_a": {
+      "n": 40,
+      "failed": 0,
+      "min_ms": 182.1,
+      "p50_ms": 1012.1,
+      "p90_ms": 2198.5,
+      "p99_ms": 2515.4,
+      "max_ms": 2515.4,
+      "mean_ms": 1155.1
+    },
+    "run_sleep_b": {
+      "n": 40,
+      "failed": 0,
+      "min_ms": 233.5,
+      "p50_ms": 922.7,
+      "p90_ms": 2251.3,
+      "p99_ms": 2352.6,
+      "max_ms": 2352.6,
+      "mean_ms": 1068.8
+    },
+    "ls": {
+      "n": 40,
+      "failed": 0,
+      "min_ms": 226.6,
+      "p50_ms": 827.8,
+      "p90_ms": 1621.2,
+      "p99_ms": 3304.0,
+      "max_ms": 3304.0,
+      "mean_ms": 932.0
+    },
+    "rm": {
+      "n": 40,
+      "failed": 0,
+      "min_ms": 176.1,
+      "p50_ms": 617.4,
+      "p90_ms": 1281.5,
+      "p99_ms": 2175.0,
+      "max_ms": 2175.0,
+      "mean_ms": 674.3
+    }
+  }
+}

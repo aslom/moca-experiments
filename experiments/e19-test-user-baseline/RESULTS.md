@@ -7,11 +7,16 @@ Measured 2026-11-24. Three rungs, in the order they ran:
 | [N = 10](#the-table) | the baseline lifecycle, and does it hold at 10 at once | all nine predictions held; ten users cost what one costs | [`results/n10/`](results/n10) |
 | [N = 100](#n--100-the-service-says-no-at-40) | does it still hold at 100 | 60 of 100 refused at `create`; the service caps live sandboxes at 40 | [`results/n100/`](results/n100) |
 | [C = 1…40 ladder](#the-ladder-c--1-5-10--40) | how a user's experience changes as the crowd grows | zero failures at every level; median degrades 1.20x, and the tail breaks at the cap | [`results/ladder/`](results/ladder) |
+| [null arm](#the-null-arm-how-much-of-this-is-the-driver) | how much of the above is the driver, not the service | the harness is free, but `mocactl` start-up under concurrency is not — enough to account for the whole ladder | [`results/null*/`](results/null) |
 
-**If you read one thing:** below the cap this deployment degrades gently and predictably — a
-user alone waits 8.5 s for the whole lifecycle, a user among forty waits 10.2 s. The number that
-misbehaves is not the median but the tail, and only at the cap: see
-[the stall](#one-user-in-forty-waits-20-seconds-for-one-command).
+**If you read one thing:** below the cap a user alone waits 8.5 s for the whole lifecycle and a
+user among forty waits 10.2 s — but the null arm shows that local process start-up can add more
+than that gap by itself, so **the ladder is an upper bound on the service's degradation, not a
+measurement of it**. One conclusion has been
+[retracted](#correction-2026-11-24--the-paragraph-above-is-retracted) on that basis. The hard
+results that stand: the service caps live sandboxes at **40** and refuses past it, nothing failed
+below the cap, and at the cap one user in forty hit a
+[silent 20-second stall](#one-user-in-forty-waits-20-seconds-for-one-command).
 
 ## N = 10
 
@@ -217,6 +222,30 @@ Only `create` is convincing on its own, though. It climbs monotonically at every
 up but wanders on the way (767 at C = 20, 770 at C = 30, 777 at C = 35), so its ratio rests on two
 samples and should be read as "did not clearly degrade" rather than second place.
 
+> ### Correction, 2026-11-24 — the paragraph above is retracted
+>
+> The two paragraphs above attribute the degradation to the control plane. **That attribution is
+> not supported and is withdrawn.** The text stays visible per `docs/CONVENTIONS.md`
+> ("corrections are appended"); what follows is what the evidence actually allows.
+>
+> The [null arm](#the-null-arm-how-much-of-this-is-the-driver) ran the same harness with a payload
+> that touches no cluster. Going from C = 1 to C = 40 it added **+1426 ms** per operation of purely
+> local cost — against the **+525 ms** that real `create`, the worst-degraded real operation, grew
+> over the same range. Local process start-up contention at that width is therefore around three
+> times more than enough to produce the entire observed effect, with no server contention at all.
+>
+> So the correct statement is: **the ladder cannot separate server-side contention from the
+> driver's own.** `create` and `ls` degrade most because they are the two operations with the least
+> server time, so a local cost of a few hundred milliseconds is the largest *share* of them — not
+> because the control plane is the bottleneck. `create` is also the first CLI call each user makes,
+> so its spawns coincide most tightly, and in the null arm the first position is likewise the most
+> expensive at almost every level.
+>
+> What survives from the ladder: nothing failed at any level up to the cap, and a user's whole
+> lifecycle grows only ~1.2x from 1 to 40 concurrent users. That bound is still useful — it is an
+> upper bound on the service's own degradation, since part of it is the laptop. Locating the real
+> server-side curve needs a driver that does not pay a process per operation.
+
 ### Login barely notices 40 — L-P3 falsified
 
 Predicted at least 1.3x; measured **1.04x** (563 → 583 ms). The 1.8x seen at N = 100 does not
@@ -326,6 +355,145 @@ Both runs are kept. The N = 10 and N = 100 rungs were not repeated.
   untested — raise the cap and re-run to find out.
 - **Still one worker replica, still over the public Route, still CLI start-up in every row.** The
   caveats on the N = 10 rung all apply unchanged.
+
+## The null arm: how much of this is the driver?
+
+Every CLI row in every table above is a subprocess, so each pays a Node start-up and the parse of
+a 7.3 MB bundle before it opens a socket. The null arm measures that, by running **the same
+harness** — same five subprocesses per user, same threads, same timing calls, same free-threaded
+interpreter — with a payload that touches no cluster. Predictions:
+[`predictions-null.json`](predictions-null.json), sealed in commit `882e2e5`.
+**Six of seven held; NULL-P4 was falsified badly, and that is the finding.**
+
+Four payloads, because "overhead" is not one thing:
+
+| Tier | Payload | What it isolates |
+|---|---|---|
+| `true` | `/usr/bin/true` | fork, exec, the pipes, Python's per-op cost |
+| `node` | `node -e 0` | the above plus a Node runtime start-up |
+| `mocactl` | `mocactl --version` | the above plus the bundle — the real binary on its real start-up path, stopping before any network call |
+| `sleep` | `sleep 1.0` | a process that forks and then **idles**, which is what a real op does for most of its life |
+
+Records: [`results/null/`](results/null) (simultaneous starts),
+[`results/null-stagger/`](results/null-stagger) (10 ms between users),
+[`results/null-sleep/`](results/null-sleep) (the idle tier).
+
+### Added latency per operation, against a zero-cost ideal
+
+The ideal is exact, not estimated: 0 ms for `true`/`node`/`mocactl`, which do no work at all, and
+1000 ms for the `sleep` tier. Everything above it is overhead.
+
+| Tier | stagger | C=1 | C=5 | C=10 | C=20 | C=40 | C=100 | C=1000 |
+|---|---|---|---|---|---|---|---|---|
+| `true` | 0 | 18 | | | | | 534 | 5484 |
+| `node` | 0 | 57 | | | | | 1206 | 6743 |
+| `mocactl` | 0 | 161 | 218 | 404 | 728 | 1328 | 3279 | 20604 |
+| `mocactl` | 10 ms | 154 | 228 | 331 | 673 | 1580 | 3025 | — |
+| `sleep 1 s` | 10 ms | **31** | **38** | **40** | **36** | **21** | **20** | 3807 |
+
+Milliseconds added per operation, median across the five positions.
+
+### Three things this settles
+
+**1. The harness itself is free.** The idle tier adds 21–40 ms per operation and is **flat from
+C = 1 to C = 100** — 21 ms at C = 40, 20 ms at C = 100, no trend. Threads, `fork`/`exec`, the
+pipes, the ordered reporter and the free-threaded interpreter cost nothing at any width the real
+rungs use. A user's whole 5-op sequence under the idle payload costs 5130 ms against a 5000 ms
+ideal: **130 ms of overhead, 3% of what the user waits.** So nothing in the *concurrency
+machinery* contaminated the measurements.
+
+**2. The floor per CLI row is ~154 ms, and that part is benign.** At C = 1 a `mocactl` start-up
+costs 154–161 ms at the median of the five positions, and 178 ms at the slowest of them. Against
+the cheapest real row (`ls`, 697 ms at C = 1) that is 22% at the median and 25.5% at the slowest;
+against the 8470 ms lifecycle it is 1.8%. NULL-P1 (slowest position under 300 ms) and NULL-P2
+(that same figure under 40% of `ls`) both held: at C = 1 the real numbers are mostly the service,
+not the laptop.
+
+**3. Under concurrency that floor stops being benign — NULL-P4 falsified.** The prediction was
+that going from C = 1 to C = 100 would cost under 2x locally. It cost **20.4x** on the sealed
+simultaneous-start set the prediction was scored against (161 → 3279 ms), and 19.6x with the 10 ms
+stagger (154 → 3025 ms). And at C = 40, the width the ladder reached, local cost grew
+**+1426 ms** — compared with
+the **+525 ms** that the worst-degraded real operation grew across the same range:
+
+| C | real `create` | its growth | real `ls` | its growth | null `mocactl` | its growth | null idle |
+|---|---|---|---|---|---|---|---|
+| 1 | 705 | 0 | 697 | 0 | 154 | 0 | 31 |
+| 5 | 749 | +44 | 737 | +40 | 228 | +74 | 38 |
+| 10 | 821 | +116 | 766 | +69 | 331 | +177 | 40 |
+| 20 | 1018 | +312 | 767 | +70 | 673 | +520 | 36 |
+| 40 | 1230 | **+525** | 839 | +142 | 1580 | **+1426** | 21 |
+
+Local start-up contention alone is about three times more than enough to account for the whole
+ladder, which is why the ladder's control-plane conclusion is
+[retracted above](#correction-2026-11-24--the-paragraph-above-is-retracted).
+
+### Why the mechanism is start-up coincidence, and why this is an upper bound
+
+The idle tier is flat while the `mocactl` tier explodes, and the only difference is whether the
+process burns CPU. A `mocactl` start-up needs ~110 ms of CPU; 40 of them at once on 18 cores
+cannot all have it. Two further pieces of evidence:
+
+- **Spreading the arrivals halves the penalty.** At C = 40, raising the stagger from 10 ms to
+  100 ms — so the last user starts 4073 ms in rather than 505 ms in — cut the added latency from
+  **1580 ms to 828 ms**, and the peak count of genuinely coexisting processes from 40 to 34.
+- **Position in the sequence predicts cost.** In the null arm the first operation is the most
+  expensive at almost every level (C = 40: 2157, 2116, 1328, 1314, 842 ms), because all users
+  spawn their first command together and drift apart afterwards.
+
+This also means the `mocactl` tier is an **upper bound, not a subtractable floor**. It runs its
+five processes back to back with no waiting, so it keeps the host saturated; a real op starts,
+then idles on the network for 1–2 s, which spreads the next start-up out. The real arm's local
+cost at C = 40 is therefore somewhere between 154 ms (the uncontended floor) and 1580 ms (full
+saturation), and this rung cannot pin it tighter. Note the null `create` position at C = 40,
+2157 ms, is *larger* than the real `create` it is supposed to bound, 1230 ms — direct confirmation
+that the null arm over-saturates rather than under-states.
+
+### Where the driver breaks
+
+At C = 1000 every tier collapses: `mocactl` adds 20604 ms per operation (128x its C = 1 cost),
+and even the idle tier adds 3807 ms. The run completed — 1000/1000 users, no failures, peak 1000
+coexisting processes — in 184.6 s, having paged out 366k times on a 64 GB host. NULL-P5
+(≥ 5x degradation) and NULL-P7 (peak ≥ 500) held; NULL-P6 held with zero failures anywhere.
+
+This is a property of the driver host, not the service — the service caps live sandboxes at 40, so
+no real rung can reach this width. It is reported to mark the ceiling: **this harness is
+trustworthy to about C = 40 and meaningless past C = 100.**
+
+### Consequence for the N = 100 rung
+
+The null floor at C = 100 is 3025 ms per operation. The N = 100 rung reported `run_id` p50 of
+3701 ms. Those are the same order, so **most of the N = 100 rung's latencies are local**, and its
+survivorship numbers (N100-P2…P7) should not be read as service latencies at all. Its one solid
+result — 60 of 100 refused at `create` by a cap of 40 — is a count, not a latency, and is
+unaffected.
+
+### Verdict on each sealed prediction
+
+| | Claim | Bar | Measured | Verdict |
+|---|---|---|---|---|
+| NULL-P1 | `mocactl` C=1 op p50 | ≤ 300 ms | 178 | **held** |
+| NULL-P2 | that, as a share of real `ls` C=1 | ≤ 0.40 | 0.255 | **held** |
+| NULL-P3 | tiers ordered `true` < `node` < `mocactl` at every level | true | true | **held** |
+| NULL-P4 | local cost C=1→C=100 | ≤ 2.0x | **20.4x** | **falsified** |
+| NULL-P5 | local cost C=1→C=1000 | ≥ 5.0x | 127.9x | **held** |
+| NULL-P6 | no failures at C=1 or C=100 | 0 | 0 | **held** |
+| NULL-P7 | peak coexisting processes at C=1000 | ≥ 500 | 1000 | **held** |
+
+### What the null arm does not say
+
+- **It bounds, it does not subtract.** See above: the CPU-hot tiers over-saturate and the idle
+  tier under-represents, so the real local cost is bracketed, not measured. Pinning it needs
+  per-phase timing inside the client — separating "node started" from "request sent".
+- **One run per cell.** No repeats at any tier or level.
+- **The sleep tier changed the real arm's shape too.** `--sleep` defaults to 1 s and rewrites the
+  two `run` commands to `run -- sleep 1`, renaming them `run_sleep_a`/`run_sleep_b`. The sealed
+  rungs above ran `run -- id` and `run -- uname -a` with **no stagger**; `--stagger-ms` now
+  defaults to 10, so a fresh run of those rungs is not bit-comparable to their records. Both
+  settings are recorded in every `summary.json` (`sleep_s`, `stagger_ms`, `last_start_ms`).
+- **Arithmetic worth stating plainly:** at the default 10 ms stagger, C users take `(C-1) × 10 ms`
+  for the last one to start — 390 ms at C = 40, not 4 s. A 4 s arrival window needs
+  `--stagger-ms 100`, which is the run reported above.
 
 ## The deployment doc's own sequence does not run as written
 

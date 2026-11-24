@@ -61,7 +61,25 @@ OPS: list[tuple[str, list[str]]] = [
     ("ls", ["sbx", "ls"]),
     ("rm", ["sbx", "rm", "--force", "{name}"]),
 ]
-OP_NAMES = ["login"] + [name for name, _ in OPS]
+
+# With --sleep the two `run` commands become a sleep of that many seconds in the sandbox, so the
+# op has a known, controlled duration instead of whatever `id` and `uname -a` happen to cost. The
+# names change with the commands: a record that says `run_id` must mean `run -- id`.
+def ops_for(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
+    if not args.sleep:
+        return OPS
+    d = f"{args.sleep:g}"
+    return [
+        ("create", ["sbx", "create", "--template", "{template}", "--name", "{name}"]),
+        ("run_sleep_a", ["sbx", "run", "--sandbox", "{name}", "--", "sleep", d]),
+        ("run_sleep_b", ["sbx", "run", "--sandbox", "{name}", "--", "sleep", d]),
+        ("ls", ["sbx", "ls"]),
+        ("rm", ["sbx", "rm", "--force", "{name}"]),
+    ]
+
+
+def op_names_for(args: argparse.Namespace) -> list[str]:
+    return ["login"] + [name for name, _ in ops_for(args)]
 
 # The null arm (--null): the same harness, the same five subprocesses per user, the same threads
 # and the same timing calls, with a payload that does no I/O and talks to nothing. Whatever it
@@ -75,7 +93,11 @@ OP_NAMES = ["login"] + [name for name, _ in OPS]
 #
 # `mocactl --version` is the right null for the third tier: it is the real binary on its real
 # start-up path, and it stops before any network call or config read.
-NULL_TIERS = ("true", "node", "mocactl")
+#   sleep    a local `sleep --sleep` per op: a process that costs one fork and then IDLES, which
+#            is what a real op does for most of its life while it waits on the network. The other
+#            three tiers are CPU-hot for their whole (short) life, so they overstate contention at
+#            high concurrency; this tier is the one to compare a real rung against.
+NULL_TIERS = ("true", "node", "mocactl", "sleep")
 
 
 @dataclass
@@ -195,12 +217,42 @@ def run_cli(
     return p.returncode, out.strip()[-400:]
 
 
+_NULL_CONFIG_DIR: str | None = None
+_NULL_ENV_LOCK = threading.Lock()
+
+
+def null_env() -> dict[str, str]:
+    """An environment in which the null payload cannot reach a network.
+
+    `mocactl --version` is only a no-op when no control plane is configured. With MOCACTL_SBX_URL
+    set it ALSO prints `sandbox control plane: <version>`, which is an HTTPS round trip -- and a
+    calibration that quietly includes one is worse than no calibration, because it would be
+    subtracted from the real measurement as though it were local cost. Measured on epic1: ~180 ms
+    without the variable, ~900 ms with it.
+
+    A remembered login in XDG_CONFIG_HOME would do the same, so the null arm gets an empty config
+    directory of its own rather than the caller's.
+    """
+    global _NULL_CONFIG_DIR
+    env = dict(os.environ)
+    for k in ("MOCACTL_SBX_URL", "MOCA_SANDBOX", "SH_CONTROL_PLANE_URL", "MOCA_TEST_USER_SECRET"):
+        env.pop(k, None)
+    with _NULL_ENV_LOCK:
+        if _NULL_CONFIG_DIR is None:
+            _NULL_CONFIG_DIR = tempfile.mkdtemp(prefix="e19-null-cfg-")
+    env["XDG_CONFIG_HOME"] = _NULL_CONFIG_DIR
+    env["XDG_STATE_HOME"] = _NULL_CONFIG_DIR
+    return env
+
+
 def null_argv(args: argparse.Namespace) -> list[str]:
-    """The payload for --null: a local command that does no I/O. See NULL_TIERS."""
+    """The payload for --null: a local command that touches no cluster. See NULL_TIERS."""
     if args.null == "true":
         return ["/usr/bin/true"]
     if args.null == "node":
         return [args.node, "-e", "0"]
+    if args.null == "sleep":
+        return ["/bin/sleep", f"{args.sleep:g}"]
     return [args.node, args.mocactl, "--version"]
 
 
@@ -212,9 +264,9 @@ def drive_null_user(args: argparse.Namespace, index: int, report, live: LiveCoun
     """
     res = UserResult(user=index, sandbox_name=None)
     argv = null_argv(args)
-    env = dict(os.environ)
+    env = null_env()
     user_start = time.perf_counter()
-    for op, _ in OPS:
+    for op, _ in ops_for(args):
         t0 = time.perf_counter()
         code, out = run_cli(argv, env, args.timeout, live)
         ms = (time.perf_counter() - t0) * 1000
@@ -261,7 +313,7 @@ def drive_user(args: argparse.Namespace, index: int, secret: str, report) -> Use
 
     base = [args.node, args.mocactl]
     created = False
-    for op, template in OPS:
+    for op, template in ops_for(args):
         if op == "rm" and not created:
             break  # nothing to delete
         argv = base + [a.format(name=res.sandbox_name, template=args.template) for a in template]
@@ -371,8 +423,9 @@ def ladder_levels(start: int, step: int, top: int) -> list[int]:
 
 
 def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace, disco: dict) -> dict:
-    by_op: dict[str, list[float]] = {name: [] for name in OP_NAMES}
-    fails: dict[str, int] = {name: 0 for name in OP_NAMES}
+    names = op_names_for(args)
+    by_op: dict[str, list[float]] = {name: [] for name in names}
+    fails: dict[str, int] = {name: 0 for name in names}
     for u in users:
         for o in u.ops:
             if o.ok:
@@ -380,7 +433,7 @@ def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace,
             else:
                 fails[o.op] += 1
     ops_summary = {}
-    for name in OP_NAMES:
+    for name in names:
         v = by_op[name]
         ops_summary[name] = {
             "n": len(v),
@@ -400,6 +453,12 @@ def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace,
         "concurrency": getattr(args, "in_flight", len(users)),
         "null_tier": args.null or None,
         "peak_live_processes": getattr(args, "peak_live", None) if args.null else None,
+        # Recorded only where it is actually in effect: the real arm's `run` ops, or the null
+        # arm's `sleep` tier. Every other null tier ignores it, and a record that reported it
+        # anyway would invite subtracting an ideal the op never had.
+        "sleep_s": (args.sleep or None) if (not args.null or args.null == "sleep") else None,
+        "stagger_ms": args.stagger_ms,
+        "last_start_ms": round(getattr(args, "last_start_ms", 0.0), 1),
         "gil_enabled": gil_enabled(),
         "python": sys.version.split()[0],
         "cluster": args.label or None,
@@ -416,6 +475,76 @@ def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace,
         },
         "ops": ops_summary,
     }
+
+
+def ideal_ms(summary: dict) -> float | None:
+    """The time an op would take if starting a process cost nothing.
+
+    For the null tiers `true`, `node` and `mocactl` the payload does no work at all, so the ideal
+    is 0 ms and every millisecond measured is overhead. For the `sleep` tier the payload has a
+    known, exact duration, so the ideal is that duration and the excess is overhead. For a real
+    rung there is no knowable ideal -- the service's own time is what is being measured -- so this
+    returns None and `--baseline` is the way to get an overhead figure.
+    """
+    tier = summary.get("null_tier")
+    if not tier:
+        return None
+    if tier == "sleep":
+        return (summary.get("sleep_s") or 0) * 1000
+    return 0.0
+
+
+def print_overhead(summary: dict, baseline: dict | None) -> None:
+    """How much latency process start-up added, against a zero-latency reference.
+
+    Two references, and they answer different questions:
+      ideal     what the op would cost if spawning were free (null arms only)
+      baseline  a reference run's own p50 per op, so a real rung can be read against the null
+                arm at the same width, or any rung against its C=1 self
+    """
+    ideal = ideal_ms(summary)
+    if ideal is None and baseline is None:
+        return
+    ref_name = "ideal" if baseline is None else "baseline"
+    ref_ops = None if baseline is None else baseline.get("ops", {})
+    print()
+    print("-" * 83)
+    print(f"added latency vs {ref_name}: what starting a process cost, per operation")
+    print(f"{'operation':<14}{'p50':>10}{ref_name:>10}{'added':>10}{'added %':>10}{'x ref':>9}")
+    rows = []
+    for name, s in summary["ops"].items():
+        if not s["n"] or s["p50_ms"] is None:
+            continue
+        ref = ideal if ref_ops is None else (ref_ops.get(name, {}) or {}).get("p50_ms")
+        if ref is None:
+            continue
+        added = s["p50_ms"] - ref
+        pct = f"{added / ref * 100:.0f}%" if ref else "n/a"
+        mult = f"{s['p50_ms'] / ref:.2f}x" if ref else "inf"
+        rows.append((name, s["p50_ms"], ref, added, pct, mult))
+        print(f"{name:<14}{s['p50_ms']:>10.0f}{ref:>10.0f}{added:>10.0f}{pct:>10}{mult:>9}")
+    if not rows:
+        return
+    tot_measured = sum(r[1] for r in rows)
+    tot_ref = sum(r[2] for r in rows)
+    tot_added = tot_measured - tot_ref
+    print("-" * 83)
+    share = f"{tot_added / tot_measured * 100:.0f}%" if tot_measured else "n/a"
+    print(
+        f"{'all ops':<14}{tot_measured:>10.0f}{tot_ref:>10.0f}{tot_added:>10.0f}"
+        f"{(f'{tot_added / tot_ref * 100:.0f}%' if tot_ref else 'n/a'):>10}"
+        f"{(f'{tot_measured / tot_ref:.2f}x' if tot_ref else 'inf'):>9}"
+    )
+    print(
+        f"  {tot_added:.0f} ms of the {tot_measured:.0f} ms a user waits is overhead ({share} of it)"
+        + (f", against a {tot_ref:.0f} ms {ref_name}" if tot_ref else "")
+    )
+    conc = summary["concurrency"]
+    per = tot_added / len(rows)
+    print(
+        f"  at concurrency {conc}, stagger {summary.get('stagger_ms', 0):g} ms:"
+        f" {per:.0f} ms added per operation on average"
+    )
 
 
 def gil_enabled() -> bool | None:
@@ -438,12 +567,18 @@ def print_stats(summary: dict) -> None:
         else f"   control plane {summary['control_plane_profile']} {summary['control_plane_version']}"
     )
     print(f"  ok {summary['users_ok']}/{summary['users']}   wall {summary['wall_ms'] / 1000:.1f}s{tail}")
+    if summary.get("sleep_s") or summary.get("stagger_ms"):
+        print(
+            f"  sleep {summary.get('sleep_s') or 0:g}s per run op,"
+            f" stagger {summary['stagger_ms']:g} ms"
+            f" (last user started {summary['last_start_ms']:.0f} ms in)"
+        )
     print("=" * 76)
     print(
         f"{'operation':<12}{'n':>5}{'fail':>6}{'min':>10}{'p50':>10}{'p90':>10}"
         f"{'p99':>10}{'max':>10}{'mean':>10}"
     )
-    for name in OP_NAMES:
+    for name in summary["ops"]:
         s = summary["ops"][name]
         if not s["n"] and not s["failed"]:
             continue
@@ -502,6 +637,37 @@ def main() -> int:
     ap.add_argument("--ladder-step", type=int, default=5, help="the increment between levels (default 5)")
     ap.add_argument("--ladder-settle", type=float, default=2.0, help="seconds to wait between levels so deletes land (default 2)")
     ap.add_argument(
+        "--sleep",
+        type=float,
+        default=1.0,
+        help="seconds (fractional allowed) for the sleep payload: in the real arm the two `run` "
+        "commands become `run -- sleep N`, and in the null arm the `sleep` tier runs a local "
+        "`sleep N`. Default 1.0. Pass 0 to restore `run -- id` and `run -- uname -a`.",
+    )
+    ap.add_argument(
+        "--stagger-ms",
+        type=float,
+        default=10.0,
+        help="milliseconds between starting one user and the next (default 10). Real requests do "
+        "not all arrive in the same instant; with C users the last one starts (C-1)*stagger ms "
+        "in. Pass 0 to start every user simultaneously, which is what the sealed rungs did.",
+    )
+    ap.add_argument(
+        "--calibrate",
+        choices=("off",) + NULL_TIERS,
+        default="mocactl",
+        help="run a null rung at the same concurrency BEFORE each real rung and report a "
+        "corrected latency beside the measured one (default mocactl: the real binary's "
+        "start-up path). `off` skips it. Ignored when --null is set.",
+    )
+    ap.add_argument(
+        "--baseline",
+        default="",
+        help="path to a previous run's summary.json; the added-latency table is then measured "
+        "against its per-op p50 instead of an ideal. Use the null arm at the same concurrency "
+        "to see how much of a real rung is process start-up.",
+    )
+    ap.add_argument(
         "--null",
         choices=NULL_TIERS,
         default="",
@@ -551,6 +717,14 @@ def main() -> int:
         )
         return 2
     args.insecure = os.environ.get("E19_INSECURE_TLS") == "1"
+    do_calib = args.calibrate != "off" and not args.null
+    ref: dict | None = None
+    if args.baseline:
+        try:
+            ref = json.loads(Path(args.baseline).read_text())
+        except (OSError, ValueError) as e:
+            print(f"e19: cannot read --baseline {args.baseline}: {e}", file=sys.stderr)
+            return 2
 
     gil = gil_enabled()
     mode = "free-threaded" if gil is False else "GIL on" if gil else "unknown GIL state"
@@ -570,9 +744,17 @@ def main() -> int:
         if in_flight < args.users:
             print(f"e19: at most {in_flight} users in flight at once")
         print()
+        calib = None
+        if do_calib:
+            calib = calibrate_rung(args, indices, in_flight, disco)
+            if args.out:
+                write_rung(Path(args.out) / "calibration", args, [], calib, calib["wall_ms"])
         users, wall_ms = run_rung(args, indices, in_flight, secret)
         summary = summarize(users, wall_ms, args, disco)
+        apply_calibration(summary, calib)
         print_stats(summary)
+        print_corrected(summary)
+        print_overhead(summary, ref)
         if args.out:
             write_rung(Path(args.out), args, users, summary, wall_ms)
             print(f"\nwrote {args.out}/params.json, record.json, summary.json")
@@ -588,6 +770,7 @@ def main() -> int:
 
     rungs: list[dict] = []
     all_users: dict[int, list[UserResult]] = {}
+    calibs: dict[int, dict] = {}
     ladder_start = time.perf_counter()
     for level in levels:
         indices = list(range(args.first_user, args.first_user + level))
@@ -596,8 +779,13 @@ def main() -> int:
         print(f"concurrency {level}: users test:{indices[0]}..test:{indices[-1]}, all at once")
         print("-" * 83)
         args.in_flight = level
+        calib = calibrate_rung(args, indices, level, disco) if do_calib else None
+        if calib is not None:
+            calibs[level] = calib
+        args.in_flight = level
         users, wall_ms = run_rung(args, indices, level, secret)
         summary = summarize(users, wall_ms, args, disco)
+        apply_calibration(summary, calib)
         rungs.append(summary)
         all_users[level] = users
         t = summary["per_user_total_ms"]
@@ -612,6 +800,11 @@ def main() -> int:
     ladder_wall_ms = (time.perf_counter() - ladder_start) * 1000
 
     print_ladder(rungs, ladder_wall_ms)
+    for summary in rungs:
+        print()
+        print(f"concurrency {summary['concurrency']}:")
+        print_corrected(summary)
+        print_overhead(summary, ref)
 
     if args.out:
         out = Path(args.out)
@@ -629,6 +822,8 @@ def main() -> int:
             "python": sys.version.split()[0],
             "gil_enabled": gil_enabled(),
             "rungs": rungs,
+            "calibration_tier": args.calibrate if do_calib else None,
+            "calibrations": {str(k): v for k, v in calibs.items()},
         }
         out.mkdir(parents=True, exist_ok=True)
         (out / "ladder.json").write_text(json.dumps(ladder, indent=2) + "\n")
@@ -681,14 +876,22 @@ def run_rung(
         if ordered:
             ordered.done(res)
 
+    # The stagger is part of the measurement, so it is inside the wall clock: a rung of C users at
+    # 10 ms cannot finish faster than (C-1)*10 ms plus one user's own time, and the summary says
+    # so via `stagger_ms` and `last_start_ms`.
+    stagger_s = args.stagger_ms / 1000
     t_start = time.perf_counter()
     for slot, index in enumerate(indices):
+        if stagger_s and slot:
+            time.sleep(stagger_s)
         t = threading.Thread(target=worker, args=(slot, index), name=f"u{index}")
         t.start()
         threads.append(t)
+    last_start_ms = (time.perf_counter() - t_start) * 1000
     for t in threads:
         t.join()
     wall_ms = (time.perf_counter() - t_start) * 1000
+    args.last_start_ms = last_start_ms
 
     users = [r for r in results if r is not None]
     # In --progress user the lines are already out, in order, so repeating them would double the
@@ -725,6 +928,107 @@ def write_rung(
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
 
 
+def calibrate_rung(
+    args: argparse.Namespace, indices: list[int], in_flight: int, disco: dict
+) -> dict:
+    """A null rung at the same concurrency and stagger, run immediately before the real one.
+
+    Same width, same arrival pattern, same number of subprocesses, same machine, same minute --
+    so its per-op p50 is the local cost to subtract from the real rung that follows.
+
+    It is an UPPER bound on that cost, for the reason the null arm's own write-up gives: the
+    calibration's processes run back to back with no network wait, so they keep the host saturated,
+    whereas a real op starts and then idles. Subtracting it therefore yields a LOWER bound on the
+    service's own time. Both numbers are printed; neither is presented as the truth.
+    """
+    saved_null, saved_peak = args.null, getattr(args, "peak_live", None)
+    args.null = args.calibrate
+    quiet = args.progress
+    args.progress = "none"
+    print(f"  calibrating: null '{args.calibrate}' at concurrency {in_flight}...", flush=True)
+    users, wall_ms = run_rung(args, indices, in_flight, "")
+    summary = summarize(users, wall_ms, args, disco)
+    args.null, args.progress = saved_null, quiet
+    if saved_peak is not None:
+        args.peak_live = saved_peak
+    floor = {n: s["p50_ms"] for n, s in summary["ops"].items() if s["p50_ms"] is not None}
+    print(
+        f"  calibration: {summary['users_ok']}/{len(indices)} ok, "
+        f"per-op p50 {min(floor.values()):.0f}-{max(floor.values()):.0f} ms, "
+        f"whole sequence {summary['per_user_total_ms']['p50'] or 0:.0f} ms",
+        flush=True,
+    )
+    return summary
+
+
+def apply_calibration(summary: dict, calib: dict | None) -> None:
+    """Attach the corrected (measured minus local) figures to a real rung's summary."""
+    if not calib:
+        return
+    summary["calibration"] = {
+        "tier": calib.get("null_tier"),
+        "concurrency": calib["concurrency"],
+        "per_user_total_p50_ms": calib["per_user_total_ms"]["p50"],
+        "ops_p50_ms": {n: s["p50_ms"] for n, s in calib["ops"].items() if s["p50_ms"] is not None},
+    }
+    local_total = 0.0
+    for name, s in summary["ops"].items():
+        c = (calib["ops"].get(name) or {}).get("p50_ms")
+        if c is None or s["p50_ms"] is None:
+            s["local_ms"] = None
+            s["corrected_p50_ms"] = None
+            continue
+        # `login` is an HTTP call in the real arm and a subprocess in the null arm, so the null
+        # figure is not its floor: left uncorrected rather than corrected wrongly.
+        if name == "login":
+            s["local_ms"] = None
+            s["corrected_p50_ms"] = None
+            continue
+        s["local_ms"] = round(c, 1)
+        s["corrected_p50_ms"] = round(s["p50_ms"] - c, 1)
+        local_total += c
+    t = summary["per_user_total_ms"]
+    if t["p50"] is not None:
+        summary["local_total_p50_ms"] = round(local_total, 1)
+        summary["corrected_total_p50_ms"] = round(t["p50"] - local_total, 1)
+
+
+def print_corrected(summary: dict) -> None:
+    """Measured beside corrected, per operation, for a real rung that was calibrated."""
+    calib = summary.get("calibration")
+    if not calib:
+        return
+    print()
+    print("-" * 83)
+    print(
+        f"measured vs corrected (minus null '{calib['tier']}' calibration at concurrency "
+        f"{calib['concurrency']})"
+    )
+    print(f"{'operation':<14}{'measured':>11}{'local':>9}{'corrected':>11}{'local %':>10}")
+    for name, s in summary["ops"].items():
+        if s["p50_ms"] is None:
+            continue
+        if s.get("corrected_p50_ms") is None:
+            print(f"{name:<14}{s['p50_ms']:>11.0f}{'-':>9}{'-':>11}{'not a subprocess':>18}")
+            continue
+        pct = s["local_ms"] / s["p50_ms"] * 100
+        print(
+            f"{name:<14}{s['p50_ms']:>11.0f}{s['local_ms']:>9.0f}"
+            f"{s['corrected_p50_ms']:>11.0f}{pct:>9.0f}%"
+        )
+    if summary.get("corrected_total_p50_ms") is not None:
+        t = summary["per_user_total_ms"]["p50"]
+        loc = summary["local_total_p50_ms"]
+        print("-" * 83)
+        print(
+            f"{'lifecycle':<14}{t:>11.0f}{loc:>9.0f}"
+            f"{summary['corrected_total_p50_ms']:>11.0f}{loc / t * 100:>9.0f}%"
+        )
+    print("corrected is a LOWER bound on the service's time: the calibration runs its processes")
+    print("back to back with no network wait, so it over-states the local cost. Measured is an")
+    print("upper bound. The service's true figure lies between the two columns.")
+
+
 def print_ladder(rungs: list[dict], ladder_wall_ms: float) -> None:
     """The point of the ladder: how one user's experience changes as the crowd grows."""
     base = rungs[0]
@@ -733,11 +1037,16 @@ def print_ladder(rungs: list[dict], ladder_wall_ms: float) -> None:
     print("=" * 96)
     print("E19 ladder: what a user waits for, by how many users are active at once")
     print("=" * 96)
-    print(
-        f"{'conc':>5}{'ok':>7}{'fail':>6}{'wall_s':>9}"
-        f"{'total_p50':>11}{'total_p90':>11}{'vs_C1':>8}"
-        f"{'create':>9}{'run_id':>9}{'run_un':>9}{'rm':>8}{'login':>8}"
-    )
+    # The op columns come from the data: --sleep renames the two `run` ops, so a hard-coded
+    # `run_id` here crashed a sleep-payload ladder once already.
+    cols = [n for n, s in base["ops"].items() if s["n"] or s["failed"]]
+    corrected = any(s.get("corrected_total_p50_ms") is not None for s in rungs)
+    head = f"{'conc':>5}{'ok':>7}{'fail':>6}{'wall_s':>9}{'total_p50':>11}"
+    if corrected:
+        head += f"{'corrected':>11}{'local':>8}"
+    head += f"{'total_p90':>11}{'vs_C1':>8}" + "".join(f"{n[:9]:>10}" for n in cols)
+    print(head)
+
     def ms(v: float | None) -> str:
         return f"{v:.0f}" if v is not None else "-"
 
@@ -746,16 +1055,21 @@ def print_ladder(rungs: list[dict], ladder_wall_ms: float) -> None:
         p50 = t["p50"]
         ratio = f"{p50 / base_p50:.2f}x" if p50 and base_p50 else "-"
         ops = s["ops"]
-        print(
+        line = (
             f"{s['concurrency']:>5}{s['users_ok']:>7}{s['users_failed']:>6}"
-            f"{s['wall_ms'] / 1000:>9.1f}"
-            f"{ms(p50):>11}{ms(t['p90']):>11}{ratio:>8}"
-            f"{ms(ops['create']['p50_ms']):>9}{ms(ops['run_id']['p50_ms']):>9}"
-            f"{ms(ops['run_uname']['p50_ms']):>9}{ms(ops['rm']['p50_ms']):>8}"
-            f"{ms(ops['login']['p50_ms']):>8}"
+            f"{s['wall_ms'] / 1000:>9.1f}{ms(p50):>11}"
         )
+        if corrected:
+            line += f"{ms(s.get('corrected_total_p50_ms')):>11}{ms(s.get('local_total_p50_ms')):>8}"
+        line += f"{ms(t['p90']):>11}{ratio:>8}" + "".join(
+            f"{ms((ops.get(n) or {}).get('p50_ms')):>10}" for n in cols
+        )
+        print(line)
     print("-" * 96)
-    print("conc = users active at once. total_p50/p90 = the whole six-step lifecycle, per user.")
+    print("conc = users active at once. total_p50/p90 = the whole lifecycle, per user.")
+    if corrected:
+        print("corrected = total_p50 minus the null calibration at the same concurrency (`local`),")
+        print("  so it is a LOWER bound on the service's own time: see the note under each rung.")
     print("vs_C1 = total_p50 against the uncontended rung. The op columns are that op's p50.")
     print(f"all times milliseconds unless named _s. ladder wall {ladder_wall_ms / 1000:.1f}s.")
     worst = max(rungs, key=lambda s: s["per_user_total_ms"]["p50"] or 0)
