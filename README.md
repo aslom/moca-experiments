@@ -18,6 +18,7 @@ the steps to repeat it.
 | E16 | Does SBX beat resident at duty cycle ≤ 2%? | done: tie at the sealed point, hypothesis falsified | [`experiments/e16-low-duty/RESULTS.md`](experiments/e16-low-duty/RESULTS.md) |
 | E17 | Lease mode: does a warm guest with an idle timeout pay? | E17a done: level 1 misses its import/grep bar (short commands gain ~90%); level 2 being built | [`experiments/e17-lease/results/E17A-REPORT.md`](experiments/e17-lease/results/E17A-REPORT.md), spec [`experiments/e17-lease/SPEC.md`](experiments/e17-lease/SPEC.md) |
 | E18 | Crash recovery latency on the Compose trial | done | [`experiments/e18-crash-recovery/RESULTS.md`](experiments/e18-crash-recovery/RESULTS.md) |
+| E19 | Test-user baseline: what one `sbx` lifecycle costs, and does it hold at N users? | done: N=10 holds, all nine predictions held, ten concurrent users cost as much as one | [`experiments/e19-test-user-baseline/RESULTS.md`](experiments/e19-test-user-baseline/RESULTS.md), spec [`experiments/e19-test-user-baseline/SPEC.md`](experiments/e19-test-user-baseline/SPEC.md) |
 
 Analysis: [`analysis/tracelab/`](analysis/tracelab/README.md) re-derives the E15 and E16 tables and
 figures from the published raw data, and holds the write-up ([`REPORT.md`](analysis/tracelab/REPORT.md))
@@ -46,7 +47,7 @@ analysis/tracelab/    E15/E16 analysis: report, deck, tables, fetch script
 experiments/          one directory per experiment, `<id>-<slug>`:
                         e01-e07-knative/  e02-e05-harness/  e10-e13-microvm/  e14-sbx/
                         e15-session-density/  e15b-bundled/  e16-low-duty/
-                        e17-lease/  e18-crash-recovery/
+                        e17-lease/  e18-crash-recovery/  e19-test-user-baseline/
 scripts/              repo tooling (commit-msg hook)
 ```
 

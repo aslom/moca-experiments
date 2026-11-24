@@ -45,6 +45,7 @@ import tempfile
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -94,6 +95,18 @@ def mint_token(url: str, index: int, secret: str, timeout: float, insecure: bool
     ctx = ssl._create_unverified_context() if insecure else None
     with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
         return json.load(resp)
+
+
+def discovery(url: str, timeout: float, insecure: bool) -> dict:
+    """`GET /v1/discovery`: the profile and the control-plane version, for the record's provenance."""
+    ctx = ssl._create_unverified_context() if insecure else None
+    req = urllib.request.Request(url.rstrip("/") + "/v1/discovery")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
+            d = json.load(resp)
+        return {"profile": d.get("profile"), "version": d.get("version")}
+    except (urllib.error.URLError, urllib.error.HTTPError, OSError, ValueError) as e:
+        return {"profile": None, "version": None, "error": f"{type(e).__name__}"}
 
 
 def write_sbx_auth(config_home: Path, url: str, login: dict) -> None:
@@ -196,6 +209,23 @@ def drive_user(args: argparse.Namespace, index: int, secret: str, report) -> Use
     return res
 
 
+def redact_url(url: str) -> str:
+    """A control-plane URL with the cluster domain replaced by a placeholder.
+
+    CONVENTIONS.md: "No hosts or credentials ... docs use placeholders". The first label of the
+    host is the service (`moca-control-plane`) and is not a secret or an address by itself, so it
+    stays; everything after it is the cluster's domain and does not go into the repository.
+    """
+    parsed = urllib.parse.urlsplit(url)
+    host = parsed.hostname or ""
+    if not host:
+        return "<CONTROL_PLANE_URL>"
+    first, _, rest = host.partition(".")
+    shown = f"{first}.<ROUTE_DOMAIN>" if rest else "<CONTROL_PLANE_HOST>"
+    port = f":{parsed.port}" if parsed.port else ""
+    return urllib.parse.urlunsplit((parsed.scheme, shown + port, parsed.path, "", ""))
+
+
 def pct(values: list[float], q: float) -> float:
     """Nearest-rank percentile: at these sample sizes interpolation would invent precision."""
     if not values:
@@ -205,7 +235,7 @@ def pct(values: list[float], q: float) -> float:
     return s[k]
 
 
-def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace) -> dict:
+def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace, disco: dict) -> dict:
     by_op: dict[str, list[float]] = {name: [] for name in OP_NAMES}
     fails: dict[str, int] = {name: 0 for name in OP_NAMES}
     for u in users:
@@ -234,6 +264,9 @@ def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace)
         "concurrency": args.users,
         "gil_enabled": gil_enabled(),
         "python": sys.version.split()[0],
+        "cluster": args.label or None,
+        "control_plane_profile": disco.get("profile"),
+        "control_plane_version": disco.get("version"),
         "wall_ms": round(wall_ms, 1),
         "per_user_total_ms": {
             "min": round(min(totals), 1) if totals else None,
@@ -260,6 +293,7 @@ def print_stats(summary: dict) -> None:
     print(
         f"  ok {summary['users_ok']}/{summary['users']}"
         f"   wall {summary['wall_ms'] / 1000:.1f}s"
+        f"   control plane {summary['control_plane_profile']} {summary['control_plane_version']}"
     )
     print("=" * 76)
     print(f"{'operation':<12}{'n':>4}{'fail':>6}{'min':>10}{'p50':>10}{'p90':>10}{'max':>10}{'mean':>10}")
@@ -295,6 +329,7 @@ def main() -> int:
     ap.add_argument("--timeout", type=float, default=180.0, help="per-operation timeout in seconds (default 180)")
     ap.add_argument("--stop-on-error", action="store_true", help="abandon a user's remaining operations after a failure")
     ap.add_argument("--out", default="", help="directory to write params.json, record.json and summary.json")
+    ap.add_argument("--label", default=os.environ.get("E19_CLUSTER_LABEL", ""), help="a name for the cluster, recorded instead of its host (or E19_CLUSTER_LABEL)")
     ap.add_argument("--require-nogil", action="store_true", help="exit 2 unless the interpreter is free-threaded")
     args = ap.parse_args()
 
@@ -326,7 +361,9 @@ def main() -> int:
     indices = list(range(args.first_user, args.first_user + args.users))
     gil = gil_enabled()
     mode = "free-threaded" if gil is False else "GIL on" if gil else "unknown GIL state"
+    disco = discovery(args.url, args.timeout, args.insecure)
     print(f"e19: {args.users} users (test:{indices[0]}..test:{indices[-1]}) against {args.url}")
+    print(f"e19: control plane profile {disco.get('profile')}, version {disco.get('version')}")
     print(f"e19: python {sys.version.split()[0]} {mode}, one thread per user")
     print()
 
@@ -362,14 +399,19 @@ def main() -> int:
         per_op = "  ".join(f"{o.op}={o.ms:.0f}" for o in u.ops)
         print(f"  test:{u.user:<5} {'ok ' if u.ok else 'FAIL'} total={u.total_ms:>8.0f} ms   {per_op}")
 
-    summary = summarize(users, wall_ms, args)
+    summary = summarize(users, wall_ms, args, disco)
     print_stats(summary)
 
     if args.out:
         out = Path(args.out)
         out.mkdir(parents=True, exist_ok=True)
-        params = {k: v for k, v in vars(args).items() if k != "mocactl"}
+        params = {k: v for k, v in vars(args).items() if k not in ("mocactl", "url")}
         params["mocactl"] = Path(args.mocactl).name
+        # CONVENTIONS.md: no hosts in a committed record. The URL is still identified -- its
+        # scheme, its service name and any path prefix are what distinguish two control planes
+        # (config.ts canonicalises on exactly those) -- with only the cluster domain withheld.
+        params["url"] = redact_url(args.url)
+        params["cluster"] = args.label or "unlabelled (pass --label)"
         params["started_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - wall_ms / 1000))
         (out / "params.json").write_text(json.dumps(params, indent=2) + "\n")
         (out / "record.json").write_text(

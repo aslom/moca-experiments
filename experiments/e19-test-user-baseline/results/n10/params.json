@@ -1,0 +1,17 @@
+{
+  "users": 10,
+  "first_user": 1,
+  "prefix": "tu",
+  "template": "default",
+  "node": "node",
+  "timeout": 180.0,
+  "stop_on_error": false,
+  "out": "results/n10",
+  "label": "OpenShift ykt1, namespace moca-sbx, 1 sbx-worker replica",
+  "require_nogil": true,
+  "insecure": false,
+  "mocactl": "mocactl.mjs",
+  "url": "https://moca-control-plane.<ROUTE_DOMAIN>",
+  "cluster": "OpenShift ykt1, namespace moca-sbx, 1 sbx-worker replica",
+  "started_at": "2026-11-24T17:39:40Z"
+}
