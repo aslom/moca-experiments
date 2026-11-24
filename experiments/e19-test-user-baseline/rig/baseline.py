@@ -35,6 +35,7 @@ writes params.json, record.json (every operation, every user) and summary.json.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import ssl
@@ -61,6 +62,20 @@ OPS: list[tuple[str, list[str]]] = [
     ("rm", ["sbx", "rm", "--force", "{name}"]),
 ]
 OP_NAMES = ["login"] + [name for name, _ in OPS]
+
+# The null arm (--null): the same harness, the same five subprocesses per user, the same threads
+# and the same timing calls, with a payload that does no I/O and talks to nothing. Whatever it
+# reports is the driver's own floor, not the sandbox service's latency -- so it says how much of
+# a real row is this machine. Three tiers, because "overhead" is not one thing:
+#
+#   true     fork + exec + the pipes + Python's own per-op cost, and nothing else
+#   node     the above plus a Node runtime start-up
+#   mocactl  the above plus parsing and compiling the 7.3 MB mocactl bundle, which is exactly
+#            what every CLI row in the real table pays before it opens a socket
+#
+# `mocactl --version` is the right null for the third tier: it is the real binary on its real
+# start-up path, and it stops before any network call or config read.
+NULL_TIERS = ("true", "node", "mocactl")
 
 
 @dataclass
@@ -131,20 +146,87 @@ def write_sbx_auth(config_home: Path, url: str, login: dict) -> None:
     f.chmod(0o600)
 
 
-def run_cli(argv: list[str], env: dict[str, str], timeout: float) -> tuple[int, str]:
-    """One mocactl invocation. Returns (exit code, the tail of its output for an error message)."""
+class LiveCount:
+    """How many subprocesses actually coexisted, which is not the same as --concurrency.
+
+    The ops within a user are sequential, so a user holds at most one process: the ceiling is the
+    number of users in flight. But threads ramp up and each process is short, so the real peak can
+    be well below that ceiling -- and at the top of the null arm it is the number that decides
+    whether the driver host is the thing being measured.
+    """
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self.live = 0
+        self.peak = 0
+
+    def __enter__(self) -> "LiveCount":
+        with self._lock:
+            self.live += 1
+            self.peak = max(self.peak, self.live)
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        with self._lock:
+            self.live -= 1
+
+
+def run_cli(
+    argv: list[str], env: dict[str, str], timeout: float, live: LiveCount | None = None
+) -> tuple[int, str]:
+    """One subprocess. Returns (exit code, the tail of its output for an error message)."""
     try:
-        p = subprocess.run(
-            argv,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
+        with live or contextlib.nullcontext():
+            p = subprocess.run(
+                argv,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
     except subprocess.TimeoutExpired:
         return 124, f"timed out after {timeout:g}s"
+    except OSError as e:
+        # At the top of the null arm this is the interesting failure: too many processes, or out
+        # of file descriptors for the pipes. Reported as the op's error, not raised, so the run
+        # finishes and the summary shows how far the host got.
+        return 125, f"{type(e).__name__}: {e}"
     out = (p.stdout or "") + (p.stderr or "")
     return p.returncode, out.strip()[-400:]
+
+
+def null_argv(args: argparse.Namespace) -> list[str]:
+    """The payload for --null: a local command that does no I/O. See NULL_TIERS."""
+    if args.null == "true":
+        return ["/usr/bin/true"]
+    if args.null == "node":
+        return [args.node, "-e", "0"]
+    return [args.node, args.mocactl, "--version"]
+
+
+def drive_null_user(args: argparse.Namespace, index: int, report, live: LiveCount) -> UserResult:
+    """The null arm's user: the same five timed subprocesses, with a payload that does nothing.
+
+    No login, no token, no config directory, no sandbox -- nothing is created, so nothing needs
+    cleaning up and the cluster is never touched. Only the harness is measured.
+    """
+    res = UserResult(user=index, sandbox_name=None)
+    argv = null_argv(args)
+    env = dict(os.environ)
+    user_start = time.perf_counter()
+    for op, _ in OPS:
+        t0 = time.perf_counter()
+        code, out = run_cli(argv, env, args.timeout, live)
+        ms = (time.perf_counter() - t0) * 1000
+        ok = code == 0
+        res.ops.append(OpResult(index, op, ms, ok, exit_code=code, error=None if ok else out))
+        report(index, op, ms, ok, None if ok else out)
+        if not ok:
+            res.ok = False
+            if args.stop_on_error:
+                break
+    res.total_ms = (time.perf_counter() - user_start) * 1000
+    return res
 
 
 def drive_user(args: argparse.Namespace, index: int, secret: str, report) -> UserResult:
@@ -316,6 +398,8 @@ def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace,
         "users_ok": sum(1 for u in users if u.ok),
         "users_failed": sum(1 for u in users if not u.ok),
         "concurrency": getattr(args, "in_flight", len(users)),
+        "null_tier": args.null or None,
+        "peak_live_processes": getattr(args, "peak_live", None) if args.null else None,
         "gil_enabled": gil_enabled(),
         "python": sys.version.split()[0],
         "cluster": args.label or None,
@@ -346,12 +430,14 @@ def print_stats(summary: dict) -> None:
     mode = "free-threaded (GIL off)" if gil is False else "GIL on" if gil else "unknown"
     conc = summary["concurrency"]
     at_once = "all at once" if conc >= summary["users"] else f"at most {conc} at once"
-    print(f"E19 baseline: {summary['users']} users ({at_once}), python {summary['python']}, {mode}")
-    print(
-        f"  ok {summary['users_ok']}/{summary['users']}"
-        f"   wall {summary['wall_ms'] / 1000:.1f}s"
-        f"   control plane {summary['control_plane_profile']} {summary['control_plane_version']}"
+    tier = f"NULL '{summary['null_tier']}'" if summary.get("null_tier") else "E19 baseline"
+    print(f"{tier}: {summary['users']} users ({at_once}), python {summary['python']}, {mode}")
+    tail = (
+        f"   peak live processes {summary['peak_live_processes']}"
+        if summary.get("null_tier")
+        else f"   control plane {summary['control_plane_profile']} {summary['control_plane_version']}"
     )
+    print(f"  ok {summary['users_ok']}/{summary['users']}   wall {summary['wall_ms'] / 1000:.1f}s{tail}")
     print("=" * 76)
     print(
         f"{'operation':<12}{'n':>5}{'fail':>6}{'min':>10}{'p50':>10}{'p90':>10}"
@@ -415,6 +501,15 @@ def main() -> int:
     ap.add_argument("--ladder-start", type=int, default=1, help="first level of the ladder (default 1, the uncontended reference)")
     ap.add_argument("--ladder-step", type=int, default=5, help="the increment between levels (default 5)")
     ap.add_argument("--ladder-settle", type=float, default=2.0, help="seconds to wait between levels so deletes land (default 2)")
+    ap.add_argument(
+        "--null",
+        choices=NULL_TIERS,
+        default="",
+        help="the null arm: run the same harness with a payload that does no I/O, to measure the "
+        "driver's own overhead. true = fork/exec only; node = plus a Node start-up; "
+        "mocactl = plus the mocactl bundle, which is what every real CLI row pays. "
+        "No login, no sandbox, no cluster access.",
+    )
     args = ap.parse_args()
     if args.ladder and args.ladder_step < 1:
         print("e19: --ladder-step must be at least 1", file=sys.stderr)
@@ -429,15 +524,19 @@ def main() -> int:
     args.in_flight = in_flight
 
     secret = os.environ.get("MOCA_TEST_USER_SECRET", "")
-    # Same reason headless.ts gives for keeping it out of a flag: a flag puts the shared secret in
-    # the shell history and in every `ps` listing of the machine running the test.
-    if not secret:
-        print("e19: MOCA_TEST_USER_SECRET is not set (the cluster's SH_TEST_USER_SECRET)", file=sys.stderr)
-        return 2
-    if not args.url:
-        print("e19: no control-plane URL: pass --url or set MOCACTL_SBX_URL", file=sys.stderr)
-        return 2
-    if not args.mocactl or not Path(args.mocactl).is_file():
+    # The null arm touches no cluster, so it needs neither the secret nor a URL -- and requiring
+    # them would mean a control run could only happen somewhere a real run could.
+    if not args.null:
+        # Same reason headless.ts gives for keeping it out of a flag: a flag puts the shared secret
+        # in the shell history and in every `ps` listing of the machine running the test.
+        if not secret:
+            print("e19: MOCA_TEST_USER_SECRET is not set (the cluster's SH_TEST_USER_SECRET)", file=sys.stderr)
+            return 2
+        if not args.url:
+            print("e19: no control-plane URL: pass --url or set MOCACTL_SBX_URL", file=sys.stderr)
+            return 2
+    needs_mocactl = not args.null or args.null == "mocactl"
+    if needs_mocactl and (not args.mocactl or not Path(args.mocactl).is_file()):
         print(
             "e19: --mocactl must point at mocactl.mjs built from the test-user branch "
             "(pnpm --filter @moca/mocactl build)",
@@ -455,9 +554,14 @@ def main() -> int:
 
     gil = gil_enabled()
     mode = "free-threaded" if gil is False else "GIL on" if gil else "unknown GIL state"
-    disco = discovery(args.url, args.timeout, args.insecure)
-    print(f"e19: control plane {args.url}")
-    print(f"e19: profile {disco.get('profile')}, version {disco.get('version')}")
+    if args.null:
+        disco = {"profile": None, "version": None}
+        print(f"e19: NULL ARM, tier '{args.null}': {' '.join(null_argv(args))}")
+        print("e19: no login, no sandbox, no cluster access -- this measures the driver only")
+    else:
+        disco = discovery(args.url, args.timeout, args.insecure)
+        print(f"e19: control plane {args.url}")
+        print(f"e19: profile {disco.get('profile')}, version {disco.get('version')}")
     print(f"e19: python {sys.version.split()[0]} {mode}, one thread per user")
 
     if not args.ladder:
@@ -564,10 +668,15 @@ def run_rung(
     results: list[UserResult | None] = [None] * total
     threads: list[threading.Thread] = []
     gate = threading.Semaphore(in_flight)
+    live = LiveCount()
 
     def worker(slot: int, index: int) -> None:
         with gate:
-            res = drive_user(args, index, secret, report)
+            res = (
+                drive_null_user(args, index, report, live)
+                if args.null
+                else drive_user(args, index, secret, report)
+            )
         results[slot] = res
         if ordered:
             ordered.done(res)
@@ -593,6 +702,7 @@ def run_rung(
         print(f"failures ({len(failed)}):")
         for u in failed:
             print(user_line(u, width))
+    args.peak_live = live.peak
     return users, wall_ms
 
 

@@ -1,0 +1,75 @@
+{
+  "status": "SEALED",
+  "sealed": true,
+  "spec": "e19/SPEC.md v0.3",
+  "section": "The null arm",
+  "rung": "null-c1-c100-c1000",
+  "recordedAt": "2026-11-24",
+  "codeCommit": "131b250",
+  "note": "The control arm. Same harness, same five subprocesses per user, same threads and timing calls, with a payload that does no I/O: /usr/bin/true, then node -e 0, then mocactl --version. It touches no cluster. Its purpose is to decide whether local concurrency effects -- process start-up, thread scheduling, the driver host itself -- contaminate the real measurements. Three concurrency levels, 1, 100 and 1000, the last being far above anything a real rung uses (the service caps live sandboxes at 40), so it also locates where the driver host rather than the service becomes the limit.",
+  "prior": {
+    "single_process_costs_measured_with_usr_bin_time": {
+      "usr_bin_true": "negligible",
+      "node_-e_0": { "real_s": 0.06, "max_rss_mb": 39 },
+      "mocactl_--version": { "real_s": 0.17, "max_rss_mb": 88 }
+    },
+    "null_true_c1_trial": { "per_op_ms": [18, 16, 14, 13, 13], "per_user_total_ms": 75 },
+    "real_rungs": {
+      "note": "The figure the null arm has to be compared against: the cheapest real CLI row is `ls`, 697 ms at C=1 in the ladder, and the whole six-step lifecycle is 8470 ms at C=1.",
+      "ls_p50_c1_ms": 697,
+      "lifecycle_p50_c1_ms": 8470
+    },
+    "host_limits": { "cpus": 18, "ram_gb": 64, "ulimit_u": 2048, "ulimit_n": 4096 }
+  },
+  "predictions": [
+    {
+      "id": "NULL-P1",
+      "claim": "At C=1 the mocactl null tier's per-op p50 is under 300 ms. This is the floor every real CLI row pays before it opens a socket.",
+      "metric": "mocactl.c1.op_p50_max_ms",
+      "bar": 300,
+      "comparator": "<="
+    },
+    {
+      "id": "NULL-P2",
+      "claim": "At C=1 the mocactl null tier accounts for less than 40% of the cheapest real CLI row (`ls`, 697 ms at C=1), so the majority of even the cheapest real row is not local start-up.",
+      "metric": "mocactl.c1.share_of_ls_c1",
+      "bar": 0.4,
+      "comparator": "<="
+    },
+    {
+      "id": "NULL-P3",
+      "claim": "The three tiers are ordered true < node < mocactl at every concurrency level, which is what makes the decomposition meaningful rather than noise.",
+      "metric": "tiers_ordered_at_every_level",
+      "bar": true,
+      "comparator": "=="
+    },
+    {
+      "id": "NULL-P4",
+      "claim": "Local overhead does NOT explain the real ladder's degradation. Going from C=1 to C=100 in the mocactl null tier costs less than 2x on per-op p50 -- and since the real ladder tops out at 40 concurrent users, whatever local growth exists at 100 is an upper bound on what contaminated it.",
+      "metric": "mocactl.ratio_c100_over_c1.op_p50",
+      "bar": 2.0,
+      "comparator": "<="
+    },
+    {
+      "id": "NULL-P5",
+      "claim": "At C=1000 the mocactl tier degrades sharply -- per-op p50 at least 5x the C=1 value -- because ~1000 concurrent node processes at ~40 MB private each exceed what an 18-core, 64 GB host absorbs. This is a claim about the driver host, not the service, and it is why no real rung is run at that width.",
+      "metric": "mocactl.ratio_c1000_over_c1.op_p50",
+      "bar": 5.0,
+      "comparator": ">="
+    },
+    {
+      "id": "NULL-P6",
+      "claim": "No null operation fails at C=1 or C=100: the host has headroom at the widths the real rungs actually use.",
+      "metric": "failures_at_c1_and_c100",
+      "bar": 0,
+      "comparator": "=="
+    },
+    {
+      "id": "NULL-P7",
+      "claim": "The peak count of genuinely coexisting processes at C=1000 is at least 500, so the level really did test wide concurrency rather than quietly ramping.",
+      "metric": "mocactl.c1000.peak_live_processes",
+      "bar": 500,
+      "comparator": ">="
+    }
+  ]
+}
