@@ -100,5 +100,46 @@ XDG_CONFIG_HOME=$(mktemp -d) node "$MOCACTL_MJS" sbx ls      # after a login for
 | `--timeout S` | 180 | per-operation timeout, seconds |
 | `--stop-on-error` | off | abandon a user's remaining operations after a failure |
 | `--out DIR` | — | write `params.json`, `record.json`, `summary.json` |
+| `--label S` | — | a name for the cluster, recorded instead of its host |
 | `--require-nogil` | set by `run.sh` | fail rather than run under a GIL |
+| `--progress user\|ops\|none` | `user` | see below |
+| `--concurrency K` | 0 (= all) | how many users may be in flight at once |
 | `PY=<ver>` | `3.14t` | the interpreter `run.sh` asks `uv` for |
+
+### `--progress`
+
+- `user` (default): one line per user **in user order** — `test:1`, then `test:2`, and so on —
+  printed as each becomes available. The users finish out of order, so a finished user is held
+  until every user before it has printed; the result is a stream a reader can scan against
+  `test:1..N`, at the cost of one slow user holding back the lines behind it. Each line ends with
+  a `[done/total]` counter, which is the completion order.
+- `ops`: a line per operation, in completion order, as it happens. Six lines per user — 600 at
+  N = 100 — so this is for small N and for watching where a hang is.
+- `none`: only the final table, plus a list of failures if there were any.
+
+### `--concurrency`
+
+By default all N users are in flight at once, which is the measurement the baseline is about. Set
+`--concurrency K` to hold at most K in flight and the rig separates "N users" from "N at once" —
+useful for telling a server-side limit from a limit of the machine running the driver. The value
+used is recorded as `concurrency` in `summary.json`.
+
+Note what N = 100 asks of the driver host: 100 users in flight means up to 100 concurrent `node`
+processes, about 93 MB resident each. On the host used for the N = 100 rung (18 cores, 64 GB) that
+is comfortable, but on a smaller machine the driver, not the cluster, becomes the bottleneck —
+and the table would then be measuring the laptop. Check before trusting a large rung.
+
+## Rungs
+
+| N | Predictions | Record |
+|---|---|---|
+| 10 | [`predictions.json`](predictions.json) | [`results/n10/`](results/n10) |
+| 100 | [`predictions-n100.json`](predictions-n100.json) | [`results/n100/`](results/n100) |
+
+Each rung's predictions are committed before that rung runs. `predictions.json` is not edited to
+add a rung; a new rung gets its own file, as E15 does with `predictions-metal.json`.
+
+```bash
+KUBECONFIG=<kubeconfig> SH_SINGLE_NAMESPACE=moca-sbx MOCACTL_MJS=<path> \
+  ./rig/run.sh --users 100 --first-user 1 --out results/n100 --label "<cluster>"
+```

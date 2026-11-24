@@ -1,0 +1,104 @@
+{
+  "status": "SEALED",
+  "sealed": true,
+  "spec": "e19/SPEC.md v0.1",
+  "section": "Pass and fail criteria, at N=100",
+  "rung": "n100",
+  "recordedAt": "2026-11-24",
+  "codeCommit": "f49c80d",
+  "note": "The second rung. Sealed before the N=100 run, with the N=10 record (results/n10) as the only prior. predictions.json is the N=10 rung and is not edited; this file is this rung's, as E15 does with predictions-metal.json. The substantive claim is N100-P10: N=10 found no queueing anywhere, and at N=100 against ONE sbx-worker replica something is expected to queue. If N100-P10 is falsified -- if 100 concurrent users are still as cheap as one -- that is the more interesting outcome and it is reported as falsified, not rewritten.",
+  "prior": {
+    "rung": "n10",
+    "record": "results/n10/summary.json",
+    "wall_ms": 9138.3,
+    "per_user_total_p50_ms": 9043.0,
+    "p90_ms": {
+      "login": 583.6,
+      "create": 869.9,
+      "run_id": 2254.2,
+      "run_uname": 2191.3,
+      "ls": 811.9,
+      "rm": 2503.5
+    },
+    "failures": 0
+  },
+  "setting": {
+    "cluster": "OpenShift ykt1, namespace moca-sbx, profile sandbox, control plane main-3b53f15",
+    "workers": "1 sbx-worker replica, unchanged from the N=10 rung",
+    "users": "test:1..test:100, all in flight at once (concurrency 100)",
+    "driver_host": "18 cores, 64 GB, macOS arm64, over the public Route",
+    "driver_host_note": "100 concurrent node processes at ~93 MB resident is ~9.3 GB, so the driver host is not expected to be the limit. If it is, the rung measures the laptop and must be re-run with --concurrency."
+  },
+  "predictions": [
+    {
+      "id": "N100-P1",
+      "claim": "All 100 users complete the whole lifecycle with no failure. Nothing in the N=10 rung suggested a per-user limit, and SH_TEST_USERS=1000 authorises the range.",
+      "metric": "users_failed",
+      "bar": 0,
+      "comparator": "=="
+    },
+    {
+      "id": "N100-P2",
+      "claim": "login p90 stays under 2500 ms: 100 near-simultaneous logins against a single control-plane pod, each signing a token.",
+      "metric": "ops.login.p90_ms",
+      "bar": 2500,
+      "comparator": "<="
+    },
+    {
+      "id": "N100-P3",
+      "claim": "create p90 stays under 6000 ms.",
+      "metric": "ops.create.p90_ms",
+      "bar": 6000,
+      "comparator": "<="
+    },
+    {
+      "id": "N100-P4",
+      "claim": "run_id p90 stays under 20000 ms. This is where queueing at one worker should land, and the bar is set wide because the N=10 rung gives no evidence about where the knee is.",
+      "metric": "ops.run_id.p90_ms",
+      "bar": 20000,
+      "comparator": "<="
+    },
+    {
+      "id": "N100-P5",
+      "claim": "run_uname p90 stays under 20000 ms.",
+      "metric": "ops.run_uname.p90_ms",
+      "bar": 20000,
+      "comparator": "<="
+    },
+    {
+      "id": "N100-P6",
+      "claim": "ls p90 stays under 4000 ms.",
+      "metric": "ops.ls.p90_ms",
+      "bar": 4000,
+      "comparator": "<="
+    },
+    {
+      "id": "N100-P7",
+      "claim": "rm p90 stays under 15000 ms.",
+      "metric": "ops.rm.p90_ms",
+      "bar": 15000,
+      "comparator": "<="
+    },
+    {
+      "id": "N100-P8",
+      "claim": "100 concurrent users still beat 100 sequential ones by a wide margin: wall clock stays under 180000 ms, against roughly 904000 ms sequential at the N=10 per-user p50.",
+      "metric": "wall_ms",
+      "bar": 180000,
+      "comparator": "<="
+    },
+    {
+      "id": "N100-P9",
+      "claim": "The driver runs on a free-threaded interpreter.",
+      "metric": "gil_enabled",
+      "bar": false,
+      "comparator": "=="
+    },
+    {
+      "id": "N100-P10",
+      "claim": "Unlike N=10, N=100 does NOT stay flat: wall clock is at least twice the N=10 wall of 9138 ms, because 100 concurrent run calls share one sbx-worker replica. A directional claim, and the one worth sealing: if it fails, 100 users cost what one costs and the worker is nowhere near its limit.",
+      "metric": "wall_ms",
+      "bar": 18277,
+      "comparator": ">="
+    }
+  ]
+}
