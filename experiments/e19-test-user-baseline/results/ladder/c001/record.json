@@ -1,0 +1,61 @@
+{
+  "users": [
+    {
+      "user": 1,
+      "subject": "test:1",
+      "sandbox_name": "tu1",
+      "ok": true,
+      "total_ms": 8470.231832994614,
+      "ops": [
+        {
+          "user": 1,
+          "op": "login",
+          "ms": 562.9123750259168,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "create",
+          "ms": 705.4297500289977,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "run_id",
+          "ms": 2106.3566250377335,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "run_uname",
+          "ms": 1996.4362499886192,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "ls",
+          "ms": 697.258582978975,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "rm",
+          "ms": 2401.4513340080157,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

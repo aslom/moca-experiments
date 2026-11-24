@@ -1,0 +1,82 @@
+{
+  "users": 1,
+  "users_ok": 1,
+  "users_failed": 0,
+  "concurrency": 1,
+  "gil_enabled": false,
+  "python": "3.14.10",
+  "cluster": "OpenShift ykt1, namespace moca-sbx, 1 sbx-worker replica",
+  "control_plane_profile": "sandbox",
+  "control_plane_version": "main-3b53f15",
+  "wall_ms": 8471.3,
+  "per_user_total_ms": {
+    "min": 8470.2,
+    "p50": 8470.2,
+    "p90": 8470.2,
+    "p99": 8470.2,
+    "max": 8470.2,
+    "mean": 8470.2
+  },
+  "ops": {
+    "login": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 562.9,
+      "p50_ms": 562.9,
+      "p90_ms": 562.9,
+      "p99_ms": 562.9,
+      "max_ms": 562.9,
+      "mean_ms": 562.9
+    },
+    "create": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 705.4,
+      "p50_ms": 705.4,
+      "p90_ms": 705.4,
+      "p99_ms": 705.4,
+      "max_ms": 705.4,
+      "mean_ms": 705.4
+    },
+    "run_id": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 2106.4,
+      "p50_ms": 2106.4,
+      "p90_ms": 2106.4,
+      "p99_ms": 2106.4,
+      "max_ms": 2106.4,
+      "mean_ms": 2106.4
+    },
+    "run_uname": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 1996.4,
+      "p50_ms": 1996.4,
+      "p90_ms": 1996.4,
+      "p99_ms": 1996.4,
+      "max_ms": 1996.4,
+      "mean_ms": 1996.4
+    },
+    "ls": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 697.3,
+      "p50_ms": 697.3,
+      "p90_ms": 697.3,
+      "p99_ms": 697.3,
+      "max_ms": 697.3,
+      "mean_ms": 697.3
+    },
+    "rm": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 2401.5,
+      "p50_ms": 2401.5,
+      "p90_ms": 2401.5,
+      "p99_ms": 2401.5,
+      "max_ms": 2401.5,
+      "mean_ms": 2401.5
+    }
+  }
+}
