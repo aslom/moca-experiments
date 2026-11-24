@@ -131,15 +131,50 @@ and the table would then be measuring the laptop. Check before trusting a large 
 
 ## Rungs
 
-| N | Predictions | Record |
+| Rung | Predictions | Record |
 |---|---|---|
-| 10 | [`predictions.json`](predictions.json) | [`results/n10/`](results/n10) |
-| 100 | [`predictions-n100.json`](predictions-n100.json) | [`results/n100/`](results/n100) |
+| N = 10 | [`predictions.json`](predictions.json) | [`results/n10/`](results/n10) |
+| N = 100 | [`predictions-n100.json`](predictions-n100.json) | [`results/n100/`](results/n100) |
+| C = 1…40 ladder | [`predictions-ladder.json`](predictions-ladder.json) | [`results/ladder/`](results/ladder) |
 
 Each rung's predictions are committed before that rung runs. `predictions.json` is not edited to
 add a rung; a new rung gets its own file, as E15 does with `predictions-metal.json`.
 
 ```bash
-KUBECONFIG=<kubeconfig> SH_SINGLE_NAMESPACE=moca-sbx MOCACTL_MJS=<path> \
-  ./rig/run.sh --users 100 --first-user 1 --out results/n100 --label "<cluster>"
+# the single large rung
+./rig/run.sh --users 100 --first-user 1 --out results/n100 --label "<cluster>"
+
+# the ladder: C = 1, 5, 10, ... 40, each level its own rung
+./rig/run.sh --ladder --users 40 --ladder-start 1 --ladder-step 5 \
+  --out results/ladder --label "<cluster>"
+```
+
+### The ladder
+
+`--ladder` turns `--users` into the **top** of a climb rather than a single rung. Levels are
+`--ladder-start`, then every `--ladder-step` up to `--users`: with the defaults and `--users 40`
+that is 1, 5, 10, 15, 20, 25, 30, 35, 40. Each level drives C users with all C in flight, prints
+them in user order as usual, deletes every sandbox, waits `--ladder-settle` seconds, and moves on.
+
+| Flag | Default | What it does |
+|---|---|---|
+| `--ladder` | off | climb levels instead of running one rung |
+| `--ladder-start K` | 1 | the first level; 1 is the uncontended reference |
+| `--ladder-step K` | 5 | the increment between levels |
+| `--ladder-settle S` | 2 | seconds between levels, so deletes land before the next `create` |
+
+At the end it prints one row per level — users ok, wall clock, the per-user lifecycle at p50 and
+p90, that level's ratio to C = 1, and each operation's p50 — which is the table to read for how a
+user's experience changes with the crowd. With `--out DIR` it writes `DIR/ladder.json` holding
+every level's summary, plus `DIR/c001/`, `DIR/c005/`, … each with the usual `params.json`,
+`record.json` and `summary.json`.
+
+**Do not set the top above `SH_SANDBOX_MAX_TOTAL`** (default 40, and unset on this cluster, so 40
+applies). Above it `create` is refused with `quota_exceeded` instead of slowing down, and a
+refusal is not a latency — the N = 100 rung is what that looks like. Check the deployment's value
+first:
+
+```bash
+kubectl -n "$SH_SINGLE_NAMESPACE" get cm sbx-settings -o jsonpath='{.data.SH_SANDBOX_MAX_TOTAL}'; echo
+# empty means the code default of 40 applies
 ```

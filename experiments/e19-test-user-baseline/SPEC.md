@@ -1,6 +1,7 @@
 # E19 — Test-user baseline: what does one `sbx` lifecycle cost, and does it hold at N users?
 
-Version 0.1. Written before the measured run.
+Version 0.2. §Design and §Pass-and-fail were written before the first measured run; "The ladder"
+was added after the N = 100 rung and before the ladder rung, and says why.
 
 ## Question
 
@@ -127,7 +128,45 @@ A failed prediction is reported as falsified in `RESULTS.md`, not rewritten.
   sandbox of the same name would collide. The driver deletes what it creates, and a stale
   `tu<N>` makes `create` fail loudly rather than silently sharing.
 
+## The ladder
+
+Added at v0.2, after the N = 100 rung, which did not answer the question it was aimed at.
+
+The N = 10 rung found no contention anywhere. The N = 100 rung was meant to find some, and
+instead found a wall: `SH_SANDBOX_MAX_TOTAL` is unset on this deployment, so the code default of
+**40** live sandboxes applies deployment-wide, and 60 of the 100 users were refused at `create`
+with `quota_exceeded`. Only 40 reached `run`, so that rung measured 40-way contention wearing a
+label that said 100. A single large N cannot distinguish "the service slows down" from "the
+service says no".
+
+The ladder replaces it. Concurrency climbs **C = 1, 5, 10, … 40** — `--ladder-start 1
+--ladder-step 5 --users 40` — and each level is a rung of its own: C users, all C in flight, every
+sandbox deleted before the next level starts. C = 1 is the uncontended reference every other level
+is read against; 40 is the top because above the cap `create` is refused rather than slowed, and a
+refusal is not a latency.
+
+The reported quantity is the **difference in user experience between levels**: for each level, the
+whole six-step lifecycle per user at p50 and p90, each operation's own p50, and the ratio of the
+level's lifecycle p50 to C = 1's. A reader should be able to see, in one table, what a user waits
+for when they are alone and what they wait for in a crowd of forty, and which operation accounts
+for the difference.
+
+Two properties of the design are worth stating because they bound the claim:
+
+- **Levels run in sequence, within one process, against a cluster nobody else is using.** Later
+  levels therefore see whatever state earlier levels left. `--ladder-settle` (2 s by default)
+  gives the deletes time to land, and C = 40 asking for exactly the cap is the rung most exposed
+  if they have not.
+- **The reference is C = 1 from the same ladder**, not the N = 1 of some earlier run, so the
+  comparison is within one sitting on one cluster.
+
 ## Sealed predictions
 
-`predictions.json`, sealed before the measured run, calibrated from an N = 2 trial on the same
-stack (`test:801`, `test:802`).
+One file per rung, each committed before that rung runs. `predictions.json` is not edited to add
+a rung; this follows E15, which keeps `predictions.json` and `predictions-metal.json` side by side.
+
+| Rung | Predictions | Sealed from |
+|---|---|---|
+| N = 10 | [`predictions.json`](predictions.json) | an N = 2 trial on the same stack |
+| N = 100 | [`predictions-n100.json`](predictions-n100.json) | the N = 10 record |
+| C = 1…40 ladder | [`predictions-ladder.json`](predictions-ladder.json) | the N = 10 and N = 100 records |
