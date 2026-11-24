@@ -1,0 +1,93 @@
+{
+  "status": "SEALED",
+  "sealed": true,
+  "spec": "e19/SPEC.md v0.1",
+  "section": "Pass and fail criteria",
+  "recordedAt": "2026-11-24",
+  "note": "Sealed before the measured N=10 run. Bars are set from an N=2 trial on the same stack (test:801, test:802) with roughly 50% headroom on each per-operation p90, because N=2 cannot see queueing at one sbx-worker replica. Falsified predictions are reported, not rewritten.",
+  "calibration": {
+    "cluster": "OpenShift, namespace moca-sbx, profile sandbox, control plane main-3b53f15",
+    "workers": "1 sbx-worker replica",
+    "driver_host": "laptop over the public Route, macOS arm64",
+    "python": "cpython-3.14.10+freethreaded",
+    "n2_trial": {
+      "users": [801, 802],
+      "p50_ms": {
+        "login": 683,
+        "create": 803,
+        "run_id": 2158,
+        "run_uname": 2049,
+        "ls": 747,
+        "rm": 2429
+      },
+      "per_user_total_p50_ms": 8885,
+      "wall_ms": 8900,
+      "failures": 0
+    }
+  },
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "Every one of the 10 users completes all six operations with no failure.",
+      "metric": "users_failed",
+      "bar": 0,
+      "comparator": "=="
+    },
+    {
+      "id": "P2",
+      "claim": "login p90 stays under 1500 ms.",
+      "metric": "ops.login.p90_ms",
+      "bar": 1500,
+      "comparator": "<="
+    },
+    {
+      "id": "P3",
+      "claim": "create p90 stays under 2000 ms.",
+      "metric": "ops.create.p90_ms",
+      "bar": 2000,
+      "comparator": "<="
+    },
+    {
+      "id": "P4",
+      "claim": "run_id p90 stays under 4500 ms. This is the first command in a fresh sandbox and the one most exposed to contention at a single worker.",
+      "metric": "ops.run_id.p90_ms",
+      "bar": 4500,
+      "comparator": "<="
+    },
+    {
+      "id": "P5",
+      "claim": "run_uname p90 stays under 4000 ms, and its p50 is at or below run_id's: the second run in the same sandbox meets a warmer path.",
+      "metric": "ops.run_uname.p90_ms",
+      "bar": 4000,
+      "comparator": "<="
+    },
+    {
+      "id": "P6",
+      "claim": "ls p90 stays under 1500 ms.",
+      "metric": "ops.ls.p90_ms",
+      "bar": 1500,
+      "comparator": "<="
+    },
+    {
+      "id": "P7",
+      "claim": "rm p90 stays under 4500 ms.",
+      "metric": "ops.rm.p90_ms",
+      "bar": 4500,
+      "comparator": "<="
+    },
+    {
+      "id": "P8",
+      "claim": "Ten concurrent users cost far less than ten sequential ones: wall clock stays under 30000 ms, against roughly 89000 ms for the same work run one user after another at the N=2 per-user total.",
+      "metric": "wall_ms",
+      "bar": 30000,
+      "comparator": "<="
+    },
+    {
+      "id": "P9",
+      "claim": "The driver runs on a free-threaded interpreter, so the N threads are genuinely concurrent.",
+      "metric": "gil_enabled",
+      "bar": false,
+      "comparator": "=="
+    }
+  ]
+}
