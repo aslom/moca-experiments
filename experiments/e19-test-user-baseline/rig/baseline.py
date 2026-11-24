@@ -39,6 +39,7 @@ import contextlib
 import json
 import os
 import resource
+import shlex
 import ssl
 import statistics
 import subprocess
@@ -167,6 +168,56 @@ def write_sbx_auth(config_home: Path, url: str, login: dict) -> None:
     f = d / "sbx-auth.json"
     f.write_text(json.dumps(auth, indent=2) + "\n")
     f.chmod(0o600)
+
+
+class Tee:
+    """Write everything that goes to the terminal into a file as well.
+
+    The console carries things the JSON records do not: the per-level ordering, the calibration
+    lines, the health reasons, the verdict prose. Losing it to a closed terminal means the numbers
+    survive and the reading of them does not. Line-buffered, so a run that is killed half way
+    still leaves a usable log.
+
+    stdout and stderr both go to the one file, in the order they were written, so the log is what
+    the terminal showed rather than a reordered reconstruction.
+    """
+
+    def __init__(self, stream, handle) -> None:
+        self._stream = stream
+        self._handle = handle
+
+    def write(self, data: str) -> int:
+        self._stream.write(data)
+        self._handle.write(data)
+        return len(data)
+
+    def flush(self) -> None:
+        self._stream.flush()
+        self._handle.flush()
+
+    def isatty(self) -> bool:
+        return self._stream.isatty()
+
+    def fileno(self) -> int:
+        return self._stream.fileno()
+
+
+@contextlib.contextmanager
+def tee_console(out_dir: str, name: str = "console.txt"):
+    """Mirror stdout and stderr into `out_dir/name` for the duration of the block."""
+    if not out_dir:
+        yield None
+        return
+    path = Path(out_dir)
+    path.mkdir(parents=True, exist_ok=True)
+    f = (path / name).open("w", buffering=1, encoding="utf-8")
+    saved_out, saved_err = sys.stdout, sys.stderr
+    sys.stdout, sys.stderr = Tee(saved_out, f), Tee(saved_err, f)
+    try:
+        yield path / name
+    finally:
+        sys.stdout, sys.stderr = saved_out, saved_err
+        f.close()
 
 
 class HostHealth:
@@ -1347,5 +1398,34 @@ def print_ladder_verdict(rungs: list[dict]) -> None:
         print("     NO level was trustworthy: every rung shows a client-side limit")
 
 
+def out_dir_from_argv(argv: list[str]) -> str:
+    """`--out`'s value, read straight from argv.
+
+    The console log has to be open before the first line is printed, and the first line is printed
+    inside `main()` after `parse_args`. Rather than restructure `main` around that, --out is read
+    here: the duplication is two lines and it is the only way the log can be complete.
+    """
+    for i, a in enumerate(argv):
+        if a == "--out" and i + 1 < len(argv):
+            return argv[i + 1]
+        if a.startswith("--out="):
+            return a.split("=", 1)[1]
+    return ""
+
+
+def _entry() -> int:
+    with tee_console(out_dir_from_argv(sys.argv[1:])) as logpath:
+        if logpath:
+            # Printed, not just written, so the file stays an exact copy of the terminal.
+            print(f"# {time.strftime('%Y-%m-%dT%H:%M:%S%z')}  e19 baseline.py")
+            print(f"# command: {' '.join(shlex.quote(a) for a in sys.argv)}")
+            print(f"# cwd: {os.getcwd()}")
+            print()
+        rc = main()
+        if logpath:
+            print(f"\nconsole log: {logpath}")
+        return rc
+
+
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(_entry())
