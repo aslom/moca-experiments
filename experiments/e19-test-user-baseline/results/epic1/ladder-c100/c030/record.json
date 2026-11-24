@@ -1,0 +1,1682 @@
+{
+  "users": [
+    {
+      "user": 1,
+      "subject": "test:1",
+      "sandbox_name": "tu1",
+      "ok": true,
+      "total_ms": 12173.248459002934,
+      "ops": [
+        {
+          "user": 1,
+          "op": "login",
+          "ms": 545.0640410417691,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "create",
+          "ms": 758.1999159883708,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "run_sleep_a",
+          "ms": 4404.822749958839,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "run_sleep_b",
+          "ms": 3441.2648750003427,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "ls",
+          "ms": 682.7962079551071,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "rm",
+          "ms": 2340.2447080006823,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 2,
+      "subject": "test:2",
+      "sandbox_name": "tu2",
+      "ok": true,
+      "total_ms": 12147.26229099324,
+      "ops": [
+        {
+          "user": 2,
+          "op": "login",
+          "ms": 545.8177080145106,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "create",
+          "ms": 758.6781660211273,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "run_sleep_a",
+          "ms": 4364.4353749696165,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "run_sleep_b",
+          "ms": 3459.240707976278,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "ls",
+          "ms": 690.2832919731736,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "rm",
+          "ms": 2328.317084000446,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 3,
+      "subject": "test:3",
+      "sandbox_name": "tu3",
+      "ok": true,
+      "total_ms": 12284.454584005289,
+      "ops": [
+        {
+          "user": 3,
+          "op": "login",
+          "ms": 540.1185840019025,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "create",
+          "ms": 764.8062910302542,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "run_sleep_a",
+          "ms": 4507.271000009496,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "run_sleep_b",
+          "ms": 3468.0040840175934,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "ls",
+          "ms": 675.8112499956042,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "rm",
+          "ms": 2327.902416989673,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 4,
+      "subject": "test:4",
+      "sandbox_name": "tu4",
+      "ok": true,
+      "total_ms": 12299.905916966964,
+      "ops": [
+        {
+          "user": 4,
+          "op": "login",
+          "ms": 537.9022079869173,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "create",
+          "ms": 765.1585830026306,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "run_sleep_a",
+          "ms": 4540.3665420017205,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "run_sleep_b",
+          "ms": 3473.9922920125537,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "ls",
+          "ms": 670.5674999975599,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "rm",
+          "ms": 2311.264832969755,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 5,
+      "subject": "test:5",
+      "sandbox_name": "tu5",
+      "ok": true,
+      "total_ms": 13139.282041986007,
+      "ops": [
+        {
+          "user": 5,
+          "op": "login",
+          "ms": 539.6127079729922,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "create",
+          "ms": 798.2640420086682,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "run_sleep_a",
+          "ms": 4839.181624993216,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "run_sleep_b",
+          "ms": 3957.3705419898033,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "ls",
+          "ms": 676.913000002969,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "rm",
+          "ms": 2327.413334045559,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 6,
+      "subject": "test:6",
+      "sandbox_name": "tu6",
+      "ok": true,
+      "total_ms": 12374.88445796771,
+      "ops": [
+        {
+          "user": 6,
+          "op": "login",
+          "ms": 534.9844999727793,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "create",
+          "ms": 763.2986669777893,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "run_sleep_a",
+          "ms": 4638.181832968257,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "run_sleep_b",
+          "ms": 3459.028584009502,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "ls",
+          "ms": 667.3237499780953,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "rm",
+          "ms": 2311.6197919589467,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 7,
+      "subject": "test:7",
+      "sandbox_name": "tu7",
+      "ok": true,
+      "total_ms": 12874.950291996356,
+      "ops": [
+        {
+          "user": 7,
+          "op": "login",
+          "ms": 538.6669160216115,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "create",
+          "ms": 761.3159169559367,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "run_sleep_a",
+          "ms": 4804.930999991484,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "run_sleep_b",
+          "ms": 3753.3234170405194,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "ls",
+          "ms": 673.9405000116676,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "rm",
+          "ms": 2342.3025420052,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 8,
+      "subject": "test:8",
+      "sandbox_name": "tu8",
+      "ok": true,
+      "total_ms": 13248.66074998863,
+      "ops": [
+        {
+          "user": 8,
+          "op": "login",
+          "ms": 540.3766249655746,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "create",
+          "ms": 767.896999954246,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "run_sleep_a",
+          "ms": 4847.90112497285,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "run_sleep_b",
+          "ms": 4091.128457977902,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "ls",
+          "ms": 668.9233329962008,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "rm",
+          "ms": 2331.8387920153327,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 9,
+      "subject": "test:9",
+      "sandbox_name": "tu9",
+      "ok": true,
+      "total_ms": 13875.500458001625,
+      "ops": [
+        {
+          "user": 9,
+          "op": "login",
+          "ms": 538.7029999983497,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "create",
+          "ms": 768.8230840140022,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "run_sleep_a",
+          "ms": 4834.138917038217,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "run_sleep_b",
+          "ms": 4671.345292008482,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "ls",
+          "ms": 707.854958018288,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "rm",
+          "ms": 2353.977833990939,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 10,
+      "subject": "test:10",
+      "sandbox_name": "tu10",
+      "ok": true,
+      "total_ms": 13785.885417019017,
+      "ops": [
+        {
+          "user": 10,
+          "op": "login",
+          "ms": 541.9221249758266,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "create",
+          "ms": 761.4739590208046,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "run_sleep_a",
+          "ms": 4829.680584021844,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "run_sleep_b",
+          "ms": 4607.3910419945605,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "ls",
+          "ms": 697.4253339576535,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "rm",
+          "ms": 2347.534833010286,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 11,
+      "subject": "test:11",
+      "sandbox_name": "tu11",
+      "ok": true,
+      "total_ms": 13756.759166019037,
+      "ops": [
+        {
+          "user": 11,
+          "op": "login",
+          "ms": 534.817416977603,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "create",
+          "ms": 767.8372919908725,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "run_sleep_a",
+          "ms": 4813.5989580187015,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "run_sleep_b",
+          "ms": 4602.017999975942,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "ls",
+          "ms": 698.4528749599122,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "rm",
+          "ms": 2339.5678749657236,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 12,
+      "subject": "test:12",
+      "sandbox_name": "tu12",
+      "ok": true,
+      "total_ms": 13808.326667000074,
+      "ops": [
+        {
+          "user": 12,
+          "op": "login",
+          "ms": 539.9847500375472,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "create",
+          "ms": 758.1816660240293,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "run_sleep_a",
+          "ms": 4814.986916957423,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "run_sleep_b",
+          "ms": 4650.271541031543,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "ls",
+          "ms": 712.7497080364265,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "rm",
+          "ms": 2331.4529169583693,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 13,
+      "subject": "test:13",
+      "sandbox_name": "tu13",
+      "ok": true,
+      "total_ms": 13837.194124993403,
+      "ops": [
+        {
+          "user": 13,
+          "op": "login",
+          "ms": 542.332915996667,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "create",
+          "ms": 780.0867919577286,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "run_sleep_a",
+          "ms": 4789.597666007467,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "run_sleep_b",
+          "ms": 4650.222499971278,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "ls",
+          "ms": 711.1946659861133,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "rm",
+          "ms": 2363.177708000876,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 14,
+      "subject": "test:14",
+      "sandbox_name": "tu14",
+      "ok": true,
+      "total_ms": 13556.887167040259,
+      "ops": [
+        {
+          "user": 14,
+          "op": "login",
+          "ms": 541.5044580004178,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "create",
+          "ms": 778.7674579885788,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "run_sleep_a",
+          "ms": 4780.039375007618,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "run_sleep_b",
+          "ms": 4406.872791994829,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "ls",
+          "ms": 683.8854170055129,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "rm",
+          "ms": 2364.942541986238,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 15,
+      "subject": "test:15",
+      "sandbox_name": "tu15",
+      "ok": true,
+      "total_ms": 15178.92945901258,
+      "ops": [
+        {
+          "user": 15,
+          "op": "login",
+          "ms": 542.2617089934647,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "create",
+          "ms": 800.1775840530172,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "run_sleep_a",
+          "ms": 6984.703249996528,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "run_sleep_b",
+          "ms": 3800.723708991427,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "ls",
+          "ms": 679.6579170040786,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "rm",
+          "ms": 2370.7947080256417,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 16,
+      "subject": "test:16",
+      "sandbox_name": "tu16",
+      "ok": true,
+      "total_ms": 13517.272166034672,
+      "ops": [
+        {
+          "user": 16,
+          "op": "login",
+          "ms": 539.1294580185786,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "create",
+          "ms": 781.5800000098534,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "run_sleep_a",
+          "ms": 4773.663666041102,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "run_sleep_b",
+          "ms": 4393.077416985761,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "ls",
+          "ms": 678.5781669896096,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "rm",
+          "ms": 2350.6279590073973,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 17,
+      "subject": "test:17",
+      "sandbox_name": "tu17",
+      "ok": true,
+      "total_ms": 14030.914083996322,
+      "ops": [
+        {
+          "user": 17,
+          "op": "login",
+          "ms": 542.3303749994375,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "create",
+          "ms": 786.9752499973401,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "run_sleep_a",
+          "ms": 5442.017916997429,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "run_sleep_b",
+          "ms": 4219.230999995489,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "ls",
+          "ms": 688.4677080088295,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "rm",
+          "ms": 2351.2563750264235,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 18,
+      "subject": "test:18",
+      "sandbox_name": "tu18",
+      "ok": true,
+      "total_ms": 13749.73504099762,
+      "ops": [
+        {
+          "user": 18,
+          "op": "login",
+          "ms": 536.8252500193194,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "create",
+          "ms": 789.2816659878008,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "run_sleep_a",
+          "ms": 4765.013249998447,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "run_sleep_b",
+          "ms": 4610.76441698242,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "ls",
+          "ms": 709.2010420165025,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "rm",
+          "ms": 2337.9162499913946,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 19,
+      "subject": "test:19",
+      "sandbox_name": "tu19",
+      "ok": true,
+      "total_ms": 14589.683083002456,
+      "ops": [
+        {
+          "user": 19,
+          "op": "login",
+          "ms": 540.5602499959059,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "create",
+          "ms": 792.3439160222188,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "run_sleep_a",
+          "ms": 6824.156832997687,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "run_sleep_b",
+          "ms": 3384.0616249945015,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "ls",
+          "ms": 682.0761249982752,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "rm",
+          "ms": 2365.6732499948703,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 20,
+      "subject": "test:20",
+      "sandbox_name": "tu20",
+      "ok": true,
+      "total_ms": 15301.901541010011,
+      "ops": [
+        {
+          "user": 20,
+          "op": "login",
+          "ms": 541.4248330052942,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "create",
+          "ms": 768.1435419945046,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "run_sleep_a",
+          "ms": 6954.034624970518,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "run_sleep_b",
+          "ms": 3963.903790980112,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "ls",
+          "ms": 698.845041973982,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "rm",
+          "ms": 2374.7498330194503,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 21,
+      "subject": "test:21",
+      "sandbox_name": "tu21",
+      "ok": true,
+      "total_ms": 14055.726833001245,
+      "ops": [
+        {
+          "user": 21,
+          "op": "login",
+          "ms": 539.2436670372263,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "create",
+          "ms": 780.6951249949634,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "run_sleep_a",
+          "ms": 5680.83112500608,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "run_sleep_b",
+          "ms": 4009.3293330282904,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "ls",
+          "ms": 692.8306249901652,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "rm",
+          "ms": 2351.9142090226524,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 22,
+      "subject": "test:22",
+      "sandbox_name": "tu22",
+      "ok": true,
+      "total_ms": 14078.487083024811,
+      "ops": [
+        {
+          "user": 22,
+          "op": "login",
+          "ms": 544.1690839943476,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "create",
+          "ms": 772.756082995329,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "run_sleep_a",
+          "ms": 5955.06812504027,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "run_sleep_b",
+          "ms": 3751.6222090343945,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "ls",
+          "ms": 695.8625839906745,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "rm",
+          "ms": 2358.045959030278,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 23,
+      "subject": "test:23",
+      "sandbox_name": "tu23",
+      "ok": true,
+      "total_ms": 14108.188041951507,
+      "ops": [
+        {
+          "user": 23,
+          "op": "login",
+          "ms": 539.5687500131316,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "create",
+          "ms": 811.2879580003209,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "run_sleep_a",
+          "ms": 6309.821792005096,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "run_sleep_b",
+          "ms": 3431.808750028722,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "ls",
+          "ms": 690.2805420104414,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "rm",
+          "ms": 2324.3467090069316,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 24,
+      "subject": "test:24",
+      "sandbox_name": "tu24",
+      "ok": true,
+      "total_ms": 14540.821874979883,
+      "ops": [
+        {
+          "user": 24,
+          "op": "login",
+          "ms": 543.4277080348693,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "create",
+          "ms": 783.287875005044,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "run_sleep_a",
+          "ms": 6783.575874986127,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "run_sleep_b",
+          "ms": 3381.833875027951,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "ls",
+          "ms": 676.176208013203,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "rm",
+          "ms": 2371.7069580452517,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 25,
+      "subject": "test:25",
+      "sandbox_name": "tu25",
+      "ok": true,
+      "total_ms": 13945.063708990347,
+      "ops": [
+        {
+          "user": 25,
+          "op": "login",
+          "ms": 544.3900829995982,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "create",
+          "ms": 813.0415410269052,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "run_sleep_a",
+          "ms": 5389.10308398772,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "run_sleep_b",
+          "ms": 4162.239458994009,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "ls",
+          "ms": 683.8359999819659,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "rm",
+          "ms": 2351.872041996103,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 26,
+      "subject": "test:26",
+      "sandbox_name": "tu26",
+      "ok": false,
+      "total_ms": 1412.2478750068694,
+      "ops": [
+        {
+          "user": 26,
+          "op": "login",
+          "ms": 540.6321249902248,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 26,
+          "op": "create",
+          "ms": 871.0561670013703,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 27,
+      "subject": "test:27",
+      "sandbox_name": "tu27",
+      "ok": true,
+      "total_ms": 15229.911665956024,
+      "ops": [
+        {
+          "user": 27,
+          "op": "login",
+          "ms": 536.4765409613028,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "create",
+          "ms": 846.5018749702722,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "run_sleep_a",
+          "ms": 6809.614833036903,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "run_sleep_b",
+          "ms": 3964.099458011333,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "ls",
+          "ms": 707.6710420078598,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "rm",
+          "ms": 2364.9268749868497,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 28,
+      "subject": "test:28",
+      "sandbox_name": "tu28",
+      "ok": true,
+      "total_ms": 15192.784791986924,
+      "ops": [
+        {
+          "user": 28,
+          "op": "login",
+          "ms": 539.7188750212081,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "create",
+          "ms": 808.0537079949863,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "run_sleep_a",
+          "ms": 6831.172542006243,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "run_sleep_b",
+          "ms": 3940.369665971957,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "ls",
+          "ms": 710.1682919892482,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "rm",
+          "ms": 2362.6733329729177,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 29,
+      "subject": "test:29",
+      "sandbox_name": "tu29",
+      "ok": true,
+      "total_ms": 14664.583916019183,
+      "ops": [
+        {
+          "user": 29,
+          "op": "login",
+          "ms": 545.5531250336207,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "create",
+          "ms": 829.4413749827072,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "run_sleep_a",
+          "ms": 6760.859374946449,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "run_sleep_b",
+          "ms": 3497.8277910267934,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "ls",
+          "ms": 697.5120839779265,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "rm",
+          "ms": 2332.7762500266545,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 30,
+      "subject": "test:30",
+      "sandbox_name": "tu30",
+      "ok": true,
+      "total_ms": 14981.567249982618,
+      "ops": [
+        {
+          "user": 30,
+          "op": "login",
+          "ms": 540.6950830365531,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "create",
+          "ms": 795.0154999853112,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "run_sleep_a",
+          "ms": 6802.941958012525,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "run_sleep_b",
+          "ms": 3802.6561670121737,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "ls",
+          "ms": 677.0285840029828,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "rm",
+          "ms": 2362.396875047125,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    }
+  ]
+}

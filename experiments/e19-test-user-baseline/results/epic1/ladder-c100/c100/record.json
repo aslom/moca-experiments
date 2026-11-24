@@ -1,0 +1,3432 @@
+{
+  "users": [
+    {
+      "user": 1,
+      "subject": "test:1",
+      "sandbox_name": "tu1",
+      "ok": true,
+      "total_ms": 13944.366958981846,
+      "ops": [
+        {
+          "user": 1,
+          "op": "login",
+          "ms": 537.4817500123754,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "create",
+          "ms": 850.3972500329837,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "run_sleep_a",
+          "ms": 5172.401957970578,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "run_sleep_b",
+          "ms": 4313.243416952901,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "ls",
+          "ms": 694.9632089817896,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 1,
+          "op": "rm",
+          "ms": 2375.2997089759447,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 2,
+      "subject": "test:2",
+      "sandbox_name": "tu2",
+      "ok": true,
+      "total_ms": 11926.282625005115,
+      "ops": [
+        {
+          "user": 2,
+          "op": "login",
+          "ms": 537.3252090066671,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "create",
+          "ms": 819.7846249677241,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "run_sleep_a",
+          "ms": 4202.997291984502,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "run_sleep_b",
+          "ms": 3342.114625032991,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "ls",
+          "ms": 686.8793329922482,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 2,
+          "op": "rm",
+          "ms": 2336.077124986332,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 3,
+      "subject": "test:3",
+      "sandbox_name": "tu3",
+      "ok": true,
+      "total_ms": 12347.23870799644,
+      "ops": [
+        {
+          "user": 3,
+          "op": "login",
+          "ms": 540.8184999832883,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "create",
+          "ms": 835.4210839606822,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "run_sleep_a",
+          "ms": 4391.057000029832,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "run_sleep_b",
+          "ms": 3534.4570000306703,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "ls",
+          "ms": 693.3325830032118,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 3,
+          "op": "rm",
+          "ms": 2351.408583985176,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 4,
+      "subject": "test:4",
+      "sandbox_name": "tu4",
+      "ok": true,
+      "total_ms": 12320.637459051795,
+      "ops": [
+        {
+          "user": 4,
+          "op": "login",
+          "ms": 542.2846670262516,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "create",
+          "ms": 851.6339579946361,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "run_sleep_a",
+          "ms": 4370.461417012848,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "run_sleep_b",
+          "ms": 3543.592166970484,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "ls",
+          "ms": 680.40883296635,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 4,
+          "op": "rm",
+          "ms": 2331.703750009183,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 5,
+      "subject": "test:5",
+      "sandbox_name": "tu5",
+      "ok": true,
+      "total_ms": 11869.89137501223,
+      "ops": [
+        {
+          "user": 5,
+          "op": "login",
+          "ms": 539.6939169731922,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "create",
+          "ms": 871.5165000176057,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "run_sleep_a",
+          "ms": 4103.374083992094,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "run_sleep_b",
+          "ms": 3330.7305420166813,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "ls",
+          "ms": 699.86070797313,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 5,
+          "op": "rm",
+          "ms": 2324.2676249938086,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 6,
+      "subject": "test:6",
+      "sandbox_name": "tu6",
+      "ok": true,
+      "total_ms": 12224.825707962736,
+      "ops": [
+        {
+          "user": 6,
+          "op": "login",
+          "ms": 539.196334022563,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "create",
+          "ms": 835.5685829883441,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "run_sleep_a",
+          "ms": 4364.426459011156,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "run_sleep_b",
+          "ms": 3493.479583004955,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "ls",
+          "ms": 684.3006660346873,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 6,
+          "op": "rm",
+          "ms": 2307.219707989134,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 7,
+      "subject": "test:7",
+      "sandbox_name": "tu7",
+      "ok": true,
+      "total_ms": 13460.924874991179,
+      "ops": [
+        {
+          "user": 7,
+          "op": "login",
+          "ms": 535.9540419885889,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "create",
+          "ms": 862.5518750050105,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "run_sleep_a",
+          "ms": 4926.210334000643,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "run_sleep_b",
+          "ms": 4118.588417011779,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "ls",
+          "ms": 690.8668749965727,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 7,
+          "op": "rm",
+          "ms": 2326.232124993112,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 8,
+      "subject": "test:8",
+      "sandbox_name": "tu8",
+      "ok": true,
+      "total_ms": 12702.73320900742,
+      "ops": [
+        {
+          "user": 8,
+          "op": "login",
+          "ms": 537.7327079768293,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "create",
+          "ms": 875.3943750052713,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "run_sleep_a",
+          "ms": 4598.546666966286,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "run_sleep_b",
+          "ms": 3674.386291007977,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "ls",
+          "ms": 688.7480409932323,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 8,
+          "op": "rm",
+          "ms": 2327.1787079866044,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 9,
+      "subject": "test:9",
+      "sandbox_name": "tu9",
+      "ok": true,
+      "total_ms": 12783.559500006959,
+      "ops": [
+        {
+          "user": 9,
+          "op": "login",
+          "ms": 535.8842920395546,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "create",
+          "ms": 885.090499999933,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "run_sleep_a",
+          "ms": 4628.798458026722,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "run_sleep_b",
+          "ms": 3747.192749986425,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "ls",
+          "ms": 672.6095839985646,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 9,
+          "op": "rm",
+          "ms": 2313.313582970295,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 10,
+      "subject": "test:10",
+      "sandbox_name": "tu10",
+      "ok": true,
+      "total_ms": 15236.50075000478,
+      "ops": [
+        {
+          "user": 10,
+          "op": "login",
+          "ms": 537.0032080099918,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "create",
+          "ms": 885.4099999880418,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "run_sleep_a",
+          "ms": 6835.797958949115,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "run_sleep_b",
+          "ms": 3912.8169589675963,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "ls",
+          "ms": 686.0143749509007,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 10,
+          "op": "rm",
+          "ms": 2378.8715000264347,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 11,
+      "subject": "test:11",
+      "sandbox_name": "tu11",
+      "ok": true,
+      "total_ms": 15006.410665984731,
+      "ops": [
+        {
+          "user": 11,
+          "op": "login",
+          "ms": 578.6277079605497,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "create",
+          "ms": 936.2276250030845,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "run_sleep_a",
+          "ms": 6679.2925000190735,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "run_sleep_b",
+          "ms": 3762.573792017065,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "ls",
+          "ms": 695.2886249637231,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 11,
+          "op": "rm",
+          "ms": 2353.5586670041084,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 12,
+      "subject": "test:12",
+      "sandbox_name": "tu12",
+      "ok": true,
+      "total_ms": 14872.382875008043,
+      "ops": [
+        {
+          "user": 12,
+          "op": "login",
+          "ms": 566.0309579689056,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "create",
+          "ms": 976.8295829999261,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "run_sleep_a",
+          "ms": 6618.169708002824,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "run_sleep_b",
+          "ms": 3650.078125006985,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "ls",
+          "ms": 692.265082965605,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 12,
+          "op": "rm",
+          "ms": 2368.1244580075145,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 13,
+      "subject": "test:13",
+      "sandbox_name": "tu13",
+      "ok": true,
+      "total_ms": 14280.186374962796,
+      "ops": [
+        {
+          "user": 13,
+          "op": "login",
+          "ms": 553.4641669946723,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "create",
+          "ms": 1000.9298340301029,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "run_sleep_a",
+          "ms": 5506.122790975496,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "run_sleep_b",
+          "ms": 4139.424541965127,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "ls",
+          "ms": 696.0756659973413,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 13,
+          "op": "rm",
+          "ms": 2383.392999996431,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 14,
+      "subject": "test:14",
+      "sandbox_name": "tu14",
+      "ok": true,
+      "total_ms": 14887.685124995187,
+      "ops": [
+        {
+          "user": 14,
+          "op": "login",
+          "ms": 541.5572499623522,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "create",
+          "ms": 853.6285830195993,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "run_sleep_a",
+          "ms": 6723.181084031239,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "run_sleep_b",
+          "ms": 3701.8783329986036,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "ls",
+          "ms": 691.3298750296235,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 14,
+          "op": "rm",
+          "ms": 2369.120459014084,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 15,
+      "subject": "test:15",
+      "sandbox_name": "tu15",
+      "ok": true,
+      "total_ms": 13790.58387503028,
+      "ops": [
+        {
+          "user": 15,
+          "op": "login",
+          "ms": 535.9703750000335,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "create",
+          "ms": 931.1700420221314,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "run_sleep_a",
+          "ms": 4953.35658401018,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "run_sleep_b",
+          "ms": 4322.7605420397595,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "ls",
+          "ms": 690.8471250208095,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 15,
+          "op": "rm",
+          "ms": 2355.834916001186,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 16,
+      "subject": "test:16",
+      "sandbox_name": "tu16",
+      "ok": true,
+      "total_ms": 13415.76562501723,
+      "ops": [
+        {
+          "user": 16,
+          "op": "login",
+          "ms": 550.3150830045342,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "create",
+          "ms": 871.6556250001304,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "run_sleep_a",
+          "ms": 4822.402584017254,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "run_sleep_b",
+          "ms": 4178.771083010361,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "ls",
+          "ms": 680.444500001613,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 16,
+          "op": "rm",
+          "ms": 2311.626125010662,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 17,
+      "subject": "test:17",
+      "sandbox_name": "tu17",
+      "ok": true,
+      "total_ms": 13920.327625004575,
+      "ops": [
+        {
+          "user": 17,
+          "op": "login",
+          "ms": 545.0755420024507,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "create",
+          "ms": 973.337667004671,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "run_sleep_a",
+          "ms": 5115.06429198198,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "run_sleep_b",
+          "ms": 4279.07274995232,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "ls",
+          "ms": 675.2305830013938,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 17,
+          "op": "rm",
+          "ms": 2331.6581250401214,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 18,
+      "subject": "test:18",
+      "sandbox_name": "tu18",
+      "ok": true,
+      "total_ms": 12940.123666019645,
+      "ops": [
+        {
+          "user": 18,
+          "op": "login",
+          "ms": 542.1198750264011,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "create",
+          "ms": 860.0768750184216,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "run_sleep_a",
+          "ms": 4643.203624989837,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "run_sleep_b",
+          "ms": 3886.400584015064,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "ls",
+          "ms": 671.9192499876954,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 18,
+          "op": "rm",
+          "ms": 2331.513957993593,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 19,
+      "subject": "test:19",
+      "sandbox_name": "tu19",
+      "ok": true,
+      "total_ms": 13751.773457974195,
+      "ops": [
+        {
+          "user": 19,
+          "op": "login",
+          "ms": 541.1738340044394,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "create",
+          "ms": 821.2888330454007,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "run_sleep_a",
+          "ms": 4989.510416984558,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "run_sleep_b",
+          "ms": 4332.816332986113,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "ls",
+          "ms": 696.1359159904532,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 19,
+          "op": "rm",
+          "ms": 2363.3198749739677,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 20,
+      "subject": "test:20",
+      "sandbox_name": "tu20",
+      "ok": true,
+      "total_ms": 13315.75387500925,
+      "ops": [
+        {
+          "user": 20,
+          "op": "login",
+          "ms": 540.2865839423612,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "create",
+          "ms": 949.7100840089843,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "run_sleep_a",
+          "ms": 4678.768916986883,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "run_sleep_b",
+          "ms": 4124.143583001569,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "ls",
+          "ms": 686.2071250216104,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 20,
+          "op": "rm",
+          "ms": 2335.9168339520693,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 21,
+      "subject": "test:21",
+      "sandbox_name": "tu21",
+      "ok": true,
+      "total_ms": 13686.6165829706,
+      "ops": [
+        {
+          "user": 21,
+          "op": "login",
+          "ms": 538.5040419641882,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "create",
+          "ms": 953.3964999718592,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "run_sleep_a",
+          "ms": 4793.729875003919,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "run_sleep_b",
+          "ms": 4341.271834040526,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "ls",
+          "ms": 693.2564999442548,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 21,
+          "op": "rm",
+          "ms": 2365.6095839687623,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 22,
+      "subject": "test:22",
+      "sandbox_name": "tu22",
+      "ok": true,
+      "total_ms": 14257.615042035468,
+      "ops": [
+        {
+          "user": 22,
+          "op": "login",
+          "ms": 540.8604579861276,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "create",
+          "ms": 961.7137080058455,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "run_sleep_a",
+          "ms": 5957.222957978956,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "run_sleep_b",
+          "ms": 3773.237292014528,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "ls",
+          "ms": 684.3007910065353,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 22,
+          "op": "rm",
+          "ms": 2339.644459018018,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 23,
+      "subject": "test:23",
+      "sandbox_name": "tu23",
+      "ok": true,
+      "total_ms": 15083.005749969743,
+      "ops": [
+        {
+          "user": 23,
+          "op": "login",
+          "ms": 539.8980840109289,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "create",
+          "ms": 930.9158340329304,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "run_sleep_a",
+          "ms": 6619.08004200086,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "run_sleep_b",
+          "ms": 3928.2705830410123,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "ls",
+          "ms": 690.9321250277571,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 23,
+          "op": "rm",
+          "ms": 2372.1862499951385,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 24,
+      "subject": "test:24",
+      "sandbox_name": "tu24",
+      "ok": true,
+      "total_ms": 14153.874166018795,
+      "ops": [
+        {
+          "user": 24,
+          "op": "login",
+          "ms": 539.8336250218563,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "create",
+          "ms": 931.034000008367,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "run_sleep_a",
+          "ms": 5499.229624983855,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "run_sleep_b",
+          "ms": 4103.960416978225,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "ls",
+          "ms": 691.2323330179788,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 24,
+          "op": "rm",
+          "ms": 2388.108499988448,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 25,
+      "subject": "test:25",
+      "sandbox_name": "tu25",
+      "ok": true,
+      "total_ms": 14110.81916600233,
+      "ops": [
+        {
+          "user": 25,
+          "op": "login",
+          "ms": 597.3242089967243,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "create",
+          "ms": 888.9435409801081,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "run_sleep_a",
+          "ms": 5479.7145840129815,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "run_sleep_b",
+          "ms": 4095.5425409483723,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "ls",
+          "ms": 689.6732499590144,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 25,
+          "op": "rm",
+          "ms": 2358.914292010013,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 26,
+      "subject": "test:26",
+      "sandbox_name": "tu26",
+      "ok": false,
+      "total_ms": 1482.555540977046,
+      "ops": [
+        {
+          "user": 26,
+          "op": "login",
+          "ms": 593.4861249988899,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 26,
+          "op": "create",
+          "ms": 888.4610420209356,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 27,
+      "subject": "test:27",
+      "sandbox_name": "tu27",
+      "ok": true,
+      "total_ms": 13596.85349999927,
+      "ops": [
+        {
+          "user": 27,
+          "op": "login",
+          "ms": 580.844874959439,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "create",
+          "ms": 872.1558329998516,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "run_sleep_a",
+          "ms": 4769.6818329859525,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "run_sleep_b",
+          "ms": 4321.882791002281,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "ls",
+          "ms": 691.3090419839136,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 27,
+          "op": "rm",
+          "ms": 2360.3014170075767,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 28,
+      "subject": "test:28",
+      "sandbox_name": "tu28",
+      "ok": true,
+      "total_ms": 14268.818959011696,
+      "ops": [
+        {
+          "user": 28,
+          "op": "login",
+          "ms": 576.1971660540439,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "create",
+          "ms": 901.7831250093877,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "run_sleep_a",
+          "ms": 6026.802750013303,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "run_sleep_b",
+          "ms": 3699.690749985166,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "ls",
+          "ms": 702.2369159967639,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 28,
+          "op": "rm",
+          "ms": 2357.141499989666,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 29,
+      "subject": "test:29",
+      "sandbox_name": "tu29",
+      "ok": true,
+      "total_ms": 13803.353291994426,
+      "ops": [
+        {
+          "user": 29,
+          "op": "login",
+          "ms": 562.9228330217302,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "create",
+          "ms": 898.5530840000138,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "run_sleep_a",
+          "ms": 5048.951042001136,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "run_sleep_b",
+          "ms": 4279.923957947176,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "ls",
+          "ms": 686.1710409866646,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 29,
+          "op": "rm",
+          "ms": 2326.2244579964317,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 30,
+      "subject": "test:30",
+      "sandbox_name": "tu30",
+      "ok": true,
+      "total_ms": 14345.421209000051,
+      "ops": [
+        {
+          "user": 30,
+          "op": "login",
+          "ms": 550.733832991682,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "create",
+          "ms": 890.157249988988,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "run_sleep_a",
+          "ms": 6267.010124982335,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "run_sleep_b",
+          "ms": 3563.9863749966025,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "ls",
+          "ms": 712.4872499844059,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "user": 30,
+          "op": "rm",
+          "ms": 2358.784249983728,
+          "ok": true,
+          "exit_code": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "user": 31,
+      "subject": "test:31",
+      "sandbox_name": "tu31",
+      "ok": false,
+      "total_ms": 1429.5359160169028,
+      "ops": [
+        {
+          "user": 31,
+          "op": "login",
+          "ms": 551.6919589717872,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 31,
+          "op": "create",
+          "ms": 875.8527919999324,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 32,
+      "subject": "test:32",
+      "sandbox_name": "tu32",
+      "ok": false,
+      "total_ms": 1413.750666019041,
+      "ops": [
+        {
+          "user": 32,
+          "op": "login",
+          "ms": 541.1544169764966,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 32,
+          "op": "create",
+          "ms": 872.0545830437914,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 33,
+      "subject": "test:33",
+      "sandbox_name": "tu33",
+      "ok": false,
+      "total_ms": 1396.0313749848865,
+      "ops": [
+        {
+          "user": 33,
+          "op": "login",
+          "ms": 541.9979160069488,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 33,
+          "op": "create",
+          "ms": 853.4873750177212,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 34,
+      "subject": "test:34",
+      "sandbox_name": "tu34",
+      "ok": false,
+      "total_ms": 1388.444291020278,
+      "ops": [
+        {
+          "user": 34,
+          "op": "login",
+          "ms": 539.7794999880716,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 34,
+          "op": "create",
+          "ms": 848.273292009253,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 35,
+      "subject": "test:35",
+      "sandbox_name": "tu35",
+      "ok": false,
+      "total_ms": 1354.2477909941226,
+      "ops": [
+        {
+          "user": 35,
+          "op": "login",
+          "ms": 544.5819580345415,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 35,
+          "op": "create",
+          "ms": 809.1703329700977,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 36,
+      "subject": "test:36",
+      "sandbox_name": "tu36",
+      "ok": false,
+      "total_ms": 1391.2401249981485,
+      "ops": [
+        {
+          "user": 36,
+          "op": "login",
+          "ms": 550.7500829990022,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 36,
+          "op": "create",
+          "ms": 839.9506249697879,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 37,
+      "subject": "test:37",
+      "sandbox_name": "tu37",
+      "ok": false,
+      "total_ms": 1380.5697920033708,
+      "ops": [
+        {
+          "user": 37,
+          "op": "login",
+          "ms": 545.826792018488,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 37,
+          "op": "create",
+          "ms": 833.8497499935329,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 38,
+      "subject": "test:38",
+      "sandbox_name": "tu38",
+      "ok": false,
+      "total_ms": 1361.0117079806514,
+      "ops": [
+        {
+          "user": 38,
+          "op": "login",
+          "ms": 544.1082090255804,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 38,
+          "op": "create",
+          "ms": 816.3500829832628,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 39,
+      "subject": "test:39",
+      "sandbox_name": "tu39",
+      "ok": false,
+      "total_ms": 1370.5419999896549,
+      "ops": [
+        {
+          "user": 39,
+          "op": "login",
+          "ms": 538.7439579935744,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 39,
+          "op": "create",
+          "ms": 831.0511670424603,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 40,
+      "subject": "test:40",
+      "sandbox_name": "tu40",
+      "ok": false,
+      "total_ms": 1363.3609999669716,
+      "ops": [
+        {
+          "user": 40,
+          "op": "login",
+          "ms": 539.3795829731971,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 40,
+          "op": "create",
+          "ms": 823.4255840070546,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 41,
+      "subject": "test:41",
+      "sandbox_name": "tu41",
+      "ok": false,
+      "total_ms": 1403.8972919806838,
+      "ops": [
+        {
+          "user": 41,
+          "op": "login",
+          "ms": 643.6251670238562,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 41,
+          "op": "create",
+          "ms": 759.7777079790831,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 42,
+      "subject": "test:42",
+      "sandbox_name": "tu42",
+      "ok": false,
+      "total_ms": 1427.4080420145765,
+      "ops": [
+        {
+          "user": 42,
+          "op": "login",
+          "ms": 633.2394999917597,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 42,
+          "op": "create",
+          "ms": 793.4325409587473,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 43,
+      "subject": "test:43",
+      "sandbox_name": "tu43",
+      "ok": false,
+      "total_ms": 1437.4484160216525,
+      "ops": [
+        {
+          "user": 43,
+          "op": "login",
+          "ms": 608.4862499847077,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 43,
+          "op": "create",
+          "ms": 827.1312920260243,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 44,
+      "subject": "test:44",
+      "sandbox_name": "tu44",
+      "ok": false,
+      "total_ms": 1382.9115420230664,
+      "ops": [
+        {
+          "user": 44,
+          "op": "login",
+          "ms": 595.691499998793,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 44,
+          "op": "create",
+          "ms": 786.6337909945287,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 45,
+      "subject": "test:45",
+      "sandbox_name": "tu45",
+      "ok": false,
+      "total_ms": 1400.7361250114627,
+      "ops": [
+        {
+          "user": 45,
+          "op": "login",
+          "ms": 597.9803749942221,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 45,
+          "op": "create",
+          "ms": 800.3284999867901,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 46,
+      "subject": "test:46",
+      "sandbox_name": "tu46",
+      "ok": false,
+      "total_ms": 1394.944207975641,
+      "ops": [
+        {
+          "user": 46,
+          "op": "login",
+          "ms": 582.0221669855528,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 46,
+          "op": "create",
+          "ms": 801.7145000048913,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 47,
+      "subject": "test:47",
+      "sandbox_name": "tu47",
+      "ok": false,
+      "total_ms": 1355.0907089957036,
+      "ops": [
+        {
+          "user": 47,
+          "op": "login",
+          "ms": 549.8491250327788,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 47,
+          "op": "create",
+          "ms": 804.1941249975935,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 48,
+      "subject": "test:48",
+      "sandbox_name": "tu48",
+      "ok": false,
+      "total_ms": 1352.6535419514403,
+      "ops": [
+        {
+          "user": 48,
+          "op": "login",
+          "ms": 559.7817079978995,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 48,
+          "op": "create",
+          "ms": 790.9749169484712,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 49,
+      "subject": "test:49",
+      "sandbox_name": "tu49",
+      "ok": false,
+      "total_ms": 1339.82404100243,
+      "ops": [
+        {
+          "user": 49,
+          "op": "login",
+          "ms": 547.1137079875916,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 49,
+          "op": "create",
+          "ms": 790.5439169844612,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 50,
+      "subject": "test:50",
+      "sandbox_name": "tu50",
+      "ok": false,
+      "total_ms": 1332.1862919838168,
+      "ops": [
+        {
+          "user": 50,
+          "op": "login",
+          "ms": 540.2924589579925,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 50,
+          "op": "create",
+          "ms": 789.1052920022048,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 51,
+      "subject": "test:51",
+      "sandbox_name": "tu51",
+      "ok": false,
+      "total_ms": 1313.8857500161976,
+      "ops": [
+        {
+          "user": 51,
+          "op": "login",
+          "ms": 546.3192919851281,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 51,
+          "op": "create",
+          "ms": 764.4337919773534,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 52,
+      "subject": "test:52",
+      "sandbox_name": "tu52",
+      "ok": false,
+      "total_ms": 1306.7740409751423,
+      "ops": [
+        {
+          "user": 52,
+          "op": "login",
+          "ms": 547.7428750018589,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 52,
+          "op": "create",
+          "ms": 758.4784170030616,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 53,
+      "subject": "test:53",
+      "sandbox_name": "tu53",
+      "ok": false,
+      "total_ms": 1562.2466670465656,
+      "ops": [
+        {
+          "user": 53,
+          "op": "login",
+          "ms": 690.5002919957042,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 53,
+          "op": "create",
+          "ms": 869.3930000299588,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 54,
+      "subject": "test:54",
+      "sandbox_name": "tu54",
+      "ok": false,
+      "total_ms": 1487.5730840140022,
+      "ops": [
+        {
+          "user": 54,
+          "op": "login",
+          "ms": 665.3620410361327,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 54,
+          "op": "create",
+          "ms": 821.0517080151476,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 55,
+      "subject": "test:55",
+      "sandbox_name": "tu55",
+      "ok": false,
+      "total_ms": 1470.3718750388362,
+      "ops": [
+        {
+          "user": 55,
+          "op": "login",
+          "ms": 652.9386249603704,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 55,
+          "op": "create",
+          "ms": 816.7746249819174,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 56,
+      "subject": "test:56",
+      "sandbox_name": "tu56",
+      "ok": false,
+      "total_ms": 1409.4631249899976,
+      "ops": [
+        {
+          "user": 56,
+          "op": "login",
+          "ms": 639.9490000330843,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 56,
+          "op": "create",
+          "ms": 768.8667500042357,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 57,
+      "subject": "test:57",
+      "sandbox_name": "tu57",
+      "ok": false,
+      "total_ms": 1440.918000007514,
+      "ops": [
+        {
+          "user": 57,
+          "op": "login",
+          "ms": 626.027833961416,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 57,
+          "op": "create",
+          "ms": 813.6684999917634,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 58,
+      "subject": "test:58",
+      "sandbox_name": "tu58",
+      "ok": false,
+      "total_ms": 1341.154458001256,
+      "ops": [
+        {
+          "user": 58,
+          "op": "login",
+          "ms": 584.8372919717804,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 58,
+          "op": "create",
+          "ms": 755.7819169596769,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 59,
+      "subject": "test:59",
+      "sandbox_name": "tu59",
+      "ok": false,
+      "total_ms": 1540.6104999710806,
+      "ops": [
+        {
+          "user": 59,
+          "op": "login",
+          "ms": 598.967875004746,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 59,
+          "op": "create",
+          "ms": 941.2005830090493,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 60,
+      "subject": "test:60",
+      "sandbox_name": "tu60",
+      "ok": false,
+      "total_ms": 1488.8833329896443,
+      "ops": [
+        {
+          "user": 60,
+          "op": "login",
+          "ms": 591.054417018313,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 60,
+          "op": "create",
+          "ms": 896.0175419924781,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 61,
+      "subject": "test:61",
+      "sandbox_name": "tu61",
+      "ok": false,
+      "total_ms": 1369.383791985456,
+      "ops": [
+        {
+          "user": 61,
+          "op": "login",
+          "ms": 544.8631250183098,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 61,
+          "op": "create",
+          "ms": 819.8653330327943,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 62,
+      "subject": "test:62",
+      "sandbox_name": "tu62",
+      "ok": false,
+      "total_ms": 1451.353000011295,
+      "ops": [
+        {
+          "user": 62,
+          "op": "login",
+          "ms": 543.4493750217371,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 62,
+          "op": "create",
+          "ms": 907.2937090531923,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 63,
+      "subject": "test:63",
+      "sandbox_name": "tu63",
+      "ok": false,
+      "total_ms": 1437.9490409628488,
+      "ops": [
+        {
+          "user": 63,
+          "op": "login",
+          "ms": 541.5445829858072,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 63,
+          "op": "create",
+          "ms": 895.8007910405286,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 64,
+      "subject": "test:64",
+      "sandbox_name": "tu64",
+      "ok": false,
+      "total_ms": 1790.128416963853,
+      "ops": [
+        {
+          "user": 64,
+          "op": "login",
+          "ms": 543.4194579720497,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 64,
+          "op": "create",
+          "ms": 1245.3045830479823,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 65,
+      "subject": "test:65",
+      "sandbox_name": "tu65",
+      "ok": false,
+      "total_ms": 1635.544040997047,
+      "ops": [
+        {
+          "user": 65,
+          "op": "login",
+          "ms": 620.8987910067663,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 65,
+          "op": "create",
+          "ms": 1008.9675830095075,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 66,
+      "subject": "test:66",
+      "sandbox_name": "tu66",
+      "ok": false,
+      "total_ms": 2161.4546250202693,
+      "ops": [
+        {
+          "user": 66,
+          "op": "login",
+          "ms": 607.0536670158617,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 66,
+          "op": "create",
+          "ms": 1552.9866669676267,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 67,
+      "subject": "test:67",
+      "sandbox_name": "tu67",
+      "ok": false,
+      "total_ms": 1509.8350829794072,
+      "ops": [
+        {
+          "user": 67,
+          "op": "login",
+          "ms": 605.5290829972364,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 67,
+          "op": "create",
+          "ms": 888.0524170235731,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 68,
+      "subject": "test:68",
+      "sandbox_name": "tu68",
+      "ok": false,
+      "total_ms": 1433.122334012296,
+      "ops": [
+        {
+          "user": 68,
+          "op": "login",
+          "ms": 573.9076250465587,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 68,
+          "op": "create",
+          "ms": 856.523958966136,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 69,
+      "subject": "test:69",
+      "sandbox_name": "tu69",
+      "ok": false,
+      "total_ms": 2240.2864579926245,
+      "ops": [
+        {
+          "user": 69,
+          "op": "login",
+          "ms": 599.4742089533247,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 69,
+          "op": "create",
+          "ms": 1640.2407080167904,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 70,
+      "subject": "test:70",
+      "sandbox_name": "tu70",
+      "ok": false,
+      "total_ms": 1500.7841250044294,
+      "ops": [
+        {
+          "user": 70,
+          "op": "login",
+          "ms": 585.5587080004625,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 70,
+          "op": "create",
+          "ms": 907.7534999814816,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 71,
+      "subject": "test:71",
+      "sandbox_name": "tu71",
+      "ok": false,
+      "total_ms": 2691.888500005007,
+      "ops": [
+        {
+          "user": 71,
+          "op": "login",
+          "ms": 565.6911669648252,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 71,
+          "op": "create",
+          "ms": 2125.7712499937043,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 72,
+      "subject": "test:72",
+      "sandbox_name": "tu72",
+      "ok": false,
+      "total_ms": 2437.54291604273,
+      "ops": [
+        {
+          "user": 72,
+          "op": "login",
+          "ms": 555.6331670377403,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 72,
+          "op": "create",
+          "ms": 1881.4222909859382,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 73,
+      "subject": "test:73",
+      "sandbox_name": "tu73",
+      "ok": false,
+      "total_ms": 2066.1246250383556,
+      "ops": [
+        {
+          "user": 73,
+          "op": "login",
+          "ms": 542.6287080044858,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 73,
+          "op": "create",
+          "ms": 1515.9824170405045,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 74,
+      "subject": "test:74",
+      "sandbox_name": "tu74",
+      "ok": false,
+      "total_ms": 1404.8654999933206,
+      "ops": [
+        {
+          "user": 74,
+          "op": "login",
+          "ms": 548.1402919976972,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 74,
+          "op": "create",
+          "ms": 856.0094580170698,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 75,
+      "subject": "test:75",
+      "sandbox_name": "tu75",
+      "ok": false,
+      "total_ms": 1616.1587500246242,
+      "ops": [
+        {
+          "user": 75,
+          "op": "login",
+          "ms": 543.3639169787057,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 75,
+          "op": "create",
+          "ms": 1070.3773340210319,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 76,
+      "subject": "test:76",
+      "sandbox_name": "tu76",
+      "ok": false,
+      "total_ms": 1420.6441669957712,
+      "ops": [
+        {
+          "user": 76,
+          "op": "login",
+          "ms": 546.3985420065001,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 76,
+          "op": "create",
+          "ms": 872.6727080065757,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 77,
+      "subject": "test:77",
+      "sandbox_name": "tu77",
+      "ok": false,
+      "total_ms": 1991.843790980056,
+      "ops": [
+        {
+          "user": 77,
+          "op": "login",
+          "ms": 609.9378329818137,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 77,
+          "op": "create",
+          "ms": 1381.458708026912,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 78,
+      "subject": "test:78",
+      "sandbox_name": "tu78",
+      "ok": false,
+      "total_ms": 2630.3409169777296,
+      "ops": [
+        {
+          "user": 78,
+          "op": "login",
+          "ms": 606.4699160051532,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 78,
+          "op": "create",
+          "ms": 2023.0870840023272,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 79,
+      "subject": "test:79",
+      "sandbox_name": "tu79",
+      "ok": false,
+      "total_ms": 1561.3060409668833,
+      "ops": [
+        {
+          "user": 79,
+          "op": "login",
+          "ms": 576.8415409838781,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 79,
+          "op": "create",
+          "ms": 983.9215829852037,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 80,
+      "subject": "test:80",
+      "sandbox_name": "tu80",
+      "ok": false,
+      "total_ms": 1509.3632499920204,
+      "ops": [
+        {
+          "user": 80,
+          "op": "login",
+          "ms": 588.8489579665475,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 80,
+          "op": "create",
+          "ms": 919.8762910091318,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 81,
+      "subject": "test:81",
+      "sandbox_name": "tu81",
+      "ok": false,
+      "total_ms": 1522.4321249988861,
+      "ops": [
+        {
+          "user": 81,
+          "op": "login",
+          "ms": 547.8470000089146,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 81,
+          "op": "create",
+          "ms": 973.2013749890029,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 82,
+      "subject": "test:82",
+      "sandbox_name": "tu82",
+      "ok": false,
+      "total_ms": 1895.9918330074288,
+      "ops": [
+        {
+          "user": 82,
+          "op": "login",
+          "ms": 554.073209001217,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 82,
+          "op": "create",
+          "ms": 1341.4222919964232,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 83,
+      "subject": "test:83",
+      "sandbox_name": "tu83",
+      "ok": false,
+      "total_ms": 2163.5180410230532,
+      "ops": [
+        {
+          "user": 83,
+          "op": "login",
+          "ms": 559.4081250019372,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 83,
+          "op": "create",
+          "ms": 1603.5002910066396,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 84,
+      "subject": "test:84",
+      "sandbox_name": "tu84",
+      "ok": false,
+      "total_ms": 2047.1590830129571,
+      "ops": [
+        {
+          "user": 84,
+          "op": "login",
+          "ms": 560.2182080037892,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 84,
+          "op": "create",
+          "ms": 1486.3485840032808,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 85,
+      "subject": "test:85",
+      "sandbox_name": "tu85",
+      "ok": false,
+      "total_ms": 1475.4344999673776,
+      "ops": [
+        {
+          "user": 85,
+          "op": "login",
+          "ms": 549.1867499658838,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 85,
+          "op": "create",
+          "ms": 925.6171670276672,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 86,
+      "subject": "test:86",
+      "sandbox_name": "tu86",
+      "ok": false,
+      "total_ms": 1737.7050840295851,
+      "ops": [
+        {
+          "user": 86,
+          "op": "login",
+          "ms": 541.6278750053607,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 86,
+          "op": "create",
+          "ms": 1195.4243750078604,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 87,
+      "subject": "test:87",
+      "sandbox_name": "tu87",
+      "ok": false,
+      "total_ms": 2179.2426659958437,
+      "ops": [
+        {
+          "user": 87,
+          "op": "login",
+          "ms": 545.5276250140741,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 87,
+          "op": "create",
+          "ms": 1633.2666669622995,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 88,
+      "subject": "test:88",
+      "sandbox_name": "tu88",
+      "ok": false,
+      "total_ms": 2256.8876249715686,
+      "ops": [
+        {
+          "user": 88,
+          "op": "login",
+          "ms": 539.651833998505,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 88,
+          "op": "create",
+          "ms": 1716.4786249632016,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 89,
+      "subject": "test:89",
+      "sandbox_name": "tu89",
+      "ok": false,
+      "total_ms": 1538.1769580417313,
+      "ops": [
+        {
+          "user": 89,
+          "op": "login",
+          "ms": 556.8999170209281,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 89,
+          "op": "create",
+          "ms": 980.4917079745792,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 90,
+      "subject": "test:90",
+      "sandbox_name": "tu90",
+      "ok": false,
+      "total_ms": 2070.03454095684,
+      "ops": [
+        {
+          "user": 90,
+          "op": "login",
+          "ms": 548.0314169544727,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 90,
+          "op": "create",
+          "ms": 1521.0435839835554,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 91,
+      "subject": "test:91",
+      "sandbox_name": "tu91",
+      "ok": false,
+      "total_ms": 2148.612625023816,
+      "ops": [
+        {
+          "user": 91,
+          "op": "login",
+          "ms": 549.5806249673478,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 91,
+          "op": "create",
+          "ms": 1597.9903750121593,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 92,
+      "subject": "test:92",
+      "sandbox_name": "tu92",
+      "ok": false,
+      "total_ms": 2029.7941669705324,
+      "ops": [
+        {
+          "user": 92,
+          "op": "login",
+          "ms": 541.1390420049429,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 92,
+          "op": "create",
+          "ms": 1487.9070830065757,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 93,
+      "subject": "test:93",
+      "sandbox_name": "tu93",
+      "ok": false,
+      "total_ms": 1659.2450830503367,
+      "ops": [
+        {
+          "user": 93,
+          "op": "login",
+          "ms": 549.0793329663575,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 93,
+          "op": "create",
+          "ms": 1109.7345830057748,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 94,
+      "subject": "test:94",
+      "sandbox_name": "tu94",
+      "ok": false,
+      "total_ms": 1623.511707992293,
+      "ops": [
+        {
+          "user": 94,
+          "op": "login",
+          "ms": 547.0720839803107,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 94,
+          "op": "create",
+          "ms": 1076.0156660107896,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 95,
+      "subject": "test:95",
+      "sandbox_name": "tu95",
+      "ok": false,
+      "total_ms": 1617.9609160171822,
+      "ops": [
+        {
+          "user": 95,
+          "op": "login",
+          "ms": 542.883415997494,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 95,
+          "op": "create",
+          "ms": 1074.340499995742,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 96,
+      "subject": "test:96",
+      "sandbox_name": "tu96",
+      "ok": false,
+      "total_ms": 1825.82587498473,
+      "ops": [
+        {
+          "user": 96,
+          "op": "login",
+          "ms": 550.6881250184961,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 96,
+          "op": "create",
+          "ms": 1274.5040419977158,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 97,
+      "subject": "test:97",
+      "sandbox_name": "tu97",
+      "ok": false,
+      "total_ms": 2147.667374985758,
+      "ops": [
+        {
+          "user": 97,
+          "op": "login",
+          "ms": 544.6430830052122,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 97,
+          "op": "create",
+          "ms": 1602.0382500137202,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 98,
+      "subject": "test:98",
+      "sandbox_name": "tu98",
+      "ok": false,
+      "total_ms": 1776.3910409994423,
+      "ops": [
+        {
+          "user": 98,
+          "op": "login",
+          "ms": 540.5730420025066,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 98,
+          "op": "create",
+          "ms": 1235.2963330340572,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 99,
+      "subject": "test:99",
+      "sandbox_name": "tu99",
+      "ok": false,
+      "total_ms": 1548.4833340160549,
+      "ops": [
+        {
+          "user": 99,
+          "op": "login",
+          "ms": 543.1910420302302,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 99,
+          "op": "create",
+          "ms": 1004.7882089857012,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    },
+    {
+      "user": 100,
+      "subject": "test:100",
+      "sandbox_name": "tu100",
+      "ok": false,
+      "total_ms": 1499.9664159840904,
+      "ops": [
+        {
+          "user": 100,
+          "op": "login",
+          "ms": 550.9807079797611,
+          "ok": true,
+          "exit_code": null,
+          "error": null
+        },
+        {
+          "user": 100,
+          "op": "create",
+          "ms": 948.3911250135861,
+          "ok": false,
+          "exit_code": 1,
+          "error": "sbx: the sandbox service is at capacity"
+        }
+      ]
+    }
+  ]
+}
