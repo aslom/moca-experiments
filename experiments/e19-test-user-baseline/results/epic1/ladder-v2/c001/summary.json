@@ -1,0 +1,125 @@
+{
+  "users": 1,
+  "users_ok": 1,
+  "users_failed": 0,
+  "concurrency": 1,
+  "null_tier": null,
+  "peak_live_processes": null,
+  "sleep_s": 1.0,
+  "stagger_ms": 10.0,
+  "last_start_ms": 0.2,
+  "host_health": {
+    "cores": 18,
+    "child_cpu_s": 1.06,
+    "wall_s": 12.16,
+    "cpu_saturation": 0.005,
+    "load_peak": 3.35,
+    "load_mean": 3.25,
+    "load_per_core_peak": 0.186,
+    "max_child_rss_mb": 117.5,
+    "child_major_faults": 533,
+    "pageouts": 0
+  },
+  "gil_enabled": false,
+  "python": "3.14.10",
+  "cluster": "epic1 main-3bde132",
+  "control_plane_profile": "sandbox",
+  "control_plane_version": "main-3bde132",
+  "wall_ms": 12156.0,
+  "per_user_total_ms": {
+    "min": 12155.4,
+    "p50": 12155.4,
+    "p90": 12155.4,
+    "p99": 12155.4,
+    "max": 12155.4,
+    "mean": 12155.4
+  },
+  "ops": {
+    "login": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 561.6,
+      "p50_ms": 561.6,
+      "p90_ms": 561.6,
+      "p99_ms": 561.6,
+      "max_ms": 561.6,
+      "mean_ms": 561.6,
+      "local_ms": null,
+      "corrected_p50_ms": null
+    },
+    "create": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 931.8,
+      "p50_ms": 931.8,
+      "p90_ms": 931.8,
+      "p99_ms": 931.8,
+      "max_ms": 931.8,
+      "mean_ms": 931.8,
+      "local_ms": 182.7,
+      "corrected_p50_ms": 749.1
+    },
+    "run_sleep_a": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 3725.8,
+      "p50_ms": 3725.8,
+      "p90_ms": 3725.8,
+      "p99_ms": 3725.8,
+      "max_ms": 3725.8,
+      "mean_ms": 3725.8,
+      "local_ms": 149.0,
+      "corrected_p50_ms": 3576.8
+    },
+    "run_sleep_b": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 3430.0,
+      "p50_ms": 3430.0,
+      "p90_ms": 3430.0,
+      "p99_ms": 3430.0,
+      "max_ms": 3430.0,
+      "mean_ms": 3430.0,
+      "local_ms": 149.4,
+      "corrected_p50_ms": 3280.6
+    },
+    "ls": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 717.7,
+      "p50_ms": 717.7,
+      "p90_ms": 717.7,
+      "p99_ms": 717.7,
+      "max_ms": 717.7,
+      "mean_ms": 717.7,
+      "local_ms": 150.6,
+      "corrected_p50_ms": 567.1
+    },
+    "rm": {
+      "n": 1,
+      "failed": 0,
+      "min_ms": 2787.0,
+      "p50_ms": 2787.0,
+      "p90_ms": 2787.0,
+      "p99_ms": 2787.0,
+      "max_ms": 2787.0,
+      "mean_ms": 2787.0,
+      "local_ms": 147.7,
+      "corrected_p50_ms": 2639.3
+    }
+  },
+  "calibration": {
+    "tier": "mocactl",
+    "concurrency": 1,
+    "per_user_total_p50_ms": 779.6,
+    "ops_p50_ms": {
+      "create": 182.7,
+      "run_sleep_a": 149.0,
+      "run_sleep_b": 149.4,
+      "ls": 150.6,
+      "rm": 147.7
+    }
+  },
+  "local_total_p50_ms": 779.4,
+  "corrected_total_p50_ms": 11376.0
+}

@@ -38,6 +38,7 @@ import argparse
 import contextlib
 import json
 import os
+import resource
 import ssl
 import statistics
 import subprocess
@@ -166,6 +167,114 @@ def write_sbx_auth(config_home: Path, url: str, login: dict) -> None:
     f = d / "sbx-auth.json"
     f.write_text(json.dumps(auth, indent=2) + "\n")
     f.chmod(0o600)
+
+
+class HostHealth:
+    """Did the driver host, rather than the service, limit this rung?
+
+    Three independent signals, all from the standard library, so no agent and no sudo:
+
+    `cpu_saturation` -- the strong one. `getrusage(RUSAGE_CHILDREN)` gives the exact CPU seconds
+      every reaped subprocess consumed. Divided by (wall seconds x cores) it is the fraction of the
+      machine the client burned. A per-call process model turns client CPU into latency, so above
+      roughly 0.7 the measurement is about the laptop. This is not a sample: the kernel counted it.
+
+    `load_per_core` -- the 1-minute load average over core count, sampled while the rung runs.
+      Above 1.0 there are more runnable threads than cores, which is queueing the client imposed
+      on itself.
+
+    `pageouts` -- the delta in `vm_stat`'s pageout counter across the rung. Non-zero means the
+      host was evicting pages, which is how the C=1000 null rung spent 184 s.
+
+    Also recorded: `max_child_rss_mb`, the high-water mark of any single subprocess, which is what
+      makes N concurrent processes a memory problem rather than only a CPU one.
+    """
+
+    def __init__(self) -> None:
+        self._stop = threading.Event()
+        self._thread: threading.Thread | None = None
+        self.load_peak = 0.0
+        self.load_sum = 0.0
+        self.load_n = 0
+        self._ru0: object | None = None
+        self._pageouts0 = 0
+        self._t0 = 0.0
+        self.result: dict = {}
+
+    @staticmethod
+    def _pageouts() -> int:
+        try:
+            out = subprocess.run(["/usr/bin/vm_stat"], capture_output=True, text=True, timeout=5).stdout
+        except (OSError, subprocess.SubprocessError):
+            return 0
+        for line in out.splitlines():
+            if "Pageouts" in line:
+                digits = "".join(ch for ch in line if ch.isdigit())
+                return int(digits) if digits else 0
+        return 0
+
+    def _sample(self) -> None:
+        while not self._stop.wait(0.25):
+            try:
+                load = os.getloadavg()[0]
+            except OSError:
+                return
+            self.load_peak = max(self.load_peak, load)
+            self.load_sum += load
+            self.load_n += 1
+
+    def start(self) -> None:
+        self._ru0 = resource.getrusage(resource.RUSAGE_CHILDREN)
+        self._pageouts0 = self._pageouts()
+        self._t0 = time.perf_counter()
+        self._thread = threading.Thread(target=self._sample, name="health", daemon=True)
+        self._thread.start()
+
+    def stop(self) -> dict:
+        self._stop.set()
+        if self._thread:
+            self._thread.join(timeout=2)
+        wall = time.perf_counter() - self._t0
+        ru = resource.getrusage(resource.RUSAGE_CHILDREN)
+        r0 = self._ru0
+        cpu = (ru.ru_utime - r0.ru_utime) + (ru.ru_stime - r0.ru_stime)  # type: ignore[union-attr]
+        cores = os.cpu_count() or 1
+        # ru_maxrss is a high-water mark, not a delta, and macOS reports it in bytes.
+        self.result = {
+            "cores": cores,
+            "child_cpu_s": round(cpu, 2),
+            "wall_s": round(wall, 2),
+            "cpu_saturation": round(cpu / (wall * cores), 3) if wall > 0 else None,
+            "load_peak": round(self.load_peak, 2),
+            "load_mean": round(self.load_sum / self.load_n, 2) if self.load_n else None,
+            "load_per_core_peak": round(self.load_peak / cores, 3),
+            "max_child_rss_mb": round(ru.ru_maxrss / 2**20, 1),
+            "child_major_faults": ru.ru_majflt - r0.ru_majflt,  # type: ignore[union-attr]
+            "pageouts": max(0, self._pageouts() - self._pageouts0),
+        }
+        return self.result
+
+
+def health_verdict(h: dict, local_share: float | None) -> tuple[str, list[str]]:
+    """Whether to trust a rung's latencies, and why not when not."""
+    bad: list[str] = []
+    sat = h.get("cpu_saturation")
+    if sat is not None and sat >= 0.7:
+        bad.append(f"client burned {sat:.0%} of {h['cores']} cores: latency is CPU queueing")
+    elif sat is not None and sat >= 0.4:
+        bad.append(f"client CPU at {sat:.0%} of the machine: some latency is local")
+    if h.get("load_per_core_peak", 0) >= 1.0:
+        bad.append(f"peak load {h['load_peak']:.1f} on {h['cores']} cores: more runnable than cores")
+    if h.get("pageouts"):
+        bad.append(f"{h['pageouts']} pageouts during the rung: host was swapping")
+    if local_share is not None and local_share >= 0.25:
+        bad.append(f"calibration says {local_share:.0%} of the lifecycle was local start-up")
+    if not bad:
+        return "TRUSTWORTHY", []
+    hard = any(
+        s.startswith("client burned") or "swapping" in s or "more runnable" in s for s in bad
+    )
+    return ("CONTAMINATED" if hard else "SUSPECT"), bad
 
 
 class LiveCount:
@@ -459,6 +568,7 @@ def summarize(users: list[UserResult], wall_ms: float, args: argparse.Namespace,
         "sleep_s": (args.sleep or None) if (not args.null or args.null == "sleep") else None,
         "stagger_ms": args.stagger_ms,
         "last_start_ms": round(getattr(args, "last_start_ms", 0.0), 1),
+        "host_health": getattr(args, "health", None),
         "gil_enabled": gil_enabled(),
         "python": sys.version.split()[0],
         "cluster": args.label or None,
@@ -754,6 +864,7 @@ def main() -> int:
         apply_calibration(summary, calib)
         print_stats(summary)
         print_corrected(summary)
+        print_health(summary)
         print_overhead(summary, ref)
         if args.out:
             write_rung(Path(args.out), args, users, summary, wall_ms)
@@ -804,6 +915,7 @@ def main() -> int:
         print()
         print(f"concurrency {summary['concurrency']}:")
         print_corrected(summary)
+        print_health(summary)
         print_overhead(summary, ref)
 
     if args.out:
@@ -880,6 +992,8 @@ def run_rung(
     # 10 ms cannot finish faster than (C-1)*10 ms plus one user's own time, and the summary says
     # so via `stagger_ms` and `last_start_ms`.
     stagger_s = args.stagger_ms / 1000
+    health = HostHealth()
+    health.start()
     t_start = time.perf_counter()
     for slot, index in enumerate(indices):
         if stagger_s and slot:
@@ -892,6 +1006,7 @@ def run_rung(
         t.join()
     wall_ms = (time.perf_counter() - t_start) * 1000
     args.last_start_ms = last_start_ms
+    args.health = health.stop()
 
     users = [r for r in results if r is not None]
     # In --progress user the lines are already out, in order, so repeating them would double the
@@ -1029,6 +1144,57 @@ def print_corrected(summary: dict) -> None:
     print("upper bound. The service's true figure lies between the two columns.")
 
 
+def print_health(summary: dict) -> None:
+    """Client-side resource use, and whether it invalidates the rung."""
+    h = summary.get("host_health")
+    if not h:
+        return
+    local = None
+    if summary.get("local_total_p50_ms") and summary["per_user_total_ms"]["p50"]:
+        local = summary["local_total_p50_ms"] / summary["per_user_total_ms"]["p50"]
+    verdict, reasons = health_verdict(h, local)
+    print()
+    print("-" * 83)
+    print(f"client health: {verdict}")
+    print(
+        f"  child CPU {h['child_cpu_s']:.1f} s over {h['wall_s']:.1f} s wall on {h['cores']} cores"
+        f"  ->  {h['cpu_saturation']:.0%} of the machine" if h["cpu_saturation"] is not None else ""
+    )
+    print(
+        f"  load peak {h['load_peak']:.2f} (mean {h['load_mean']}), "
+        f"{h['load_per_core_peak']:.2f} per core;  max child RSS {h['max_child_rss_mb']:.0f} MB;  "
+        f"pageouts {h['pageouts']};  child major faults {h['child_major_faults']}"
+    )
+    for r in reasons:
+        print(f"  ! {r}")
+    if verdict == "TRUSTWORTHY":
+        print("  no client-side limit detected: the latencies above are the service's to explain")
+
+    # --sleep makes the server-side work of a `run` call exactly known, which is a far better
+    # calibration than the null arm can be: everything above the sleep is overhead, and the null
+    # arm says how much of that overhead is process start-up. What is left is per-call protocol
+    # cost -- a sandbox token, a TLS handshake, a gRPC connection -- which is the cost a
+    # long-lived client (`mocactl sbx mcp`) pays once instead of per call.
+    sleep_ms = (summary.get("sleep_s") or 0) * 1000
+    if not sleep_ms:
+        return
+    runs = [(n, s) for n, s in summary["ops"].items() if n.startswith("run_sleep") and s["p50_ms"]]
+    if not runs:
+        return
+    print()
+    print(f"  where a `run -- sleep {sleep_ms / 1000:g}` call's time goes (p50):")
+    print(f"  {'op':<14}{'measured':>10}{'sandbox':>9}{'startup':>9}{'protocol':>10}{'prot %':>8}")
+    for n, s in runs:
+        start = s.get("local_ms") or 0
+        proto = s["p50_ms"] - sleep_ms - start
+        print(
+            f"  {n:<14}{s['p50_ms']:>10.0f}{sleep_ms:>9.0f}{start:>9.0f}"
+            f"{proto:>10.0f}{proto / s['p50_ms'] * 100:>7.0f}%"
+        )
+    print("  sandbox = the sleep the service actually performed; startup = the null calibration;")
+    print("  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.")
+
+
 def print_ladder(rungs: list[dict], ladder_wall_ms: float) -> None:
     """The point of the ladder: how one user's experience changes as the crowd grows."""
     base = rungs[0]
@@ -1041,11 +1207,12 @@ def print_ladder(rungs: list[dict], ladder_wall_ms: float) -> None:
     # `run_id` here crashed a sleep-payload ladder once already.
     cols = [n for n, s in base["ops"].items() if s["n"] or s["failed"]]
     corrected = any(s.get("corrected_total_p50_ms") is not None for s in rungs)
-    head = f"{'conc':>5}{'ok':>7}{'fail':>6}{'wall_s':>9}{'total_p50':>11}"
+    head = f"{'conc':>5}{'ok':>7}{'fail':>6}{'wall_s':>9}{'measured':>10}"
     if corrected:
-        head += f"{'corrected':>11}{'local':>8}"
-    head += f"{'total_p90':>11}{'vs_C1':>8}" + "".join(f"{n[:9]:>10}" for n in cols)
+        head += f"{'CORRECTED':>11}{'local':>8}{'vsC1corr':>10}"
+    head += f"{'vs_C1':>8}{'health':>8}" + "".join(f"{n[:9]:>10}" for n in cols)
     print(head)
+    base_corr = base.get("corrected_total_p50_ms")
 
     def ms(v: float | None) -> str:
         return f"{v:.0f}" if v is not None else "-"
@@ -1057,11 +1224,19 @@ def print_ladder(rungs: list[dict], ladder_wall_ms: float) -> None:
         ops = s["ops"]
         line = (
             f"{s['concurrency']:>5}{s['users_ok']:>7}{s['users_failed']:>6}"
-            f"{s['wall_ms'] / 1000:>9.1f}{ms(p50):>11}"
+            f"{s['wall_ms'] / 1000:>9.1f}{ms(p50):>10}"
         )
         if corrected:
-            line += f"{ms(s.get('corrected_total_p50_ms')):>11}{ms(s.get('local_total_p50_ms')):>8}"
-        line += f"{ms(t['p90']):>11}{ratio:>8}" + "".join(
+            c = s.get("corrected_total_p50_ms")
+            cr = f"{c / base_corr:.2f}x" if c and base_corr else "-"
+            line += f"{ms(c):>11}{ms(s.get('local_total_p50_ms')):>8}{cr:>10}"
+        loc_share = None
+        if s.get("local_total_p50_ms") and p50:
+            loc_share = s["local_total_p50_ms"] / p50
+        flag = {"TRUSTWORTHY": "ok", "SUSPECT": "SUSP", "CONTAMINATED": "CONT"}[
+            health_verdict(s.get("host_health") or {}, loc_share)[0]
+        ]
+        line += f"{ratio:>8}{flag:>8}" + "".join(
             f"{ms((ops.get(n) or {}).get('p50_ms')):>10}" for n in cols
         )
         print(line)
@@ -1085,6 +1260,91 @@ def print_ladder(rungs: list[dict], ladder_wall_ms: float) -> None:
             "levels with failures: "
             + ", ".join(f"C={s['concurrency']} ({s['users_failed']}/{s['users']})" for s in bad)
         )
+    print_ladder_verdict(rungs)
+
+
+def print_ladder_verdict(rungs: list[dict]) -> None:
+    """State the conclusion in numbers, so a reader does not have to derive it.
+
+    The whole point of calibrating is that `measured` and `corrected` can disagree in DIRECTION:
+    a measurement that rises while the service's own share falls means the client degraded, not
+    the service. That is easy to miss in a wide table, so it is spelled out here.
+    """
+    lo, hi = rungs[0], rungs[-1]
+    t_lo, t_hi = lo["per_user_total_ms"]["p50"], hi["per_user_total_ms"]["p50"]
+    if not (t_lo and t_hi):
+        return
+    print()
+    print("=" * 96)
+    print(f"WHAT THE NUMBERS SAY   (concurrency {lo['concurrency']} -> {hi['concurrency']})")
+    print("=" * 96)
+
+    def row(label: str, a: float, b: float, note: str = "") -> None:
+        print(
+            f"  {label:<24}{a:>9.0f} -> {b:>9.0f} ms   {b / a if a else 0:>5.2f}x"
+            f"   {b - a:>+8.0f} ms   {note}"
+        )
+
+    row("measured lifecycle", t_lo, t_hi, "what the stopwatch saw")
+    c_lo, c_hi = lo.get("corrected_total_p50_ms"), hi.get("corrected_total_p50_ms")
+    l_lo, l_hi = lo.get("local_total_p50_ms"), hi.get("local_total_p50_ms")
+    if c_lo and c_hi and l_lo is not None and l_hi is not None:
+        row("CORRECTED lifecycle", c_lo, c_hi, "the service's share (lower bound)")
+        row("client start-up cost", max(l_lo, 1e-9), l_hi, "the driver's share")
+        measured_delta, corrected_delta, local_delta = t_hi - t_lo, c_hi - c_lo, l_hi - l_lo
+        print()
+        if local_delta >= measured_delta * 0.8:
+            print("  => the apparent degradation is CLIENT-SIDE.")
+            print(
+                f"     Local start-up grew {local_delta:+.0f} ms while the measurement grew"
+                f" {measured_delta:+.0f} ms,"
+            )
+            print(
+                f"     and the service's own share went {corrected_delta:+.0f} ms"
+                f" ({'down' if corrected_delta < 0 else 'up'})."
+            )
+            print("     Conclusion: this ladder does NOT show the service degrading.")
+        elif corrected_delta > 0.1 * c_lo:
+            print("  => at least part of the degradation is SERVICE-SIDE.")
+            print(
+                f"     After removing {local_delta:+.0f} ms of local growth, the service's own"
+                f" share still grew {corrected_delta:+.0f} ms ({c_hi / c_lo:.2f}x)."
+            )
+        else:
+            print("  => INCONCLUSIVE: neither share moved enough to attribute the change.")
+        print(
+            f"     local share of the lifecycle: {l_lo / t_lo:.0%} at C={lo['concurrency']}"
+            f" -> {l_hi / t_hi:.0%} at C={hi['concurrency']}"
+        )
+
+    # Capacity, which is a count and not a latency, so it survives any contamination.
+    first_fail = next((s for s in rungs if s["users_failed"]), None)
+    if first_fail:
+        served = sorted({s["users_ok"] for s in rungs if s["users_failed"]})
+        print()
+        print(
+            f"  capacity: first refusal at C={first_fail['concurrency']};"
+            f" users served at every failing level: {', '.join(str(x) for x in served)}"
+        )
+        print("     a refusal is a count, not a latency: unaffected by client-side cost")
+
+    # Which rungs a reader may quote.
+    flags = []
+    for s in rungs:
+        share = None
+        if s.get("local_total_p50_ms") and s["per_user_total_ms"]["p50"]:
+            share = s["local_total_p50_ms"] / s["per_user_total_ms"]["p50"]
+        flags.append((s["concurrency"], health_verdict(s.get("host_health") or {}, share)[0]))
+    counts: dict[str, int] = {}
+    for _, v in flags:
+        counts[v] = counts.get(v, 0) + 1
+    print()
+    print("  client health: " + ", ".join(f"{n} {k}" for k, n in sorted(counts.items())))
+    trusted = [c for c, v in flags if v == "TRUSTWORTHY"]
+    if trusted:
+        print(f"     trustworthy levels: C <= {max(trusted)}  (quote latencies at or below this)")
+    else:
+        print("     NO level was trustworthy: every rung shows a client-side limit")
 
 
 if __name__ == "__main__":
