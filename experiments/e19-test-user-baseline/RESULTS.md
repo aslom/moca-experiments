@@ -250,8 +250,10 @@ Three consequences:
 - **p90 does not show it and p99 barely does.** Over 40 samples the ninth-from-top value is
   10730 ms; the stall is only visible in max and p99. Any summary of this deployment quoting p50
   and p90 would report C = 40 as fine.
-- **n = 1.** One stall in one run at one level. It says this can happen at the cap, not how often.
-  Establishing a rate needs repeats at C = 35 and C = 40, which this rung did not do.
+- **Rare, not systematic.** A second run of the whole ladder saw no stall at all
+  ([below](#repeated-a-second-ladder-same-cluster-same-day)), so this is one occurrence in two
+  runs of 40 users at the cap — it can happen there, but not reliably. A real rate needs many more
+  repeats at C = 35 and C = 40.
 
 ### Verdict on each sealed prediction
 
@@ -272,10 +274,51 @@ outlier, not the throughput it was meant to describe.
 L-P4's failure is the most useful result in the rung: it moves the suspected bottleneck from the
 worker to the control plane, which is the opposite of what the N = 10 and N = 100 rungs suggested.
 
+### Repeated: a second ladder, same cluster, same day
+
+The ladder was run a second time, unchanged, while reproducing these steps from a fresh shell.
+Its record is [`results/ladder-run2/`](results/ladder-run2) (its `params.json` says
+`out: results/ladder`, because that is where it was written before being set aside — the two runs
+are otherwise identical in settings). It was not planned, and it is not a sealed rung; it is
+reported because it settles two of the caveats below.
+
+| C | lifecycle p50, run 1 | run 2 | Δ |
+|---|---|---|---|
+| 1 | 8470 | 8459 | −0.1% |
+| 5 | 8587 | 8524 | −0.7% |
+| 10 | 8890 | 8653 | −2.7% |
+| 15 | 8936 | 8774 | −1.8% |
+| 20 | 8938 | 8995 | +0.6% |
+| 25 | 9180 | 8914 | −2.9% |
+| 30 | 9444 | 9145 | −3.2% |
+| 35 | 9772 | 9252 | −5.3% |
+| 40 | 10153 | 9533 | −6.1% |
+
+**What reproduced.** Zero failures at all nine levels, again, including C = 40 at the cap. The
+gentle climb: 1.127x from C = 1 to C = 40, against 1.199x in run 1. And the result that matters —
+`create` is again the worst-degraded operation, again monotonically at every level
+(701, 734, 756, 801, 834, 878, 910, 934, 1019 ms), so L-P4's falsification and "the bottleneck
+below the cap is the control plane, not the worker" rest on two independent runs rather than one.
+
+**What did not.** The 20-second stall **did not recur**. No operation anywhere in run 2 exceeded
+5 s, and C = 40's slowest user finished in 10160 ms against 27481 ms in run 1 — which is why
+run 2's C = 40 wall clock is 10.2 s rather than 27.5 s. So the stall is a real but *occasional*
+event at the cap, not a property of C = 40: one occurrence in two runs of 40 users each. That is
+still not a rate, but it does bound it well below "every time".
+
+**What run 2 weakens.** The `create`-versus-`run_id` gap is narrower than run 1 implied: 1.454x
+against 1.174x here, where run 1 had 1.744x against 1.097x. `create` stays first and `run_id`
+stays behind `ls`, but the size of the control-plane effect is uncertain to roughly a factor of
+two between runs. Run 2 is also uniformly a little faster at every level, so some of run 1's
+absolute numbers reflect the cluster that minute, not the deployment.
+
+Both runs are kept. The N = 10 and N = 100 rungs were not repeated.
+
 ### What this rung does not say
 
-- **One run per level, no repeats.** Every level is a single sample of C users. The smooth p50
-  climb is believable because nine levels agree; the single stall is not a rate.
+- **One sealed run per level.** Each level of the sealed ladder is a single sample of C users. The
+  smooth p50 climb is believable because nine levels agree and a second run reproduced it; the
+  single stall is still not a rate, only bounded at one occurrence in two runs.
 - **Levels ran in sequence on a warming cluster.** C = 40 ran last, about two minutes after C = 1.
   Drift over those two minutes is not separated from the effect of C.
 - **The cap was never raised.** Everything above is for `SH_SANDBOX_MAX_TOTAL = 40`. Whether the
