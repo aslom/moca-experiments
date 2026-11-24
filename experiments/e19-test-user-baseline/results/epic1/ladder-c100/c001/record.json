@@ -5,12 +5,12 @@
       "subject": "test:1",
       "sandbox_name": "tu1",
       "ok": true,
-      "total_ms": 11053.9053750108,
+      "total_ms": 11339.6023340174,
       "ops": [
         {
           "user": 1,
           "op": "login",
-          "ms": 547.5345419836231,
+          "ms": 547.9681660071947,
           "ok": true,
           "exit_code": null,
           "error": null
@@ -18,7 +18,7 @@
         {
           "user": 1,
           "op": "create",
-          "ms": 723.9609170355834,
+          "ms": 780.6957089924254,
           "ok": true,
           "exit_code": 0,
           "error": null
@@ -26,7 +26,7 @@
         {
           "user": 1,
           "op": "run_sleep_a",
-          "ms": 3221.900917007588,
+          "ms": 3491.32999998983,
           "ok": true,
           "exit_code": 0,
           "error": null
@@ -34,7 +34,7 @@
         {
           "user": 1,
           "op": "run_sleep_b",
-          "ms": 3205.3526249947026,
+          "ms": 3276.346625003498,
           "ok": true,
           "exit_code": 0,
           "error": null
@@ -42,7 +42,7 @@
         {
           "user": 1,
           "op": "ls",
-          "ms": 883.5169579833746,
+          "ms": 724.6736669912934,
           "ok": true,
           "exit_code": 0,
           "error": null
@@ -50,7 +50,7 @@
         {
           "user": 1,
           "op": "rm",
-          "ms": 2470.8341250079684,
+          "ms": 2517.545374983456,
           "ok": true,
           "exit_code": 0,
           "error": null

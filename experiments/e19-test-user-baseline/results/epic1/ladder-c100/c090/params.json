@@ -22,22 +22,22 @@
   "null": "",
   "in_flight": 100,
   "insecure": false,
-  "last_start_ms": 1506.2464170041494,
+  "last_start_ms": 1429.3709169724025,
   "health": {
     "cores": 18,
-    "child_cpu_s": 42.28,
-    "wall_s": 15.36,
-    "cpu_saturation": 0.153,
-    "load_peak": 19.45,
-    "load_mean": 18.33,
-    "load_per_core_peak": 1.08,
+    "child_cpu_s": 44.62,
+    "wall_s": 15.99,
+    "cpu_saturation": 0.155,
+    "load_peak": 14.98,
+    "load_mean": 14.34,
+    "load_per_core_peak": 0.832,
     "max_child_rss_mb": 118.6,
-    "child_major_faults": 22793,
+    "child_major_faults": 23227,
     "pageouts": 0
   },
   "peak_live": 0,
   "mocactl": "mocactl.mjs",
   "url": "https://sbx-api-moca-sbx.<ROUTE_DOMAIN>",
   "cluster": "epic1: sbx-api-moca-sbx on epoc001.ete14, profile sandbox, main-3bde132",
-  "started_at": "2026-11-24T20:18:18Z"
+  "started_at": "2026-11-24T20:35:17Z"
 }

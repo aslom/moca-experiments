@@ -1,0 +1,1874 @@
+# 2026-11-24T15:31:15-0500  e19 baseline.py
+# command: rig/baseline.py --ladder --users 100 --ladder-start 1 --ladder-step 10 --first-user 1 --require-nogil --progress none --calibrate mocactl --sleep 1.0 --stagger-ms 10 --out results/epic1/ladder-c100 --label 'epic1: sbx-api-moca-sbx on epoc001.ete14, profile sandbox, main-3bde132'
+# cwd: /Users/aslom/sandbox/rosso-moca2/moca-experiments/experiments/e19-test-user-baseline
+
+e19: control plane https://sbx-api-moca-sbx.apps.epoc001.ete14.res.ibm.com
+e19: profile sandbox, version main-3bde132
+e19: python 3.14.10 free-threaded, one thread per user
+e19: ladder over concurrency 1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100
+e19: each level is its own rung: C users, C at once, then every sandbox deleted
+
+-----------------------------------------------------------------------------------
+concurrency 1: users test:1..test:1, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 1...
+per-user totals:
+  test:1 ok   total=     648 ms   create=150  run_sleep_a=126  run_sleep_b=126  ls=123  rm=123
+  calibration: 1/1 ok, per-op p50 123-150 ms, whole sequence 648 ms
+per-user totals:
+  test:1 ok   total=   11340 ms   login=548  create=781  run_sleep_a=3491  run_sleep_b=3276  ls=725  rm=2518
+  -> 1/1 ok, wall 11.3s, per-user total p50 11340 ms
+
+-----------------------------------------------------------------------------------
+concurrency 10: users test:1..test:10, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 10...
+per-user totals:
+  test:1  ok   total=    1144 ms   create=206  run_sleep_a=217  run_sleep_b=244  ls=282  rm=195
+  test:2  ok   total=    1126 ms   create=196  run_sleep_a=235  run_sleep_b=221  ls=244  rm=229
+  test:3  ok   total=    1138 ms   create=202  run_sleep_a=288  run_sleep_b=250  ls=195  rm=202
+  test:4  ok   total=    1198 ms   create=215  run_sleep_a=280  run_sleep_b=250  ls=186  rm=267
+  test:5  ok   total=    1296 ms   create=239  run_sleep_a=287  run_sleep_b=280  ls=261  rm=228
+  test:6  ok   total=    1289 ms   create=225  run_sleep_a=272  run_sleep_b=265  ls=285  rm=242
+  test:7  ok   total=    1253 ms   create=217  run_sleep_a=302  run_sleep_b=287  ls=241  rm=207
+  test:8  ok   total=    1262 ms   create=209  run_sleep_a=270  run_sleep_b=299  ls=268  rm=215
+  test:9  ok   total=    1250 ms   create=197  run_sleep_a=353  run_sleep_b=221  ls=259  rm=220
+  test:10 ok   total=    1240 ms   create=201  run_sleep_a=318  run_sleep_b=238  ls=257  rm=226
+  calibration: 10/10 ok, per-op p50 206-280 ms, whole sequence 1240 ms
+per-user totals:
+  test:1  ok   total=   11370 ms   login=549  create=836  run_sleep_a=3356  run_sleep_b=3525  ls=693  rm=2411
+  test:2  ok   total=   11402 ms   login=543  create=781  run_sleep_a=3403  run_sleep_b=3525  ls=695  rm=2454
+  test:3  ok   total=   11441 ms   login=542  create=884  run_sleep_a=3708  run_sleep_b=3229  ls=671  rm=2406
+  test:4  ok   total=   11644 ms   login=540  create=929  run_sleep_a=3771  run_sleep_b=3330  ls=679  rm=2394
+  test:5  ok   total=   11726 ms   login=539  create=965  run_sleep_a=3804  run_sleep_b=3362  ls=678  rm=2378
+  test:6  ok   total=   12044 ms   login=537  create=1016  run_sleep_a=3872  run_sleep_b=3553  ls=693  rm=2372
+  test:7  ok   total=   12090 ms   login=541  create=1044  run_sleep_a=3854  run_sleep_b=3555  ls=685  rm=2411
+  test:8  ok   total=   12302 ms   login=555  create=1082  run_sleep_a=3892  run_sleep_b=3592  ls=682  rm=2498
+  test:9  ok   total=   12236 ms   login=546  create=1180  run_sleep_a=3794  run_sleep_b=3572  ls=687  rm=2455
+  test:10 ok   total=   12179 ms   login=537  create=1121  run_sleep_a=3850  run_sleep_b=3588  ls=688  rm=2394
+  -> 10/10 ok, wall 12.4s, per-user total p50 11726 ms
+
+-----------------------------------------------------------------------------------
+concurrency 20: users test:1..test:20, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 20...
+per-user totals:
+  test:1  ok   total=    1780 ms   create=308  run_sleep_a=466  run_sleep_b=338  ls=263  rm=405
+  test:2  ok   total=    2038 ms   create=321  run_sleep_a=706  run_sleep_b=221  ls=529  rm=260
+  test:3  ok   total=    2136 ms   create=292  run_sleep_a=717  run_sleep_b=234  ls=632  rm=261
+  test:4  ok   total=    1988 ms   create=289  run_sleep_a=607  run_sleep_b=299  ls=390  rm=404
+  test:5  ok   total=    1945 ms   create=520  run_sleep_a=280  run_sleep_b=284  ls=293  rm=569
+  test:6  ok   total=    2191 ms   create=295  run_sleep_a=632  run_sleep_b=276  ls=768  rm=220
+  test:7  ok   total=    1940 ms   create=458  run_sleep_a=363  run_sleep_b=264  ls=278  rm=577
+  test:8  ok   total=    2070 ms   create=248  run_sleep_a=497  run_sleep_b=380  ls=722  rm=222
+  test:9  ok   total=    2124 ms   create=300  run_sleep_a=439  run_sleep_b=384  ls=807  rm=193
+  test:10 ok   total=    1902 ms   create=329  run_sleep_a=316  run_sleep_b=327  ls=239  rm=690
+  test:11 ok   total=    2055 ms   create=703  run_sleep_a=384  run_sleep_b=383  ls=399  rm=186
+  test:12 ok   total=    1868 ms   create=524  run_sleep_a=415  run_sleep_b=274  ls=390  rm=265
+  test:13 ok   total=    2130 ms   create=688  run_sleep_a=296  run_sleep_b=279  ls=622  rm=245
+  test:14 ok   total=    2174 ms   create=762  run_sleep_a=336  run_sleep_b=593  ls=291  rm=193
+  test:15 ok   total=    2090 ms   create=874  run_sleep_a=228  run_sleep_b=351  ls=405  rm=233
+  test:16 ok   total=    1965 ms   create=636  run_sleep_a=335  run_sleep_b=290  ls=386  rm=318
+  test:17 ok   total=    1906 ms   create=629  run_sleep_a=321  run_sleep_b=354  ls=283  rm=320
+  test:18 ok   total=    1844 ms   create=373  run_sleep_a=399  run_sleep_b=266  ls=547  rm=260
+  test:19 ok   total=    1809 ms   create=416  run_sleep_a=226  run_sleep_b=346  ls=553  rm=267
+  test:20 ok   total=    2117 ms   create=684  run_sleep_a=293  run_sleep_b=759  ls=192  rm=190
+  calibration: 20/20 ok, per-op p50 261-458 ms, whole sequence 2038 ms
+per-user totals:
+  test:1  ok   total=   11019 ms   login=543  create=812  run_sleep_a=3333  run_sleep_b=3274  ls=682  rm=2374
+  test:2  ok   total=   11048 ms   login=542  create=851  run_sleep_a=3354  run_sleep_b=3265  ls=671  rm=2365
+  test:3  ok   total=   11477 ms   login=542  create=890  run_sleep_a=3762  run_sleep_b=3231  ls=687  rm=2363
+  test:4  ok   total=   12114 ms   login=545  create=1021  run_sleep_a=4327  run_sleep_b=3210  ls=673  rm=2337
+  test:5  ok   total=   11709 ms   login=538  create=913  run_sleep_a=4012  run_sleep_b=3220  ls=675  rm=2350
+  test:6  ok   total=   11922 ms   login=539  create=962  run_sleep_a=4176  run_sleep_b=3218  ls=673  rm=2354
+  test:7  ok   total=   12523 ms   login=541  create=1084  run_sleep_a=4424  run_sleep_b=3486  ls=677  rm=2311
+  test:8  ok   total=   12316 ms   login=535  create=1031  run_sleep_a=4382  run_sleep_b=3363  ls=682  rm=2321
+  test:9  ok   total=   12744 ms   login=538  create=1117  run_sleep_a=4410  run_sleep_b=3662  ls=673  rm=2343
+  test:10 ok   total=   13050 ms   login=543  create=1151  run_sleep_a=4452  run_sleep_b=3868  ls=675  rm=2361
+  test:11 ok   total=   13397 ms   login=538  create=1198  run_sleep_a=4480  run_sleep_b=4154  ls=687  rm=2339
+  test:12 ok   total=   13345 ms   login=545  create=1222  run_sleep_a=4450  run_sleep_b=4083  ls=673  rm=2371
+  test:13 ok   total=   13576 ms   login=539  create=1280  run_sleep_a=4452  run_sleep_b=4206  ls=708  rm=2390
+  test:14 ok   total=   13531 ms   login=543  create=1307  run_sleep_a=4446  run_sleep_b=4160  ls=700  rm=2373
+  test:15 ok   total=   13549 ms   login=544  create=1350  run_sleep_a=4416  run_sleep_b=4144  ls=708  rm=2384
+  test:16 ok   total=   13675 ms   login=537  create=1592  run_sleep_a=4538  run_sleep_b=3929  ls=697  rm=2381
+  test:17 ok   total=   13546 ms   login=538  create=1385  run_sleep_a=4381  run_sleep_b=4140  ls=695  rm=2407
+  test:18 ok   total=   13665 ms   login=536  create=1430  run_sleep_a=4474  run_sleep_b=4094  ls=712  rm=2419
+  test:19 ok   total=   13682 ms   login=537  create=1458  run_sleep_a=4445  run_sleep_b=4087  ls=706  rm=2449
+  test:20 ok   total=   13657 ms   login=540  create=1490  run_sleep_a=4508  run_sleep_b=4001  ls=702  rm=2416
+  -> 20/20 ok, wall 13.9s, per-user total p50 13345 ms
+
+-----------------------------------------------------------------------------------
+concurrency 30: users test:1..test:30, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 30...
+per-user totals:
+  test:1  ok   total=    2754 ms   create=237  run_sleep_a=420  run_sleep_b=904  ls=317  rm=875
+  test:2  ok   total=    3380 ms   create=260  run_sleep_a=528  run_sleep_b=1639  ls=286  rm=666
+  test:3  ok   total=    3445 ms   create=277  run_sleep_a=609  run_sleep_b=674  ls=876  rm=1008
+  test:4  ok   total=    2683 ms   create=489  run_sleep_a=581  run_sleep_b=707  ls=472  rm=434
+  test:5  ok   total=    3184 ms   create=609  run_sleep_a=278  run_sleep_b=831  ls=635  rm=831
+  test:6  ok   total=    3406 ms   create=755  run_sleep_a=1005  run_sleep_b=817  ls=516  rm=312
+  test:7  ok   total=    3321 ms   create=738  run_sleep_a=517  run_sleep_b=434  ls=743  rm=888
+  test:8  ok   total=    2594 ms   create=351  run_sleep_a=645  run_sleep_b=741  ls=627  rm=231
+  test:9  ok   total=    2596 ms   create=598  run_sleep_a=697  run_sleep_b=356  ls=639  rm=306
+  test:10 ok   total=    3289 ms   create=654  run_sleep_a=538  run_sleep_b=489  ls=809  rm=799
+  test:11 ok   total=    3342 ms   create=771  run_sleep_a=631  run_sleep_b=1198  ls=441  rm=300
+  test:12 ok   total=    3302 ms   create=553  run_sleep_a=798  run_sleep_b=371  ls=987  rm=593
+  test:13 ok   total=    3217 ms   create=688  run_sleep_a=579  run_sleep_b=408  ls=597  rm=946
+  test:14 ok   total=    2989 ms   create=697  run_sleep_a=381  run_sleep_b=857  ls=684  rm=370
+  test:15 ok   total=    3316 ms   create=642  run_sleep_a=1038  run_sleep_b=787  ls=523  rm=326
+  test:16 ok   total=    3059 ms   create=629  run_sleep_a=709  run_sleep_b=311  ls=771  rm=639
+  test:17 ok   total=    3388 ms   create=1350  run_sleep_a=523  run_sleep_b=475  ls=822  rm=218
+  test:18 ok   total=    3378 ms   create=735  run_sleep_a=841  run_sleep_b=1339  ls=248  rm=216
+  test:19 ok   total=    3388 ms   create=682  run_sleep_a=1466  run_sleep_b=577  ls=421  rm=242
+  test:20 ok   total=    3162 ms   create=693  run_sleep_a=541  run_sleep_b=331  ls=1057  rm=539
+  test:21 ok   total=    3270 ms   create=816  run_sleep_a=1107  run_sleep_b=511  ls=628  rm=207
+  test:22 ok   total=    3085 ms   create=518  run_sleep_a=706  run_sleep_b=872  ls=365  rm=625
+  test:23 ok   total=    2720 ms   create=620  run_sleep_a=662  run_sleep_b=515  ls=382  rm=540
+  test:24 ok   total=    3271 ms   create=1317  run_sleep_a=769  run_sleep_b=282  ls=699  rm=205
+  test:25 ok   total=    2855 ms   create=691  run_sleep_a=726  run_sleep_b=534  ls=427  rm=477
+  test:26 ok   total=    3122 ms   create=465  run_sleep_a=719  run_sleep_b=578  ls=985  rm=375
+  test:27 ok   total=    3271 ms   create=490  run_sleep_a=951  run_sleep_b=505  ls=1102  rm=223
+  test:28 ok   total=    3041 ms   create=1454  run_sleep_a=584  run_sleep_b=304  ls=462  rm=237
+  test:29 ok   total=    3060 ms   create=561  run_sleep_a=847  run_sleep_b=675  ls=634  rm=344
+  test:30 ok   total=    2764 ms   create=453  run_sleep_a=704  run_sleep_b=609  ls=509  rm=489
+  calibration: 30/30 ok, per-op p50 375-662 ms, whole sequence 3184 ms
+per-user totals:
+  test:1  ok   total=   14730 ms   login=550  create=799  run_sleep_a=4921  run_sleep_b=5089  ls=852  rm=2519
+  test:2  ok   total=   12670 ms   login=538  create=789  run_sleep_a=4910  run_sleep_b=3393  ls=685  rm=2355
+  test:3  ok   total=   14431 ms   login=541  create=795  run_sleep_a=4916  run_sleep_b=5130  ls=690  rm=2358
+  test:4  ok   total=   12667 ms   login=535  create=801  run_sleep_a=4883  run_sleep_b=3379  ls=692  rm=2376
+  test:5  ok   total=   14358 ms   login=536  create=799  run_sleep_a=4871  run_sleep_b=5126  ls=679  rm=2345
+  test:6  ok   total=   14167 ms   login=542  create=803  run_sleep_a=4857  run_sleep_b=4929  ls=684  rm=2351
+  test:7  ok   total=   14402 ms   login=537  create=810  run_sleep_a=4850  run_sleep_b=5178  ls=684  rm=2343
+  test:8  ok   total=   14572 ms   login=535  create=817  run_sleep_a=4852  run_sleep_b=5297  ls=715  rm=2356
+  test:9  ok   total=   14466 ms   login=537  create=813  run_sleep_a=4861  run_sleep_b=5192  ls=687  rm=2374
+  test:10 ok   total=   14595 ms   login=534  create=823  run_sleep_a=4860  run_sleep_b=5304  ls=709  rm=2364
+  test:11 ok   total=   14681 ms   login=536  create=828  run_sleep_a=4945  run_sleep_b=5251  ls=717  rm=2403
+  test:12 ok   total=   14690 ms   login=536  create=831  run_sleep_a=4981  run_sleep_b=5218  ls=719  rm=2404
+  test:13 ok   total=   14728 ms   login=534  create=834  run_sleep_a=4955  run_sleep_b=5204  ls=722  rm=2478
+  test:14 ok   total=   14693 ms   login=538  create=834  run_sleep_a=4950  run_sleep_b=5201  ls=723  rm=2446
+  test:15 ok   total=   14752 ms   login=539  create=836  run_sleep_a=4939  run_sleep_b=5217  ls=722  rm=2499
+  test:16 ok   total=   14721 ms   login=540  create=844  run_sleep_a=4916  run_sleep_b=5220  ls=720  rm=2481
+  test:17 ok   total=   15116 ms   login=541  create=847  run_sleep_a=7263  run_sleep_b=3391  ls=707  rm=2368
+  test:18 ok   total=   16112 ms   login=545  create=850  run_sleep_a=7251  run_sleep_b=4443  ls=679  rm=2344
+  test:19 ok   total=   15072 ms   login=543  create=858  run_sleep_a=7233  run_sleep_b=3387  ls=702  rm=2348
+  test:20 ok   total=   16013 ms   login=536  create=870  run_sleep_a=7242  run_sleep_b=4304  ls=697  rm=2364
+  test:21 ok   total=   16736 ms   login=539  create=1006  run_sleep_a=7273  run_sleep_b=4756  ls=714  rm=2447
+  test:22 ok   total=   16166 ms   login=547  create=864  run_sleep_a=7219  run_sleep_b=4518  ls=683  rm=2334
+  test:23 ok   total=   15271 ms   login=537  create=840  run_sleep_a=7210  run_sleep_b=3578  ls=718  rm=2386
+  test:24 ok   total=   16663 ms   login=537  create=941  run_sleep_a=7343  run_sleep_b=4722  ls=705  rm=2414
+  test:25 ok   total=   16575 ms   login=538  create=880  run_sleep_a=7266  run_sleep_b=4814  ls=702  rm=2374
+  test:26 ok   total=   16618 ms   login=537  create=889  run_sleep_a=7344  run_sleep_b=4743  ls=714  rm=2391
+  test:27 ok   total=   16486 ms   login=536  create=849  run_sleep_a=7274  run_sleep_b=4768  ls=710  rm=2348
+  test:28 ok   total=   16341 ms   login=541  create=868  run_sleep_a=7282  run_sleep_b=4624  ls=697  rm=2328
+  test:29 ok   total=   16234 ms   login=536  create=805  run_sleep_a=7262  run_sleep_b=4603  ls=692  rm=2335
+  test:30 ok   total=   16543 ms   login=543  create=873  run_sleep_a=7316  run_sleep_b=4717  ls=704  rm=2389
+  -> 30/30 ok, wall 17.0s, per-user total p50 14730 ms
+
+-----------------------------------------------------------------------------------
+concurrency 40: users test:1..test:40, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 40...
+per-user totals:
+  test:1  ok   total=    2730 ms   create=224  run_sleep_a=473  run_sleep_b=792  ls=784  rm=457
+  test:2  ok   total=    4448 ms   create=220  run_sleep_a=1050  run_sleep_b=1668  ls=1157  rm=353
+  test:3  ok   total=    3035 ms   create=333  run_sleep_a=1187  run_sleep_b=702  ls=356  rm=457
+  test:4  ok   total=    3951 ms   create=261  run_sleep_a=726  run_sleep_b=915  ls=944  rm=1105
+  test:5  ok   total=    4914 ms   create=320  run_sleep_a=1032  run_sleep_b=2008  ls=1058  rm=496
+  test:6  ok   total=    4293 ms   create=579  run_sleep_a=721  run_sleep_b=662  ls=549  rm=1782
+  test:7  ok   total=    5020 ms   create=464  run_sleep_a=1965  run_sleep_b=1745  ls=302  rm=544
+  test:8  ok   total=    4120 ms   create=481  run_sleep_a=850  run_sleep_b=1066  ls=1087  rm=636
+  test:9  ok   total=    5255 ms   create=1456  run_sleep_a=2336  run_sleep_b=500  ls=745  rm=218
+  test:10 ok   total=    4252 ms   create=581  run_sleep_a=863  run_sleep_b=823  ls=515  rm=1470
+  test:11 ok   total=    4111 ms   create=531  run_sleep_a=794  run_sleep_b=785  ls=678  rm=1322
+  test:12 ok   total=    4315 ms   create=536  run_sleep_a=1583  run_sleep_b=841  ls=733  rm=621
+  test:13 ok   total=    4384 ms   create=657  run_sleep_a=785  run_sleep_b=1469  ls=603  rm=870
+  test:14 ok   total=    4389 ms   create=1367  run_sleep_a=1129  run_sleep_b=403  ls=1032  rm=458
+  test:15 ok   total=    5049 ms   create=582  run_sleep_a=2197  run_sleep_b=1298  ls=786  rm=187
+  test:16 ok   total=    4869 ms   create=1519  run_sleep_a=1584  run_sleep_b=779  ls=764  rm=223
+  test:17 ok   total=    4250 ms   create=1125  run_sleep_a=857  run_sleep_b=570  ls=1423  rm=274
+  test:18 ok   total=    4216 ms   create=479  run_sleep_a=905  run_sleep_b=1238  ls=874  rm=720
+  test:19 ok   total=    4825 ms   create=656  run_sleep_a=1944  run_sleep_b=695  ls=896  rm=635
+  test:20 ok   total=    4792 ms   create=330  run_sleep_a=1627  run_sleep_b=377  ls=1823  rm=635
+  test:21 ok   total=    4818 ms   create=456  run_sleep_a=1230  run_sleep_b=1070  ls=1484  rm=578
+  test:22 ok   total=    4751 ms   create=712  run_sleep_a=2639  run_sleep_b=639  ls=416  rm=345
+  test:23 ok   total=    4075 ms   create=1020  run_sleep_a=444  run_sleep_b=963  ls=861  rm=785
+  test:24 ok   total=    4750 ms   create=1033  run_sleep_a=1676  run_sleep_b=620  ls=688  rm=733
+  test:25 ok   total=    4842 ms   create=1184  run_sleep_a=2467  run_sleep_b=474  ls=518  rm=198
+  test:26 ok   total=    4937 ms   create=1932  run_sleep_a=1190  run_sleep_b=947  ls=673  rm=195
+  test:27 ok   total=    4569 ms   create=1595  run_sleep_a=1579  run_sleep_b=767  ls=290  rm=339
+  test:28 ok   total=    4177 ms   create=1149  run_sleep_a=649  run_sleep_b=1216  ls=881  rm=282
+  test:29 ok   total=    4655 ms   create=1660  run_sleep_a=1312  run_sleep_b=786  ls=420  rm=476
+  test:30 ok   total=    4132 ms   create=919  run_sleep_a=235  run_sleep_b=1301  ls=1386  rm=291
+  test:31 ok   total=    4093 ms   create=899  run_sleep_a=811  run_sleep_b=1484  ls=360  rm=539
+  test:32 ok   total=    4485 ms   create=1209  run_sleep_a=1109  run_sleep_b=882  ls=787  rm=497
+  test:33 ok   total=    4600 ms   create=1220  run_sleep_a=1201  run_sleep_b=678  ls=710  rm=791
+  test:34 ok   total=    4720 ms   create=1126  run_sleep_a=1974  run_sleep_b=799  ls=606  rm=216
+  test:35 ok   total=    4632 ms   create=1076  run_sleep_a=1740  run_sleep_b=489  ls=525  rm=803
+  test:36 ok   total=    4820 ms   create=1496  run_sleep_a=2349  run_sleep_b=465  ls=312  rm=198
+  test:37 ok   total=    4311 ms   create=507  run_sleep_a=598  run_sleep_b=1527  ls=1106  rm=573
+  test:38 ok   total=    4210 ms   create=762  run_sleep_a=931  run_sleep_b=945  ls=1273  rm=299
+  test:39 ok   total=    4019 ms   create=1645  run_sleep_a=832  run_sleep_b=952  ls=270  rm=320
+  test:40 ok   total=    4581 ms   create=815  run_sleep_a=2284  run_sleep_b=580  ls=576  rm=326
+  calibration: 40/40 ok, per-op p50 496-1187 ms, whole sequence 4485 ms
+per-user totals:
+  test:1  ok   total=   13185 ms   login=538  create=836  run_sleep_a=4909  run_sleep_b=3921  ls=672  rm=2308
+  test:2  ok   total=   11882 ms   login=543  create=803  run_sleep_a=3481  run_sleep_b=4023  ls=700  rm=2331
+  test:3  ok   total=   12051 ms   login=538  create=842  run_sleep_a=4282  run_sleep_b=3373  ls=679  rm=2336
+  test:4  ok   total=   12051 ms   login=543  create=842  run_sleep_a=4270  run_sleep_b=3383  ls=674  rm=2338
+  test:5  ok   total=   12716 ms   login=554  create=853  run_sleep_a=4725  run_sleep_b=3599  ls=682  rm=2302
+  test:6  ok   total=   12889 ms   login=541  create=899  run_sleep_a=4739  run_sleep_b=3725  ls=672  rm=2312
+  test:7  ok   total=   13516 ms   login=534  create=950  run_sleep_a=4769  run_sleep_b=4250  ls=672  rm=2339
+  test:8  ok   total=   12592 ms   login=539  create=847  run_sleep_a=4682  run_sleep_b=3531  ls=689  rm=2303
+  test:9  ok   total=   13761 ms   login=540  create=884  run_sleep_a=4791  run_sleep_b=4532  ls=682  rm=2332
+  test:10 ok   total=   14039 ms   login=540  create=927  run_sleep_a=4809  run_sleep_b=4755  ls=682  rm=2325
+  test:11 ok   total=   13898 ms   login=539  create=966  run_sleep_a=4769  run_sleep_b=4631  ls=683  rm=2310
+  test:12 ok   total=   14164 ms   login=534  create=987  run_sleep_a=4809  run_sleep_b=4782  ls=704  rm=2347
+  test:13 ok   total=   14098 ms   login=542  create=918  run_sleep_a=4789  run_sleep_b=4814  ls=685  rm=2349
+  test:14 ok   total=   14171 ms   login=541  create=999  run_sleep_a=4799  run_sleep_b=4766  ls=703  rm=2360
+  test:15 ok   total=   14171 ms   login=541  create=1007  run_sleep_a=4766  run_sleep_b=4775  ls=703  rm=2375
+  test:16 ok   total=   14131 ms   login=550  create=939  run_sleep_a=4789  run_sleep_b=4762  ls=698  rm=2391
+  test:17 ok   total=   14163 ms   login=557  create=979  run_sleep_a=4881  run_sleep_b=4694  ls=710  rm=2340
+  test:18 ok   total=   14282 ms   login=549  create=989  run_sleep_a=5277  run_sleep_b=4379  ls=705  rm=2381
+  test:19 ok   total=   15584 ms   login=542  create=1018  run_sleep_a=6973  run_sleep_b=4019  ls=681  rm=2351
+  test:20 ok   total=   14245 ms   login=543  create=985  run_sleep_a=5257  run_sleep_b=4374  ls=705  rm=2379
+  test:21 ok   total=   14558 ms   login=543  create=1018  run_sleep_a=6600  run_sleep_b=3390  ls=697  rm=2309
+  test:22 ok   total=   14281 ms   login=543  create=997  run_sleep_a=5794  run_sleep_b=3936  ls=695  rm=2315
+  test:23 ok   total=   14908 ms   login=538  create=1022  run_sleep_a=6858  run_sleep_b=3426  ls=705  rm=2358
+  test:24 ok   total=   14333 ms   login=536  create=1002  run_sleep_a=6188  run_sleep_b=3603  ls=685  rm=2320
+  test:25 ok   total=   14583 ms   login=539  create=1010  run_sleep_a=6681  run_sleep_b=3351  ls=698  rm=2303
+  test:26 ok   total=   15518 ms   login=538  create=1020  run_sleep_a=6887  run_sleep_b=4052  ls=681  rm=2340
+  test:27 ok   total=   14719 ms   login=540  create=1019  run_sleep_a=6718  run_sleep_b=3374  ls=738  rm=2329
+  test:28 ok   total=   15052 ms   login=544  create=1011  run_sleep_a=6848  run_sleep_b=3642  ls=674  rm=2333
+  test:29 ok   total=   15471 ms   login=540  create=1019  run_sleep_a=6852  run_sleep_b=4039  ls=683  rm=2338
+  test:30 FAIL total=    1393 ms   login=540  create=852   <- sbx: the sandbox service is at capacity
+  test:31 FAIL total=    1474 ms   login=567  create=907   <- sbx: the sandbox service is at capacity
+  test:32 FAIL total=    1494 ms   login=568  create=925   <- sbx: the sandbox service is at capacity
+  test:33 ok   total=   15275 ms   login=560  create=959  run_sleep_a=6838  run_sleep_b=3924  ls=672  rm=2320
+  test:34 FAIL total=    1399 ms   login=551  create=848   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1461 ms   login=540  create=921   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1321 ms   login=548  create=773   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    1456 ms   login=542  create=914   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    1322 ms   login=539  create=783   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1387 ms   login=545  create=841   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1352 ms   login=540  create=811   <- sbx: the sandbox service is at capacity
+failures (10):
+  test:30 FAIL total=    1393 ms   login=540  create=852   <- sbx: the sandbox service is at capacity
+  test:31 FAIL total=    1474 ms   login=567  create=907   <- sbx: the sandbox service is at capacity
+  test:32 FAIL total=    1494 ms   login=568  create=925   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    1399 ms   login=551  create=848   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1461 ms   login=540  create=921   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1321 ms   login=548  create=773   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    1456 ms   login=542  create=914   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    1322 ms   login=539  create=783   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1387 ms   login=545  create=841   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1352 ms   login=540  create=811   <- sbx: the sandbox service is at capacity
+  -> 30/40 ok, wall 15.8s, per-user total p50 14164 ms
+
+-----------------------------------------------------------------------------------
+concurrency 50: users test:1..test:50, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 50...
+per-user totals:
+  test:1  ok   total=    3622 ms   create=228  run_sleep_a=543  run_sleep_b=1566  ls=804  rm=481
+  test:2  ok   total=    5600 ms   create=221  run_sleep_a=1535  run_sleep_b=1325  ls=1824  rm=695
+  test:3  ok   total=    5593 ms   create=216  run_sleep_a=1727  run_sleep_b=1641  ls=1061  rm=948
+  test:4  ok   total=    3916 ms   create=253  run_sleep_a=525  run_sleep_b=680  ls=1258  rm=1200
+  test:5  ok   total=    5538 ms   create=272  run_sleep_a=1460  run_sleep_b=2814  ls=321  rm=671
+  test:6  ok   total=    3576 ms   create=326  run_sleep_a=1542  run_sleep_b=939  ls=452  rm=317
+  test:7  ok   total=    5801 ms   create=453  run_sleep_a=1420  run_sleep_b=1597  ls=2046  rm=285
+  test:8  ok   total=    3517 ms   create=503  run_sleep_a=967  run_sleep_b=254  ls=1276  rm=517
+  test:9  ok   total=    4803 ms   create=606  run_sleep_a=1164  run_sleep_b=936  ls=1432  rm=664
+  test:10 ok   total=    4869 ms   create=500  run_sleep_a=1113  run_sleep_b=953  ls=1902  rm=402
+  test:11 ok   total=    4774 ms   create=548  run_sleep_a=1137  run_sleep_b=929  ls=1372  rm=787
+  test:12 ok   total=    3741 ms   create=466  run_sleep_a=1078  run_sleep_b=803  ls=1095  rm=299
+  test:13 ok   total=    3708 ms   create=436  run_sleep_a=1481  run_sleep_b=697  ls=343  rm=750
+  test:14 ok   total=    5397 ms   create=481  run_sleep_a=2506  run_sleep_b=1019  ls=763  rm=627
+  test:15 ok   total=    5162 ms   create=470  run_sleep_a=852  run_sleep_b=809  ls=1322  rm=1711
+  test:16 ok   total=    4442 ms   create=1457  run_sleep_a=710  run_sleep_b=761  ls=1102  rm=411
+  test:17 ok   total=    4017 ms   create=571  run_sleep_a=787  run_sleep_b=355  ls=470  rm=1834
+  test:18 ok   total=    5709 ms   create=605  run_sleep_a=855  run_sleep_b=2184  ls=1720  rm=346
+  test:19 ok   total=    5321 ms   create=464  run_sleep_a=2494  run_sleep_b=1078  ls=636  rm=649
+  test:20 ok   total=    3159 ms   create=410  run_sleep_a=644  run_sleep_b=502  ls=1112  rm=490
+  test:21 ok   total=    4479 ms   create=1115  run_sleep_a=1077  run_sleep_b=471  ls=1117  rm=699
+  test:22 ok   total=    4563 ms   create=738  run_sleep_a=879  run_sleep_b=454  ls=1531  rm=960
+  test:23 ok   total=    3254 ms   create=482  run_sleep_a=1154  run_sleep_b=683  ls=478  rm=458
+  test:24 ok   total=    5595 ms   create=1261  run_sleep_a=626  run_sleep_b=2088  ls=1306  rm=314
+  test:25 ok   total=    5253 ms   create=1378  run_sleep_a=2311  run_sleep_b=608  ls=590  rm=365
+  test:26 ok   total=    5269 ms   create=1275  run_sleep_a=1142  run_sleep_b=1389  ls=1084  rm=380
+  test:27 ok   total=    5101 ms   create=1573  run_sleep_a=709  run_sleep_b=994  ls=959  rm=866
+  test:28 ok   total=    4123 ms   create=1580  run_sleep_a=494  run_sleep_b=471  ls=1079  rm=499
+  test:29 ok   total=    5189 ms   create=1225  run_sleep_a=1692  run_sleep_b=975  ls=640  rm=657
+  test:30 ok   total=    5194 ms   create=1301  run_sleep_a=700  run_sleep_b=2124  ls=781  rm=288
+  test:31 ok   total=    5210 ms   create=1313  run_sleep_a=2015  run_sleep_b=1176  ls=393  rm=314
+  test:32 ok   total=    5528 ms   create=2472  run_sleep_a=1671  run_sleep_b=799  ls=261  rm=324
+  test:33 ok   total=    5053 ms   create=1138  run_sleep_a=940  run_sleep_b=337  ls=1721  rm=917
+  test:34 ok   total=    3355 ms   create=427  run_sleep_a=982  run_sleep_b=559  ls=542  rm=844
+  test:35 ok   total=    4421 ms   create=1147  run_sleep_a=823  run_sleep_b=683  ls=1182  rm=586
+  test:36 ok   total=    3818 ms   create=1782  run_sleep_a=503  run_sleep_b=845  ls=222  rm=466
+  test:37 ok   total=    4761 ms   create=1856  run_sleep_a=466  run_sleep_b=669  ls=883  rm=886
+  test:38 ok   total=    5068 ms   create=1939  run_sleep_a=682  run_sleep_b=508  ls=938  rm=1001
+  test:39 ok   total=    4865 ms   create=1061  run_sleep_a=1207  run_sleep_b=825  ls=683  rm=1088
+  test:40 ok   total=    5324 ms   create=1443  run_sleep_a=1630  run_sleep_b=999  ls=971  rm=281
+  test:41 ok   total=    5432 ms   create=1265  run_sleep_a=1032  run_sleep_b=2717  ls=213  rm=205
+  test:42 ok   total=    3727 ms   create=1053  run_sleep_a=387  run_sleep_b=950  ls=988  rm=349
+  test:43 ok   total=    5377 ms   create=1272  run_sleep_a=1334  run_sleep_b=1433  ls=978  rm=361
+  test:44 ok   total=    4605 ms   create=1238  run_sleep_a=1286  run_sleep_b=483  ls=952  rm=645
+  test:45 ok   total=    4982 ms   create=2523  run_sleep_a=775  run_sleep_b=676  ls=355  rm=652
+  test:46 ok   total=    5019 ms   create=949  run_sleep_a=1231  run_sleep_b=1491  ls=1140  rm=208
+  test:47 ok   total=    4985 ms   create=1478  run_sleep_a=2200  run_sleep_b=571  ls=477  rm=258
+  test:48 ok   total=    5108 ms   create=1815  run_sleep_a=1181  run_sleep_b=906  ls=989  rm=217
+  test:49 ok   total=    4325 ms   create=907  run_sleep_a=376  run_sleep_b=414  ls=1473  rm=1154
+  test:50 ok   total=    4630 ms   create=1084  run_sleep_a=420  run_sleep_b=1388  ls=929  rm=808
+  calibration: 50/50 ok, per-op p50 517-1077 ms, whole sequence 4869 ms
+per-user totals:
+  test:1  ok   total=   15785 ms   login=540  create=751  run_sleep_a=7488  run_sleep_b=3923  ls=702  rm=2380
+  test:2  ok   total=   12206 ms   login=539  create=753  run_sleep_a=3935  run_sleep_b=3884  ls=717  rm=2378
+  test:3  ok   total=   13636 ms   login=548  create=770  run_sleep_a=5132  run_sleep_b=4156  ls=692  rm=2337
+  test:4  ok   total=   12217 ms   login=541  create=790  run_sleep_a=4108  run_sleep_b=3655  ls=716  rm=2408
+  test:5  ok   total=   12976 ms   login=539  create=770  run_sleep_a=4870  run_sleep_b=3750  ls=717  rm=2330
+  test:6  ok   total=   12179 ms   login=538  create=778  run_sleep_a=3898  run_sleep_b=3859  ls=707  rm=2397
+  test:7  ok   total=   12160 ms   login=538  create=780  run_sleep_a=3873  run_sleep_b=3867  ls=713  rm=2388
+  test:8  ok   total=   14090 ms   login=535  create=787  run_sleep_a=5077  run_sleep_b=4624  ls=701  rm=2365
+  test:9  ok   total=   14404 ms   login=533  create=796  run_sleep_a=5561  run_sleep_b=4470  ls=697  rm=2347
+  test:10 ok   total=   13526 ms   login=542  create=808  run_sleep_a=4990  run_sleep_b=4128  ls=682  rm=2375
+  test:11 ok   total=   14166 ms   login=536  create=809  run_sleep_a=5038  run_sleep_b=4679  ls=719  rm=2384
+  test:12 ok   total=   14319 ms   login=538  create=805  run_sleep_a=5462  run_sleep_b=4472  ls=688  rm=2352
+  test:13 ok   total=   14104 ms   login=541  create=799  run_sleep_a=5016  run_sleep_b=4673  ls=703  rm=2371
+  test:14 ok   total=   14334 ms   login=537  create=805  run_sleep_a=5428  run_sleep_b=4529  ls=691  rm=2343
+  test:15 ok   total=   14670 ms   login=539  create=797  run_sleep_a=6512  run_sleep_b=3741  ls=722  rm=2357
+  test:16 ok   total=   14646 ms   login=542  create=795  run_sleep_a=6461  run_sleep_b=3783  ls=718  rm=2346
+  test:17 ok   total=   12898 ms   login=536  create=799  run_sleep_a=4746  run_sleep_b=3799  ls=688  rm=2329
+  test:18 ok   total=   14102 ms   login=549  create=789  run_sleep_a=4955  run_sleep_b=4721  ls=701  rm=2388
+  test:19 ok   total=   12832 ms   login=537  create=819  run_sleep_a=4664  run_sleep_b=3791  ls=696  rm=2325
+  test:20 ok   total=   14065 ms   login=541  create=792  run_sleep_a=4937  run_sleep_b=4679  ls=720  rm=2395
+  test:21 ok   total=   12867 ms   login=537  create=773  run_sleep_a=4751  run_sleep_b=3791  ls=684  rm=2331
+  test:22 ok   total=   14219 ms   login=540  create=789  run_sleep_a=5348  run_sleep_b=4505  ls=690  rm=2347
+  test:23 ok   total=   14048 ms   login=539  create=826  run_sleep_a=4879  run_sleep_b=4695  ls=707  rm=2403
+  test:24 ok   total=   14650 ms   login=538  create=861  run_sleep_a=6674  run_sleep_b=3488  ls=729  rm=2360
+  test:25 ok   total=   14570 ms   login=542  create=897  run_sleep_a=6510  run_sleep_b=3564  ls=724  rm=2331
+  test:26 ok   total=   14845 ms   login=539  create=907  run_sleep_a=6988  run_sleep_b=3332  ls=720  rm=2359
+  test:27 FAIL total=    1617 ms   login=540  create=1076   <- sbx: the sandbox service is at capacity
+  test:28 ok   total=   14801 ms   login=541  create=901  run_sleep_a=6991  run_sleep_b=3295  ls=729  rm=2340
+  test:29 ok   total=   15422 ms   login=548  create=940  run_sleep_a=6973  run_sleep_b=3896  ls=701  rm=2364
+  test:30 FAIL total=    1782 ms   login=541  create=1240   <- sbx: the sandbox service is at capacity
+  test:31 FAIL total=    1610 ms   login=540  create=1070   <- sbx: the sandbox service is at capacity
+  test:32 FAIL total=    1759 ms   login=553  create=1204   <- sbx: the sandbox service is at capacity
+  test:33 FAIL total=    1778 ms   login=541  create=1237   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    1548 ms   login=542  create=1006   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1587 ms   login=542  create=1045   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1456 ms   login=539  create=917   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    2022 ms   login=542  create=1479   <- sbx: the sandbox service is at capacity
+  test:38 ok   total=   15147 ms   login=541  create=887  run_sleep_a=6910  run_sleep_b=3777  ls=691  rm=2340
+  test:39 FAIL total=    1602 ms   login=539  create=1062   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1586 ms   login=538  create=1047   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1418 ms   login=537  create=880   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    1765 ms   login=537  create=1227   <- sbx: the sandbox service is at capacity
+  test:43 FAIL total=    1620 ms   login=549  create=1071   <- sbx: the sandbox service is at capacity
+  test:44 ok   total=   15244 ms   login=536  create=819  run_sleep_a=6906  run_sleep_b=3898  ls=691  rm=2392
+  test:45 FAIL total=    1371 ms   login=541  create=830   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1510 ms   login=553  create=957   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    1555 ms   login=545  create=1008   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    1528 ms   login=539  create=988   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1932 ms   login=541  create=1391   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    1550 ms   login=538  create=1011   <- sbx: the sandbox service is at capacity
+failures (20):
+  test:27 FAIL total=    1617 ms   login=540  create=1076   <- sbx: the sandbox service is at capacity
+  test:30 FAIL total=    1782 ms   login=541  create=1240   <- sbx: the sandbox service is at capacity
+  test:31 FAIL total=    1610 ms   login=540  create=1070   <- sbx: the sandbox service is at capacity
+  test:32 FAIL total=    1759 ms   login=553  create=1204   <- sbx: the sandbox service is at capacity
+  test:33 FAIL total=    1778 ms   login=541  create=1237   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    1548 ms   login=542  create=1006   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1587 ms   login=542  create=1045   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1456 ms   login=539  create=917   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    2022 ms   login=542  create=1479   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1602 ms   login=539  create=1062   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1586 ms   login=538  create=1047   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1418 ms   login=537  create=880   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    1765 ms   login=537  create=1227   <- sbx: the sandbox service is at capacity
+  test:43 FAIL total=    1620 ms   login=549  create=1071   <- sbx: the sandbox service is at capacity
+  test:45 FAIL total=    1371 ms   login=541  create=830   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1510 ms   login=553  create=957   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    1555 ms   login=545  create=1008   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    1528 ms   login=539  create=988   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1932 ms   login=541  create=1391   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    1550 ms   login=538  create=1011   <- sbx: the sandbox service is at capacity
+  -> 30/50 ok, wall 15.8s, per-user total p50 14104 ms
+
+-----------------------------------------------------------------------------------
+concurrency 60: users test:1..test:60, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 60...
+per-user totals:
+  test:1  ok   total=    5439 ms   create=232  run_sleep_a=851  run_sleep_b=773  ls=2193  rm=1390
+  test:2  ok   total=    5579 ms   create=221  run_sleep_a=1023  run_sleep_b=1766  ls=1540  rm=1028
+  test:3  ok   total=    5915 ms   create=247  run_sleep_a=658  run_sleep_b=1836  ls=878  rm=2295
+  test:4  ok   total=    5450 ms   create=248  run_sleep_a=634  run_sleep_b=1758  ls=909  rm=1901
+  test:5  ok   total=    4244 ms   create=230  run_sleep_a=386  run_sleep_b=907  ls=2029  rm=691
+  test:6  ok   total=    5833 ms   create=217  run_sleep_a=689  run_sleep_b=851  ls=2187  rm=1889
+  test:7  ok   total=    5574 ms   create=240  run_sleep_a=633  run_sleep_b=1564  ls=1081  rm=2055
+  test:8  ok   total=    7341 ms   create=208  run_sleep_a=2761  run_sleep_b=3126  ls=953  rm=292
+  test:9  ok   total=    6831 ms   create=236  run_sleep_a=2703  run_sleep_b=1860  ls=1032  rm=999
+  test:10 ok   total=    5790 ms   create=298  run_sleep_a=2270  run_sleep_b=1806  ls=733  rm=684
+  test:11 ok   total=    5952 ms   create=1713  run_sleep_a=1478  run_sleep_b=1163  ls=1183  rm=415
+  test:12 ok   total=    4360 ms   create=306  run_sleep_a=1768  run_sleep_b=1084  ls=805  rm=398
+  test:13 ok   total=    7391 ms   create=434  run_sleep_a=2711  run_sleep_b=1603  ls=1355  rm=1288
+  test:14 ok   total=    5751 ms   create=456  run_sleep_a=1348  run_sleep_b=2488  ls=438  rm=1021
+  test:15 ok   total=    6598 ms   create=582  run_sleep_a=2446  run_sleep_b=1653  ls=1125  rm=793
+  test:16 ok   total=    6000 ms   create=775  run_sleep_a=1566  run_sleep_b=1603  ls=1414  rm=643
+  test:17 ok   total=    7352 ms   create=2632  run_sleep_a=832  run_sleep_b=2811  ls=637  rm=440
+  test:18 ok   total=    5679 ms   create=544  run_sleep_a=1912  run_sleep_b=878  ls=1329  rm=1015
+  test:19 ok   total=    4356 ms   create=558  run_sleep_a=1247  run_sleep_b=712  ls=1033  rm=806
+  test:20 ok   total=    7186 ms   create=736  run_sleep_a=2323  run_sleep_b=1918  ls=1697  rm=512
+  test:21 ok   total=    5337 ms   create=546  run_sleep_a=1782  run_sleep_b=970  ls=895  rm=1144
+  test:22 ok   total=    7310 ms   create=2121  run_sleep_a=1746  run_sleep_b=892  ls=2239  rm=312
+  test:23 ok   total=    5627 ms   create=482  run_sleep_a=1097  run_sleep_b=1109  ls=2179  rm=761
+  test:24 ok   total=    6894 ms   create=1497  run_sleep_a=2567  run_sleep_b=493  ls=1694  rm=643
+  test:25 ok   total=    6612 ms   create=690  run_sleep_a=895  run_sleep_b=1633  ls=2027  rm=1367
+  test:26 ok   total=    7142 ms   create=1561  run_sleep_a=1462  run_sleep_b=827  ls=1506  rm=1786
+  test:27 ok   total=    6806 ms   create=609  run_sleep_a=964  run_sleep_b=2172  ls=2444  rm=616
+  test:28 ok   total=    6753 ms   create=1890  run_sleep_a=2188  run_sleep_b=1462  ls=835  rm=379
+  test:29 ok   total=    6742 ms   create=2248  run_sleep_a=1067  run_sleep_b=2222  ls=521  rm=683
+  test:30 ok   total=    5804 ms   create=585  run_sleep_a=1680  run_sleep_b=764  ls=2121  rm=654
+  test:31 ok   total=    5493 ms   create=1275  run_sleep_a=1031  run_sleep_b=571  ls=1866  rm=751
+  test:32 ok   total=    5700 ms   create=1431  run_sleep_a=556  run_sleep_b=246  ls=2199  rm=1268
+  test:33 ok   total=    5694 ms   create=564  run_sleep_a=894  run_sleep_b=1688  ls=1793  rm=754
+  test:34 ok   total=    5862 ms   create=590  run_sleep_a=1643  run_sleep_b=1354  ls=933  rm=1342
+  test:35 ok   total=    5807 ms   create=1939  run_sleep_a=776  run_sleep_b=1964  ls=594  rm=534
+  test:36 ok   total=    5103 ms   create=2350  run_sleep_a=1125  run_sleep_b=716  ls=524  rm=388
+  test:37 ok   total=    6204 ms   create=668  run_sleep_a=2138  run_sleep_b=1110  ls=708  rm=1581
+  test:38 ok   total=    6613 ms   create=946  run_sleep_a=606  run_sleep_b=2725  ls=1418  rm=918
+  test:39 ok   total=    7257 ms   create=4127  run_sleep_a=1943  run_sleep_b=790  ls=233  rm=164
+  test:40 ok   total=    5488 ms   create=1344  run_sleep_a=690  run_sleep_b=1579  ls=596  rm=1279
+  test:41 ok   total=    6402 ms   create=1237  run_sleep_a=1827  run_sleep_b=1691  ls=629  rm=1018
+  test:42 ok   total=    6007 ms   create=1873  run_sleep_a=851  run_sleep_b=1239  ls=1096  rm=948
+  test:43 ok   total=    6534 ms   create=1334  run_sleep_a=1662  run_sleep_b=2026  ls=988  rm=523
+  test:44 ok   total=    7122 ms   create=3723  run_sleep_a=2172  run_sleep_b=527  ls=533  rm=167
+  test:45 ok   total=    5292 ms   create=3260  run_sleep_a=577  run_sleep_b=587  ls=551  rm=317
+  test:46 ok   total=    6995 ms   create=1194  run_sleep_a=2192  run_sleep_b=2814  ls=323  rm=473
+  test:47 ok   total=    6103 ms   create=1655  run_sleep_a=2592  run_sleep_b=775  ls=558  rm=523
+  test:48 ok   total=    5306 ms   create=686  run_sleep_a=1461  run_sleep_b=536  ls=801  rm=1821
+  test:49 ok   total=    6972 ms   create=2154  run_sleep_a=3408  run_sleep_b=682  ls=475  rm=254
+  test:50 ok   total=    7116 ms   create=1790  run_sleep_a=2047  run_sleep_b=2665  ls=451  rm=164
+  test:51 ok   total=    6687 ms   create=1982  run_sleep_a=648  run_sleep_b=1789  ls=1128  rm=1140
+  test:52 ok   total=    5954 ms   create=1147  run_sleep_a=880  run_sleep_b=1663  ls=880  rm=1383
+  test:53 ok   total=    6896 ms   create=2007  run_sleep_a=2199  run_sleep_b=1307  ls=917  rm=465
+  test:54 ok   total=    4846 ms   create=1392  run_sleep_a=630  run_sleep_b=855  ls=1287  rm=681
+  test:55 ok   total=    6821 ms   create=1673  run_sleep_a=3225  run_sleep_b=605  ls=609  rm=708
+  test:56 ok   total=    6612 ms   create=1077  run_sleep_a=1476  run_sleep_b=1191  ls=2080  rm=787
+  test:57 ok   total=    6356 ms   create=1064  run_sleep_a=2221  run_sleep_b=1864  ls=338  rm=869
+  test:58 ok   total=    6376 ms   create=1929  run_sleep_a=722  run_sleep_b=1821  ls=1142  rm=761
+  test:59 ok   total=    6838 ms   create=1964  run_sleep_a=1731  run_sleep_b=2129  ls=531  rm=482
+  test:60 ok   total=    6823 ms   create=1653  run_sleep_a=3341  run_sleep_b=913  ls=277  rm=638
+  calibration: 60/60 ok, per-op p50 754-1478 ms, whole sequence 6204 ms
+per-user totals:
+  test:1  ok   total=   16667 ms   login=545  create=804  run_sleep_a=7839  run_sleep_b=4346  ls=703  rm=2430
+  test:2  ok   total=   12327 ms   login=545  create=792  run_sleep_a=3586  run_sleep_b=4321  ls=746  rm=2335
+  test:3  ok   total=   14901 ms   login=537  create=805  run_sleep_a=5284  run_sleep_b=5155  ls=726  rm=2390
+  test:4  ok   total=   13596 ms   login=540  create=806  run_sleep_a=5332  run_sleep_b=3894  ls=695  rm=2329
+  test:5  ok   total=   12306 ms   login=541  create=808  run_sleep_a=3503  run_sleep_b=4352  ls=735  rm=2365
+  test:6  ok   total=   14714 ms   login=537  create=785  run_sleep_a=5272  run_sleep_b=5023  ls=720  rm=2376
+  test:7  ok   total=   14660 ms   login=548  create=823  run_sleep_a=5193  run_sleep_b=5027  ls=709  rm=2360
+  test:8  ok   total=   14827 ms   login=536  create=795  run_sleep_a=5221  run_sleep_b=5159  ls=740  rm=2375
+  test:9  ok   total=   14424 ms   login=542  create=808  run_sleep_a=5206  run_sleep_b=4872  ls=677  rm=2318
+  test:10 ok   total=   14853 ms   login=536  create=815  run_sleep_a=6049  run_sleep_b=4377  ls=700  rm=2375
+  test:11 ok   total=   15237 ms   login=539  create=814  run_sleep_a=7605  run_sleep_b=3240  ls=701  rm=2338
+  test:12 ok   total=   16489 ms   login=539  create=828  run_sleep_a=7625  run_sleep_b=4392  ls=713  rm=2391
+  test:13 ok   total=   14827 ms   login=537  create=813  run_sleep_a=5895  run_sleep_b=4477  ls=716  rm=2388
+  test:14 ok   total=   16459 ms   login=538  create=833  run_sleep_a=7619  run_sleep_b=4358  ls=703  rm=2406
+  test:15 ok   total=   12368 ms   login=550  create=831  run_sleep_a=4562  run_sleep_b=3401  ls=678  rm=2345
+  test:16 ok   total=   14766 ms   login=545  create=831  run_sleep_a=5305  run_sleep_b=4903  ls=720  rm=2461
+  test:17 ok   total=   16270 ms   login=554  create=831  run_sleep_a=7551  run_sleep_b=4267  ls=695  rm=2371
+  test:18 ok   total=   12315 ms   login=548  create=835  run_sleep_a=4607  run_sleep_b=3322  ls=675  rm=2327
+  test:19 ok   total=   14566 ms   login=541  create=855  run_sleep_a=5036  run_sleep_b=5028  ls=716  rm=2390
+  test:20 ok   total=   12906 ms   login=546  create=829  run_sleep_a=5103  run_sleep_b=3424  ls=684  rm=2319
+  test:21 ok   total=   14694 ms   login=557  create=837  run_sleep_a=5015  run_sleep_b=5127  ls=734  rm=2423
+  test:22 ok   total=   14605 ms   login=551  create=829  run_sleep_a=4988  run_sleep_b=5123  ls=732  rm=2382
+  test:23 ok   total=   12861 ms   login=542  create=854  run_sleep_a=5029  run_sleep_b=3426  ls=695  rm=2315
+  test:24 ok   total=   14397 ms   login=547  create=841  run_sleep_a=4969  run_sleep_b=4996  ls=702  rm=2343
+  test:25 ok   total=   15167 ms   login=540  create=867  run_sleep_a=7408  run_sleep_b=3284  ls=720  rm=2346
+  test:26 ok   total=   15731 ms   login=547  create=883  run_sleep_a=7394  run_sleep_b=3830  ls=676  rm=2399
+  test:27 ok   total=   14575 ms   login=542  create=846  run_sleep_a=5147  run_sleep_b=4880  ls=746  rm=2414
+  test:28 ok   total=   14751 ms   login=539  create=857  run_sleep_a=7160  run_sleep_b=3189  ls=673  rm=2334
+  test:29 ok   total=   16307 ms   login=542  create=891  run_sleep_a=7391  run_sleep_b=4352  ls=711  rm=2420
+  test:30 FAIL total=    1443 ms   login=545  create=897   <- sbx: the sandbox service is at capacity
+  test:31 ok   total=   16273 ms   login=567  create=854  run_sleep_a=7376  run_sleep_b=4352  ls=713  rm=2410
+  test:32 FAIL total=    1519 ms   login=554  create=962   <- sbx: the sandbox service is at capacity
+  test:33 FAIL total=    1446 ms   login=551  create=893   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    1437 ms   login=562  create=875   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1390 ms   login=551  create=838   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1577 ms   login=544  create=1033   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    1561 ms   login=549  create=1011   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    1547 ms   login=544  create=1002   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1399 ms   login=540  create=858   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1622 ms   login=542  create=1079   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1357 ms   login=536  create=819   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    1515 ms   login=537  create=977   <- sbx: the sandbox service is at capacity
+  test:43 FAIL total=    1495 ms   login=542  create=953   <- sbx: the sandbox service is at capacity
+  test:44 FAIL total=    1485 ms   login=555  create=929   <- sbx: the sandbox service is at capacity
+  test:45 FAIL total=    1468 ms   login=597  create=871   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1601 ms   login=579  create=1021   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    1480 ms   login=572  create=907   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    1634 ms   login=572  create=1055   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1418 ms   login=559  create=858   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    1467 ms   login=575  create=892   <- sbx: the sandbox service is at capacity
+  test:51 FAIL total=    1491 ms   login=547  create=943   <- sbx: the sandbox service is at capacity
+  test:52 FAIL total=    1381 ms   login=538  create=843   <- sbx: the sandbox service is at capacity
+  test:53 FAIL total=    1461 ms   login=566  create=894   <- sbx: the sandbox service is at capacity
+  test:54 FAIL total=    1452 ms   login=540  create=908   <- sbx: the sandbox service is at capacity
+  test:55 FAIL total=    1439 ms   login=562  create=876   <- sbx: the sandbox service is at capacity
+  test:56 FAIL total=    1423 ms   login=556  create=866   <- sbx: the sandbox service is at capacity
+  test:57 FAIL total=    1410 ms   login=555  create=855   <- sbx: the sandbox service is at capacity
+  test:58 FAIL total=    1743 ms   login=570  create=1172   <- sbx: the sandbox service is at capacity
+  test:59 FAIL total=    1647 ms   login=596  create=1050   <- sbx: the sandbox service is at capacity
+  test:60 FAIL total=    1546 ms   login=559  create=987   <- sbx: the sandbox service is at capacity
+failures (30):
+  test:30 FAIL total=    1443 ms   login=545  create=897   <- sbx: the sandbox service is at capacity
+  test:32 FAIL total=    1519 ms   login=554  create=962   <- sbx: the sandbox service is at capacity
+  test:33 FAIL total=    1446 ms   login=551  create=893   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    1437 ms   login=562  create=875   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1390 ms   login=551  create=838   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1577 ms   login=544  create=1033   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    1561 ms   login=549  create=1011   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    1547 ms   login=544  create=1002   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1399 ms   login=540  create=858   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1622 ms   login=542  create=1079   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1357 ms   login=536  create=819   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    1515 ms   login=537  create=977   <- sbx: the sandbox service is at capacity
+  test:43 FAIL total=    1495 ms   login=542  create=953   <- sbx: the sandbox service is at capacity
+  test:44 FAIL total=    1485 ms   login=555  create=929   <- sbx: the sandbox service is at capacity
+  test:45 FAIL total=    1468 ms   login=597  create=871   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1601 ms   login=579  create=1021   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    1480 ms   login=572  create=907   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    1634 ms   login=572  create=1055   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1418 ms   login=559  create=858   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    1467 ms   login=575  create=892   <- sbx: the sandbox service is at capacity
+  test:51 FAIL total=    1491 ms   login=547  create=943   <- sbx: the sandbox service is at capacity
+  test:52 FAIL total=    1381 ms   login=538  create=843   <- sbx: the sandbox service is at capacity
+  test:53 FAIL total=    1461 ms   login=566  create=894   <- sbx: the sandbox service is at capacity
+  test:54 FAIL total=    1452 ms   login=540  create=908   <- sbx: the sandbox service is at capacity
+  test:55 FAIL total=    1439 ms   login=562  create=876   <- sbx: the sandbox service is at capacity
+  test:56 FAIL total=    1423 ms   login=556  create=866   <- sbx: the sandbox service is at capacity
+  test:57 FAIL total=    1410 ms   login=555  create=855   <- sbx: the sandbox service is at capacity
+  test:58 FAIL total=    1743 ms   login=570  create=1172   <- sbx: the sandbox service is at capacity
+  test:59 FAIL total=    1647 ms   login=596  create=1050   <- sbx: the sandbox service is at capacity
+  test:60 FAIL total=    1546 ms   login=559  create=987   <- sbx: the sandbox service is at capacity
+  -> 30/60 ok, wall 16.7s, per-user total p50 14714 ms
+
+-----------------------------------------------------------------------------------
+concurrency 70: users test:1..test:70, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 70...
+per-user totals:
+  test:1  ok   total=    6154 ms   create=564  run_sleep_a=1789  run_sleep_b=2105  ls=320  rm=1375
+  test:2  ok   total=    5138 ms   create=463  run_sleep_a=1046  run_sleep_b=838  ls=596  rm=2196
+  test:3  ok   total=    8181 ms   create=624  run_sleep_a=3203  run_sleep_b=1532  ls=1921  rm=902
+  test:4  ok   total=    6711 ms   create=624  run_sleep_a=2674  run_sleep_b=1761  ls=484  rm=1168
+  test:5  ok   total=    6933 ms   create=518  run_sleep_a=1140  run_sleep_b=2436  ls=2288  rm=550
+  test:6  ok   total=    9398 ms   create=3172  run_sleep_a=2073  run_sleep_b=2190  ls=1345  rm=617
+  test:7  ok   total=    7781 ms   create=330  run_sleep_a=1327  run_sleep_b=1527  ls=1630  rm=2967
+  test:8  ok   total=    5965 ms   create=545  run_sleep_a=2338  run_sleep_b=973  ls=775  rm=1333
+  test:9  ok   total=    9354 ms   create=579  run_sleep_a=3811  run_sleep_b=1253  ls=2222  rm=1489
+  test:10 ok   total=    7539 ms   create=684  run_sleep_a=2779  run_sleep_b=2356  ls=662  rm=1056
+  test:11 ok   total=    9349 ms   create=816  run_sleep_a=3899  run_sleep_b=3570  ls=769  rm=295
+  test:12 ok   total=    5955 ms   create=708  run_sleep_a=981  run_sleep_b=2300  ls=1084  rm=882
+  test:13 ok   total=    9029 ms   create=886  run_sleep_a=3252  run_sleep_b=2451  ls=1601  rm=839
+  test:14 ok   total=    8539 ms   create=853  run_sleep_a=1795  run_sleep_b=1702  ls=1236  rm=2953
+  test:15 ok   total=    8495 ms   create=438  run_sleep_a=1781  run_sleep_b=2983  ls=2258  rm=1037
+  test:16 ok   total=    7556 ms   create=789  run_sleep_a=1197  run_sleep_b=1791  ls=1607  rm=2171
+  test:17 ok   total=    8040 ms   create=450  run_sleep_a=1509  run_sleep_b=1073  ls=2333  rm=2675
+  test:18 ok   total=    9274 ms   create=436  run_sleep_a=2322  run_sleep_b=2966  ls=3242  rm=309
+  test:19 ok   total=    8601 ms   create=676  run_sleep_a=2693  run_sleep_b=1195  ls=3139  rm=897
+  test:20 ok   total=    8485 ms   create=1517  run_sleep_a=2294  run_sleep_b=1792  ls=2217  rm=665
+  test:21 ok   total=    8289 ms   create=1338  run_sleep_a=2542  run_sleep_b=2091  ls=777  rm=1541
+  test:22 ok   total=    8801 ms   create=1858  run_sleep_a=825  run_sleep_b=721  ls=3736  rm=1660
+  test:23 ok   total=    8448 ms   create=2043  run_sleep_a=969  run_sleep_b=1129  ls=1846  rm=2462
+  test:24 ok   total=    7998 ms   create=1849  run_sleep_a=1844  run_sleep_b=1304  ls=1632  rm=1369
+  test:25 ok   total=    8976 ms   create=3031  run_sleep_a=3108  run_sleep_b=1653  ls=281  rm=904
+  test:26 ok   total=    8355 ms   create=2581  run_sleep_a=1831  run_sleep_b=1386  ls=2163  rm=394
+  test:27 ok   total=    8997 ms   create=2612  run_sleep_a=1783  run_sleep_b=1291  ls=1707  rm=1604
+  test:28 ok   total=    8435 ms   create=859  run_sleep_a=2351  run_sleep_b=1151  ls=3709  rm=365
+  test:29 ok   total=    7066 ms   create=1988  run_sleep_a=642  run_sleep_b=1171  ls=953  rm=2312
+  test:30 ok   total=    8385 ms   create=2449  run_sleep_a=1426  run_sleep_b=846  ls=1012  rm=2651
+  test:31 ok   total=    9070 ms   create=2633  run_sleep_a=943  run_sleep_b=2207  ls=2832  rm=455
+  test:32 ok   total=    9022 ms   create=1759  run_sleep_a=2402  run_sleep_b=988  ls=1421  rm=2453
+  test:33 ok   total=    9037 ms   create=1443  run_sleep_a=2494  run_sleep_b=2222  ls=2550  rm=329
+  test:34 ok   total=    8675 ms   create=1171  run_sleep_a=2048  run_sleep_b=1832  ls=2830  rm=795
+  test:35 ok   total=    9086 ms   create=1996  run_sleep_a=1236  run_sleep_b=3910  ls=1746  rm=198
+  test:36 ok   total=    9006 ms   create=3240  run_sleep_a=3641  run_sleep_b=792  ls=1052  rm=282
+  test:37 ok   total=    8057 ms   create=2083  run_sleep_a=2124  run_sleep_b=1358  ls=715  rm=1777
+  test:38 ok   total=    8768 ms   create=3354  run_sleep_a=1471  run_sleep_b=1377  ls=1179  rm=1388
+  test:39 ok   total=    8853 ms   create=1870  run_sleep_a=2241  run_sleep_b=1555  ls=1998  rm=1190
+  test:40 ok   total=    8528 ms   create=2634  run_sleep_a=1954  run_sleep_b=1324  ls=1696  rm=919
+  test:41 ok   total=    6948 ms   create=2008  run_sleep_a=2300  run_sleep_b=750  ls=1164  rm=726
+  test:42 ok   total=    8637 ms   create=3778  run_sleep_a=778  run_sleep_b=1944  ls=1273  rm=864
+  test:43 ok   total=    9049 ms   create=4149  run_sleep_a=2294  run_sleep_b=1819  ls=620  rm=165
+  test:44 ok   total=    8880 ms   create=737  run_sleep_a=3031  run_sleep_b=1841  ls=2655  rm=616
+  test:45 ok   total=    8859 ms   create=2383  run_sleep_a=496  run_sleep_b=3794  ls=1811  rm=374
+  test:46 ok   total=    7064 ms   create=1724  run_sleep_a=449  run_sleep_b=2197  ls=1570  rm=1124
+  test:47 ok   total=    8747 ms   create=2754  run_sleep_a=1099  run_sleep_b=2869  ls=784  rm=1241
+  test:48 ok   total=    8299 ms   create=3005  run_sleep_a=1291  run_sleep_b=1685  ls=1659  rm=658
+  test:49 ok   total=    8794 ms   create=1603  run_sleep_a=2467  run_sleep_b=3318  ls=1028  rm=378
+  test:50 ok   total=    8769 ms   create=3279  run_sleep_a=1328  run_sleep_b=2050  ls=1837  rm=275
+  test:51 ok   total=    8786 ms   create=1466  run_sleep_a=784  run_sleep_b=3448  ls=2475  rm=613
+  test:52 ok   total=    8047 ms   create=1448  run_sleep_a=2642  run_sleep_b=1941  ls=1038  rm=978
+  test:53 ok   total=    8048 ms   create=1423  run_sleep_a=1953  run_sleep_b=3068  ls=503  rm=1101
+  test:54 ok   total=    8610 ms   create=2219  run_sleep_a=1503  run_sleep_b=1130  ls=1945  rm=1813
+  test:55 ok   total=    8600 ms   create=2513  run_sleep_a=1845  run_sleep_b=1900  ls=1764  rm=579
+  test:56 ok   total=    8083 ms   create=2821  run_sleep_a=1238  run_sleep_b=1341  ls=2130  rm=553
+  test:57 ok   total=    8400 ms   create=1380  run_sleep_a=1515  run_sleep_b=310  ls=2988  rm=2207
+  test:58 ok   total=    8641 ms   create=1583  run_sleep_a=2914  run_sleep_b=1729  ls=2057  rm=359
+  test:59 ok   total=    6174 ms   create=2125  run_sleep_a=1192  run_sleep_b=1121  ls=912  rm=824
+  test:60 ok   total=    7623 ms   create=1839  run_sleep_a=2043  run_sleep_b=1028  ls=1675  rm=1039
+  test:61 ok   total=    7297 ms   create=1101  run_sleep_a=1997  run_sleep_b=2168  ls=1090  rm=940
+  test:62 ok   total=    8618 ms   create=2675  run_sleep_a=3516  run_sleep_b=868  ls=1179  rm=381
+  test:63 ok   total=    7223 ms   create=2068  run_sleep_a=1015  run_sleep_b=2174  ls=318  rm=1648
+  test:64 ok   total=    8105 ms   create=2372  run_sleep_a=2184  run_sleep_b=2549  ls=334  rm=666
+  test:65 ok   total=    8692 ms   create=3845  run_sleep_a=1675  run_sleep_b=2167  ls=757  rm=247
+  test:66 ok   total=    7950 ms   create=1470  run_sleep_a=2274  run_sleep_b=2719  ls=758  rm=730
+  test:67 ok   total=    8484 ms   create=1956  run_sleep_a=2949  run_sleep_b=2042  ls=977  rm=560
+  test:68 ok   total=    8416 ms   create=1259  run_sleep_a=1773  run_sleep_b=3359  ls=1601  rm=423
+  test:69 ok   total=    7865 ms   create=2000  run_sleep_a=320  run_sleep_b=2378  ls=1259  rm=1908
+  test:70 ok   total=    8167 ms   create=1351  run_sleep_a=1651  run_sleep_b=1378  ls=2177  rm=1608
+  calibration: 70/70 ok, per-op p50 902-1844 ms, whole sequence 8448 ms
+per-user totals:
+  test:1  ok   total=   18066 ms   login=543  create=819  run_sleep_a=8570  run_sleep_b=4718  ls=884  rm=2531
+  test:2  ok   total=   15723 ms   login=554  create=773  run_sleep_a=5912  run_sleep_b=5335  ls=742  rm=2406
+  test:3  ok   total=   15680 ms   login=541  create=811  run_sleep_a=5891  run_sleep_b=5310  ls=737  rm=2389
+  test:4  ok   total=   16303 ms   login=538  create=835  run_sleep_a=8506  run_sleep_b=3359  ls=729  rm=2337
+  test:5  ok   total=   15336 ms   login=540  create=803  run_sleep_a=5858  run_sleep_b=5091  ls=686  rm=2357
+  test:6  ok   total=   15308 ms   login=551  create=826  run_sleep_a=5811  run_sleep_b=5098  ls=681  rm=2340
+  test:7  ok   total=   15480 ms   login=538  create=822  run_sleep_a=5813  run_sleep_b=5246  ls=716  rm=2345
+  test:8  ok   total=   13920 ms   login=554  create=820  run_sleep_a=5766  run_sleep_b=3744  ls=691  rm=2344
+  test:9  ok   total=   14026 ms   login=541  create=816  run_sleep_a=5763  run_sleep_b=3892  ls=678  rm=2335
+  test:10 ok   total=   15633 ms   login=541  create=793  run_sleep_a=5825  run_sleep_b=5306  ls=751  rm=2417
+  test:11 ok   total=   15652 ms   login=545  create=885  run_sleep_a=5695  run_sleep_b=5338  ls=743  rm=2445
+  test:12 ok   total=   15903 ms   login=541  create=871  run_sleep_a=8134  run_sleep_b=3316  ls=708  rm=2332
+  test:13 ok   total=   17113 ms   login=537  create=886  run_sleep_a=8465  run_sleep_b=4149  ls=690  rm=2385
+  test:14 ok   total=   15172 ms   login=548  create=848  run_sleep_a=5672  run_sleep_b=5043  ls=701  rm=2359
+  test:15 ok   total=   16181 ms   login=543  create=850  run_sleep_a=8365  run_sleep_b=3354  ls=721  rm=2347
+  test:16 ok   total=   16553 ms   login=553  create=810  run_sleep_a=8455  run_sleep_b=3706  ls=692  rm=2337
+  test:17 ok   total=   15561 ms   login=541  create=844  run_sleep_a=5660  run_sleep_b=5319  ls=747  rm=2427
+  test:18 ok   total=   13503 ms   login=549  create=790  run_sleep_a=5677  run_sleep_b=3412  ls=704  rm=2369
+  test:19 ok   total=   13478 ms   login=544  create=809  run_sleep_a=5616  run_sleep_b=3442  ls=708  rm=2357
+  test:20 ok   total=   15485 ms   login=546  create=870  run_sleep_a=5620  run_sleep_b=5306  ls=729  rm=2414
+  test:21 ok   total=   17524 ms   login=547  create=980  run_sleep_a=8265  run_sleep_b=4610  ls=725  rm=2396
+  test:22 FAIL total=    1758 ms   login=541  create=1216   <- sbx: the sandbox service is at capacity
+  test:23 ok   total=   15423 ms   login=541  create=925  run_sleep_a=5531  run_sleep_b=5310  ls=732  rm=2384
+  test:24 ok   total=   15351 ms   login=544  create=948  run_sleep_a=5500  run_sleep_b=5286  ls=716  rm=2356
+  test:25 FAIL total=    2597 ms   login=543  create=2053   <- sbx: the sandbox service is at capacity
+  test:26 ok   total=   17383 ms   login=539  create=1172  run_sleep_a=8023  run_sleep_b=4547  ls=704  rm=2398
+  test:27 FAIL total=    2411 ms   login=542  create=1868   <- sbx: the sandbox service is at capacity
+  test:28 ok   total=   17421 ms   login=542  create=850  run_sleep_a=8318  run_sleep_b=4610  ls=713  rm=2388
+  test:29 ok   total=   16910 ms   login=537  create=804  run_sleep_a=8337  run_sleep_b=4168  ls=687  rm=2376
+  test:30 FAIL total=    2420 ms   login=544  create=1875   <- sbx: the sandbox service is at capacity
+  test:31 FAIL total=    1857 ms   login=541  create=1316   <- sbx: the sandbox service is at capacity
+  test:32 ok   total=   17390 ms   login=543  create=880  run_sleep_a=8243  run_sleep_b=4610  ls=715  rm=2398
+  test:33 ok   total=   15596 ms   login=543  create=916  run_sleep_a=7804  run_sleep_b=3307  ls=689  rm=2336
+  test:34 FAIL total=    2332 ms   login=553  create=1779   <- sbx: the sandbox service is at capacity
+  test:35 ok   total=   17170 ms   login=548  create=797  run_sleep_a=8288  run_sleep_b=4487  ls=689  rm=2361
+  test:36 FAIL total=    2364 ms   login=544  create=1820   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    1775 ms   login=545  create=1229   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    2089 ms   login=541  create=1548   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    2274 ms   login=540  create=1733   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    2421 ms   login=545  create=1876   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1536 ms   login=545  create=990   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    2238 ms   login=540  create=1698   <- sbx: the sandbox service is at capacity
+  test:43 FAIL total=    2386 ms   login=542  create=1844   <- sbx: the sandbox service is at capacity
+  test:44 FAIL total=    2214 ms   login=545  create=1668   <- sbx: the sandbox service is at capacity
+  test:45 FAIL total=    1814 ms   login=544  create=1270   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1804 ms   login=550  create=1254   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    2173 ms   login=547  create=1626   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    2219 ms   login=548  create=1670   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1817 ms   login=543  create=1273   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    2133 ms   login=548  create=1585   <- sbx: the sandbox service is at capacity
+  test:51 ok   total=   17138 ms   login=542  create=867  run_sleep_a=8029  run_sleep_b=4594  ls=712  rm=2394
+  test:52 FAIL total=    1725 ms   login=542  create=1182   <- sbx: the sandbox service is at capacity
+  test:53 FAIL total=    2092 ms   login=543  create=1549   <- sbx: the sandbox service is at capacity
+  test:54 FAIL total=    2228 ms   login=541  create=1686   <- sbx: the sandbox service is at capacity
+  test:55 FAIL total=    1685 ms   login=539  create=1145   <- sbx: the sandbox service is at capacity
+  test:56 FAIL total=    1531 ms   login=539  create=991   <- sbx: the sandbox service is at capacity
+  test:57 FAIL total=    1510 ms   login=541  create=968   <- sbx: the sandbox service is at capacity
+  test:58 FAIL total=    1691 ms   login=543  create=1147   <- sbx: the sandbox service is at capacity
+  test:59 FAIL total=    1674 ms   login=548  create=1125   <- sbx: the sandbox service is at capacity
+  test:60 FAIL total=    1998 ms   login=546  create=1451   <- sbx: the sandbox service is at capacity
+  test:61 FAIL total=    1782 ms   login=548  create=1233   <- sbx: the sandbox service is at capacity
+  test:62 FAIL total=    1617 ms   login=542  create=1074   <- sbx: the sandbox service is at capacity
+  test:63 FAIL total=    1742 ms   login=538  create=1204   <- sbx: the sandbox service is at capacity
+  test:64 FAIL total=    1912 ms   login=539  create=1372   <- sbx: the sandbox service is at capacity
+  test:65 FAIL total=    2064 ms   login=538  create=1525   <- sbx: the sandbox service is at capacity
+  test:66 FAIL total=    1954 ms   login=546  create=1404   <- sbx: the sandbox service is at capacity
+  test:67 FAIL total=    2047 ms   login=554  create=1493   <- sbx: the sandbox service is at capacity
+  test:68 FAIL total=    2012 ms   login=548  create=1463   <- sbx: the sandbox service is at capacity
+  test:69 FAIL total=    1848 ms   login=549  create=1298   <- sbx: the sandbox service is at capacity
+  test:70 FAIL total=    1991 ms   login=542  create=1446   <- sbx: the sandbox service is at capacity
+failures (40):
+  test:22 FAIL total=    1758 ms   login=541  create=1216   <- sbx: the sandbox service is at capacity
+  test:25 FAIL total=    2597 ms   login=543  create=2053   <- sbx: the sandbox service is at capacity
+  test:27 FAIL total=    2411 ms   login=542  create=1868   <- sbx: the sandbox service is at capacity
+  test:30 FAIL total=    2420 ms   login=544  create=1875   <- sbx: the sandbox service is at capacity
+  test:31 FAIL total=    1857 ms   login=541  create=1316   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    2332 ms   login=553  create=1779   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    2364 ms   login=544  create=1820   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    1775 ms   login=545  create=1229   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    2089 ms   login=541  create=1548   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    2274 ms   login=540  create=1733   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    2421 ms   login=545  create=1876   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1536 ms   login=545  create=990   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    2238 ms   login=540  create=1698   <- sbx: the sandbox service is at capacity
+  test:43 FAIL total=    2386 ms   login=542  create=1844   <- sbx: the sandbox service is at capacity
+  test:44 FAIL total=    2214 ms   login=545  create=1668   <- sbx: the sandbox service is at capacity
+  test:45 FAIL total=    1814 ms   login=544  create=1270   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1804 ms   login=550  create=1254   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    2173 ms   login=547  create=1626   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    2219 ms   login=548  create=1670   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1817 ms   login=543  create=1273   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    2133 ms   login=548  create=1585   <- sbx: the sandbox service is at capacity
+  test:52 FAIL total=    1725 ms   login=542  create=1182   <- sbx: the sandbox service is at capacity
+  test:53 FAIL total=    2092 ms   login=543  create=1549   <- sbx: the sandbox service is at capacity
+  test:54 FAIL total=    2228 ms   login=541  create=1686   <- sbx: the sandbox service is at capacity
+  test:55 FAIL total=    1685 ms   login=539  create=1145   <- sbx: the sandbox service is at capacity
+  test:56 FAIL total=    1531 ms   login=539  create=991   <- sbx: the sandbox service is at capacity
+  test:57 FAIL total=    1510 ms   login=541  create=968   <- sbx: the sandbox service is at capacity
+  test:58 FAIL total=    1691 ms   login=543  create=1147   <- sbx: the sandbox service is at capacity
+  test:59 FAIL total=    1674 ms   login=548  create=1125   <- sbx: the sandbox service is at capacity
+  test:60 FAIL total=    1998 ms   login=546  create=1451   <- sbx: the sandbox service is at capacity
+  test:61 FAIL total=    1782 ms   login=548  create=1233   <- sbx: the sandbox service is at capacity
+  test:62 FAIL total=    1617 ms   login=542  create=1074   <- sbx: the sandbox service is at capacity
+  test:63 FAIL total=    1742 ms   login=538  create=1204   <- sbx: the sandbox service is at capacity
+  test:64 FAIL total=    1912 ms   login=539  create=1372   <- sbx: the sandbox service is at capacity
+  test:65 FAIL total=    2064 ms   login=538  create=1525   <- sbx: the sandbox service is at capacity
+  test:66 FAIL total=    1954 ms   login=546  create=1404   <- sbx: the sandbox service is at capacity
+  test:67 FAIL total=    2047 ms   login=554  create=1493   <- sbx: the sandbox service is at capacity
+  test:68 FAIL total=    2012 ms   login=548  create=1463   <- sbx: the sandbox service is at capacity
+  test:69 FAIL total=    1848 ms   login=549  create=1298   <- sbx: the sandbox service is at capacity
+  test:70 FAIL total=    1991 ms   login=542  create=1446   <- sbx: the sandbox service is at capacity
+  -> 30/70 ok, wall 18.1s, per-user total p50 15652 ms
+
+-----------------------------------------------------------------------------------
+concurrency 80: users test:1..test:80, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 80...
+per-user totals:
+  test:1  ok   total=    9290 ms   create=220  run_sleep_a=1496  run_sleep_b=3664  ls=2564  rm=1346
+  test:2  ok   total=    5420 ms   create=229  run_sleep_a=482  run_sleep_b=2155  ls=866  rm=1687
+  test:3  ok   total=    6198 ms   create=267  run_sleep_a=1352  run_sleep_b=928  ls=2186  rm=1463
+  test:4  ok   total=    7201 ms   create=953  run_sleep_a=1074  run_sleep_b=659  ls=1410  rm=3104
+  test:5  ok   total=    5645 ms   create=357  run_sleep_a=1434  run_sleep_b=1903  ls=1539  rm=412
+  test:6  ok   total=    6886 ms   create=908  run_sleep_a=1102  run_sleep_b=1528  ls=2088  rm=1259
+  test:7  ok   total=    7737 ms   create=619  run_sleep_a=1184  run_sleep_b=1646  ls=2031  rm=2256
+  test:8  ok   total=    6833 ms   create=502  run_sleep_a=1564  run_sleep_b=1772  ls=1408  rm=1587
+  test:9  ok   total=    6712 ms   create=458  run_sleep_a=1027  run_sleep_b=496  ls=2286  rm=2444
+  test:10 ok   total=    9024 ms   create=2682  run_sleep_a=1880  run_sleep_b=1740  ls=536  rm=2186
+  test:11 ok   total=    7423 ms   create=708  run_sleep_a=1276  run_sleep_b=2365  ls=1371  rm=1704
+  test:12 ok   total=    5611 ms   create=607  run_sleep_a=334  run_sleep_b=1081  ls=1358  rm=2231
+  test:13 ok   total=    7091 ms   create=927  run_sleep_a=1200  run_sleep_b=388  ls=2672  rm=1905
+  test:14 ok   total=    8229 ms   create=698  run_sleep_a=1178  run_sleep_b=622  ls=3123  rm=2609
+  test:15 ok   total=    6395 ms   create=834  run_sleep_a=1736  run_sleep_b=690  ls=2271  rm=864
+  test:16 ok   total=    9043 ms   create=629  run_sleep_a=2720  run_sleep_b=1987  ls=2258  rm=1448
+  test:17 ok   total=    7750 ms   create=736  run_sleep_a=1355  run_sleep_b=3634  ls=1651  rm=375
+  test:18 ok   total=    7237 ms   create=749  run_sleep_a=2391  run_sleep_b=1982  ls=802  rm=1312
+  test:19 ok   total=    8476 ms   create=1744  run_sleep_a=2675  run_sleep_b=1218  ls=1922  rm=916
+  test:20 ok   total=    7198 ms   create=772  run_sleep_a=3681  run_sleep_b=1430  ls=798  rm=517
+  test:21 ok   total=    6978 ms   create=1475  run_sleep_a=1869  run_sleep_b=815  ls=916  rm=1903
+  test:22 ok   total=    8982 ms   create=1830  run_sleep_a=3135  run_sleep_b=2185  ls=1448  rm=384
+  test:23 ok   total=    8815 ms   create=2344  run_sleep_a=877  run_sleep_b=2205  ls=1205  rm=2184
+  test:24 ok   total=    8934 ms   create=2364  run_sleep_a=1029  run_sleep_b=2223  ls=1896  rm=1422
+  test:25 ok   total=    8936 ms   create=649  run_sleep_a=2015  run_sleep_b=3989  ls=1705  rm=578
+  test:26 ok   total=    8941 ms   create=1750  run_sleep_a=3909  run_sleep_b=1207  ls=726  rm=1348
+  test:27 ok   total=    8723 ms   create=1389  run_sleep_a=1976  run_sleep_b=2310  ls=1983  rm=1065
+  test:28 ok   total=    7910 ms   create=1591  run_sleep_a=1492  run_sleep_b=444  ls=1344  rm=3040
+  test:29 ok   total=    8275 ms   create=2218  run_sleep_a=1846  run_sleep_b=1413  ls=1498  rm=1300
+  test:30 ok   total=    6718 ms   create=1049  run_sleep_a=808  run_sleep_b=2673  ls=651  rm=1536
+  test:31 ok   total=    8666 ms   create=659  run_sleep_a=1814  run_sleep_b=3542  ls=1408  rm=1243
+  test:32 ok   total=    6893 ms   create=825  run_sleep_a=1587  run_sleep_b=2558  ls=1539  rm=385
+  test:33 ok   total=    7968 ms   create=3880  run_sleep_a=2057  run_sleep_b=879  ls=672  rm=480
+  test:34 ok   total=    5945 ms   create=1531  run_sleep_a=1098  run_sleep_b=1418  ls=1449  rm=448
+  test:35 ok   total=    7361 ms   create=571  run_sleep_a=927  run_sleep_b=1589  ls=1822  rm=2452
+  test:36 ok   total=    8947 ms   create=3415  run_sleep_a=2177  run_sleep_b=2249  ls=899  rm=207
+  test:37 ok   total=    8778 ms   create=1472  run_sleep_a=2560  run_sleep_b=1859  ls=2484  rm=403
+  test:38 ok   total=    5148 ms   create=1629  run_sleep_a=638  run_sleep_b=821  ls=1593  rm=467
+  test:39 ok   total=    7690 ms   create=1056  run_sleep_a=1238  run_sleep_b=2565  ls=1002  rm=1828
+  test:40 ok   total=    6611 ms   create=540  run_sleep_a=959  run_sleep_b=2595  ls=1766  rm=753
+  test:41 ok   total=    8795 ms   create=2922  run_sleep_a=998  run_sleep_b=2136  ls=2524  rm=215
+  test:42 ok   total=    8650 ms   create=1572  run_sleep_a=2237  run_sleep_b=2215  ls=1446  rm=1180
+  test:43 ok   total=    8117 ms   create=436  run_sleep_a=2434  run_sleep_b=2192  ls=2224  rm=831
+  test:44 ok   total=    8706 ms   create=2102  run_sleep_a=1709  run_sleep_b=2315  ls=1978  rm=603
+  test:45 ok   total=    7351 ms   create=999  run_sleep_a=2372  run_sleep_b=1277  ls=1967  rm=736
+  test:46 ok   total=    8864 ms   create=3566  run_sleep_a=1372  run_sleep_b=2285  ls=1461  rm=180
+  test:47 ok   total=    8515 ms   create=3555  run_sleep_a=1340  run_sleep_b=844  ls=2145  rm=630
+  test:48 ok   total=    7346 ms   create=614  run_sleep_a=1212  run_sleep_b=2177  ls=2277  rm=1065
+  test:49 ok   total=    6988 ms   create=1683  run_sleep_a=522  run_sleep_b=3024  ls=503  rm=1256
+  test:50 ok   total=    7245 ms   create=2122  run_sleep_a=2566  run_sleep_b=699  ls=1157  rm=702
+  test:51 ok   total=    8608 ms   create=1462  run_sleep_a=3324  run_sleep_b=2346  ls=999  rm=477
+  test:52 ok   total=    6245 ms   create=1130  run_sleep_a=1571  run_sleep_b=418  ls=927  rm=2199
+  test:53 ok   total=    7269 ms   create=1302  run_sleep_a=772  run_sleep_b=1325  ls=1275  rm=2595
+  test:54 ok   total=    8177 ms   create=2071  run_sleep_a=1934  run_sleep_b=2952  ls=447  rm=773
+  test:55 ok   total=    8230 ms   create=1915  run_sleep_a=2120  run_sleep_b=2468  ls=789  rm=939
+  test:56 ok   total=    6698 ms   create=330  run_sleep_a=1633  run_sleep_b=849  ls=1676  rm=2210
+  test:57 ok   total=    7536 ms   create=547  run_sleep_a=1454  run_sleep_b=1948  ls=2384  rm=1203
+  test:58 ok   total=    7751 ms   create=2729  run_sleep_a=1467  run_sleep_b=2021  ls=944  rm=590
+  test:59 ok   total=    7544 ms   create=2781  run_sleep_a=1794  run_sleep_b=1593  ls=300  rm=1076
+  test:60 ok   total=    8285 ms   create=1303  run_sleep_a=2633  run_sleep_b=2232  ls=1546  rm=572
+  test:61 ok   total=    8466 ms   create=2234  run_sleep_a=1510  run_sleep_b=862  ls=2053  rm=1807
+  test:62 ok   total=    7186 ms   create=955  run_sleep_a=1706  run_sleep_b=2879  ls=1114  rm=532
+  test:63 ok   total=    8267 ms   create=2894  run_sleep_a=986  run_sleep_b=656  ls=2273  rm=1457
+  test:64 ok   total=    5757 ms   create=1818  run_sleep_a=1243  run_sleep_b=542  ls=1565  rm=589
+  test:65 ok   total=    8269 ms   create=2684  run_sleep_a=1303  run_sleep_b=775  ls=2010  rm=1498
+  test:66 ok   total=    7099 ms   create=2357  run_sleep_a=393  run_sleep_b=797  ls=2285  rm=1267
+  test:67 ok   total=    8395 ms   create=2433  run_sleep_a=2232  run_sleep_b=2219  ls=1280  rm=231
+  test:68 ok   total=    8293 ms   create=2595  run_sleep_a=1495  run_sleep_b=2167  ls=1489  rm=547
+  test:69 ok   total=    7806 ms   create=2236  run_sleep_a=2390  run_sleep_b=2122  ls=767  rm=291
+  test:70 ok   total=    7358 ms   create=1318  run_sleep_a=1900  run_sleep_b=1269  ls=2011  rm=859
+  test:71 ok   total=    8097 ms   create=2409  run_sleep_a=2199  run_sleep_b=1427  ls=922  rm=1140
+  test:72 ok   total=    6459 ms   create=1777  run_sleep_a=938  run_sleep_b=2284  ls=903  rm=556
+  test:73 ok   total=    8253 ms   create=1344  run_sleep_a=1803  run_sleep_b=1257  ls=2399  rm=1448
+  test:74 ok   total=    8238 ms   create=2774  run_sleep_a=1673  run_sleep_b=2331  ls=1186  rm=274
+  test:75 ok   total=    7622 ms   create=2776  run_sleep_a=1524  run_sleep_b=2035  ls=871  rm=416
+  test:76 ok   total=    7586 ms   create=2840  run_sleep_a=2803  run_sleep_b=758  ls=824  rm=361
+  test:77 ok   total=    8201 ms   create=2858  run_sleep_a=775  run_sleep_b=1544  ls=2181  rm=843
+  test:78 ok   total=    7364 ms   create=1725  run_sleep_a=2652  run_sleep_b=1901  ls=622  rm=464
+  test:79 ok   total=    7802 ms   create=1120  run_sleep_a=2024  run_sleep_b=2443  ls=1018  rm=1197
+  test:80 ok   total=    8166 ms   create=2798  run_sleep_a=524  run_sleep_b=2329  ls=1023  rm=1491
+  calibration: 80/80 ok, per-op p50 1076-1903 ms, whole sequence 7751 ms
+per-user totals:
+  test:1  ok   total=   12998 ms   login=542  create=832  run_sleep_a=4577  run_sleep_b=3634  ls=866  rm=2548
+  test:2  ok   total=   13219 ms   login=544  create=891  run_sleep_a=5282  run_sleep_b=3424  ls=678  rm=2400
+  test:3  ok   total=   12148 ms   login=539  create=812  run_sleep_a=3506  run_sleep_b=4178  ls=740  rm=2373
+  test:4  ok   total=   14856 ms   login=541  create=962  run_sleep_a=5312  run_sleep_b=4728  ls=726  rm=2586
+  test:5  ok   total=   12303 ms   login=538  create=954  run_sleep_a=4480  run_sleep_b=3284  ls=688  rm=2359
+  test:6  ok   total=   14679 ms   login=542  create=987  run_sleep_a=5286  run_sleep_b=4667  ls=737  rm=2455
+  test:7  ok   total=   13541 ms   login=540  create=950  run_sleep_a=5200  run_sleep_b=3780  ls=681  rm=2389
+  test:8  ok   total=   14893 ms   login=538  create=1023  run_sleep_a=5228  run_sleep_b=4678  ls=740  rm=2686
+  test:9  ok   total=   12645 ms   login=539  create=1055  run_sleep_a=4505  run_sleep_b=3459  ls=704  rm=2382
+  test:10 ok   total=   12762 ms   login=542  create=1081  run_sleep_a=4740  run_sleep_b=3295  ls=700  rm=2403
+  test:11 ok   total=   12576 ms   login=543  create=1127  run_sleep_a=4347  run_sleep_b=3464  ls=688  rm=2407
+  test:12 ok   total=   14299 ms   login=539  create=1165  run_sleep_a=5013  run_sleep_b=4506  ls=679  rm=2397
+  test:13 ok   total=   14016 ms   login=538  create=1202  run_sleep_a=4951  run_sleep_b=4225  ls=685  rm=2414
+  test:14 ok   total=   13950 ms   login=546  create=1225  run_sleep_a=4882  run_sleep_b=4199  ls=686  rm=2411
+  test:15 ok   total=   14614 ms   login=550  create=1304  run_sleep_a=4809  run_sleep_b=4717  ls=734  rm=2498
+  test:16 ok   total=   14654 ms   login=556  create=1243  run_sleep_a=4912  run_sleep_b=4671  ls=723  rm=2548
+  test:17 ok   total=   14815 ms   login=551  create=1334  run_sleep_a=5151  run_sleep_b=4468  ls=712  rm=2597
+  test:18 ok   total=   14727 ms   login=543  create=1432  run_sleep_a=4777  run_sleep_b=4619  ls=720  rm=2636
+  test:19 ok   total=   15902 ms   login=550  create=1789  run_sleep_a=6500  run_sleep_b=3975  ls=706  rm=2382
+  test:20 ok   total=   14794 ms   login=540  create=1366  run_sleep_a=5219  run_sleep_b=4471  ls=709  rm=2489
+  test:21 FAIL total=    1748 ms   login=543  create=1205   <- sbx: the sandbox service is at capacity
+  test:22 ok   total=   14782 ms   login=542  create=1434  run_sleep_a=5286  run_sleep_b=4341  ls=700  rm=2478
+  test:23 ok   total=   14784 ms   login=541  create=1489  run_sleep_a=5295  run_sleep_b=4287  ls=705  rm=2467
+  test:24 ok   total=   14785 ms   login=542  create=1494  run_sleep_a=5449  run_sleep_b=4133  ls=722  rm=2446
+  test:25 FAIL total=    1637 ms   login=539  create=1097   <- sbx: the sandbox service is at capacity
+  test:26 ok   total=   14939 ms   login=538  create=1563  run_sleep_a=6452  run_sleep_b=3319  ls=706  rm=2359
+  test:27 ok   total=   15146 ms   login=543  create=1597  run_sleep_a=6489  run_sleep_b=3413  ls=739  rm=2364
+  test:28 ok   total=   14761 ms   login=537  create=1501  run_sleep_a=6256  run_sleep_b=3421  ls=700  rm=2344
+  test:29 ok   total=   15231 ms   login=542  create=1722  run_sleep_a=6442  run_sleep_b=3372  ls=767  rm=2384
+  test:30 FAIL total=    1766 ms   login=543  create=1222   <- sbx: the sandbox service is at capacity
+  test:31 ok   total=   15339 ms   login=540  create=1609  run_sleep_a=6546  run_sleep_b=3574  ls=713  rm=2356
+  test:32 FAIL total=    1864 ms   login=556  create=1307   <- sbx: the sandbox service is at capacity
+  test:33 ok   total=   15749 ms   login=546  create=1773  run_sleep_a=6353  run_sleep_b=3957  ls=701  rm=2418
+  test:34 FAIL total=    1678 ms   login=544  create=1134   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1758 ms   login=550  create=1207   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1490 ms   login=545  create=945   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    1477 ms   login=550  create=927   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    1793 ms   login=542  create=1250   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1626 ms   login=538  create=1087   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1693 ms   login=541  create=1152   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1436 ms   login=537  create=899   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    1425 ms   login=544  create=881   <- sbx: the sandbox service is at capacity
+  test:43 FAIL total=    1404 ms   login=540  create=864   <- sbx: the sandbox service is at capacity
+  test:44 ok   total=   15591 ms   login=537  create=1597  run_sleep_a=6413  run_sleep_b=3968  ls=689  rm=2386
+  test:45 FAIL total=    1583 ms   login=548  create=1034   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1688 ms   login=547  create=1141   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    1597 ms   login=546  create=1051   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    1572 ms   login=549  create=1023   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1588 ms   login=546  create=1042   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    1587 ms   login=547  create=1039   <- sbx: the sandbox service is at capacity
+  test:51 FAIL total=    1569 ms   login=545  create=1024   <- sbx: the sandbox service is at capacity
+  test:52 FAIL total=    1465 ms   login=548  create=917   <- sbx: the sandbox service is at capacity
+  test:53 FAIL total=    1519 ms   login=553  create=965   <- sbx: the sandbox service is at capacity
+  test:54 FAIL total=    1517 ms   login=547  create=969   <- sbx: the sandbox service is at capacity
+  test:55 FAIL total=    1459 ms   login=542  create=917   <- sbx: the sandbox service is at capacity
+  test:56 FAIL total=    1491 ms   login=541  create=949   <- sbx: the sandbox service is at capacity
+  test:57 FAIL total=    1473 ms   login=549  create=924   <- sbx: the sandbox service is at capacity
+  test:58 FAIL total=    1490 ms   login=558  create=930   <- sbx: the sandbox service is at capacity
+  test:59 FAIL total=    1472 ms   login=552  create=919   <- sbx: the sandbox service is at capacity
+  test:60 FAIL total=    1456 ms   login=551  create=904   <- sbx: the sandbox service is at capacity
+  test:61 FAIL total=    1436 ms   login=542  create=885   <- sbx: the sandbox service is at capacity
+  test:62 FAIL total=    1424 ms   login=544  create=879   <- sbx: the sandbox service is at capacity
+  test:63 FAIL total=    1586 ms   login=545  create=1040   <- sbx: the sandbox service is at capacity
+  test:64 FAIL total=    1574 ms   login=549  create=1023   <- sbx: the sandbox service is at capacity
+  test:65 FAIL total=    1614 ms   login=563  create=1042   <- sbx: the sandbox service is at capacity
+  test:66 FAIL total=    1538 ms   login=560  create=973   <- sbx: the sandbox service is at capacity
+  test:67 FAIL total=    2026 ms   login=629  create=1396   <- sbx: the sandbox service is at capacity
+  test:68 FAIL total=    1511 ms   login=615  create=895   <- sbx: the sandbox service is at capacity
+  test:69 FAIL total=    1939 ms   login=600  create=1320   <- sbx: the sandbox service is at capacity
+  test:70 FAIL total=    1602 ms   login=596  create=1005   <- sbx: the sandbox service is at capacity
+  test:71 FAIL total=    1726 ms   login=582  create=1142   <- sbx: the sandbox service is at capacity
+  test:72 FAIL total=    1751 ms   login=571  create=1177   <- sbx: the sandbox service is at capacity
+  test:73 FAIL total=    1890 ms   login=570  create=1316   <- sbx: the sandbox service is at capacity
+  test:74 FAIL total=    1676 ms   login=551  create=1123   <- sbx: the sandbox service is at capacity
+  test:75 FAIL total=    1421 ms   login=555  create=863   <- sbx: the sandbox service is at capacity
+  test:76 FAIL total=    1774 ms   login=544  create=1226   <- sbx: the sandbox service is at capacity
+  test:77 FAIL total=    1807 ms   login=545  create=1261   <- sbx: the sandbox service is at capacity
+  test:78 FAIL total=    1382 ms   login=545  create=837   <- sbx: the sandbox service is at capacity
+  test:79 FAIL total=    1442 ms   login=557  create=885   <- sbx: the sandbox service is at capacity
+  test:80 FAIL total=    1717 ms   login=538  create=1178   <- sbx: the sandbox service is at capacity
+failures (50):
+  test:21 FAIL total=    1748 ms   login=543  create=1205   <- sbx: the sandbox service is at capacity
+  test:25 FAIL total=    1637 ms   login=539  create=1097   <- sbx: the sandbox service is at capacity
+  test:30 FAIL total=    1766 ms   login=543  create=1222   <- sbx: the sandbox service is at capacity
+  test:32 FAIL total=    1864 ms   login=556  create=1307   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    1678 ms   login=544  create=1134   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1758 ms   login=550  create=1207   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1490 ms   login=545  create=945   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    1477 ms   login=550  create=927   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    1793 ms   login=542  create=1250   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1626 ms   login=538  create=1087   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1693 ms   login=541  create=1152   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1436 ms   login=537  create=899   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    1425 ms   login=544  create=881   <- sbx: the sandbox service is at capacity
+  test:43 FAIL total=    1404 ms   login=540  create=864   <- sbx: the sandbox service is at capacity
+  test:45 FAIL total=    1583 ms   login=548  create=1034   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1688 ms   login=547  create=1141   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    1597 ms   login=546  create=1051   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    1572 ms   login=549  create=1023   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1588 ms   login=546  create=1042   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    1587 ms   login=547  create=1039   <- sbx: the sandbox service is at capacity
+  test:51 FAIL total=    1569 ms   login=545  create=1024   <- sbx: the sandbox service is at capacity
+  test:52 FAIL total=    1465 ms   login=548  create=917   <- sbx: the sandbox service is at capacity
+  test:53 FAIL total=    1519 ms   login=553  create=965   <- sbx: the sandbox service is at capacity
+  test:54 FAIL total=    1517 ms   login=547  create=969   <- sbx: the sandbox service is at capacity
+  test:55 FAIL total=    1459 ms   login=542  create=917   <- sbx: the sandbox service is at capacity
+  test:56 FAIL total=    1491 ms   login=541  create=949   <- sbx: the sandbox service is at capacity
+  test:57 FAIL total=    1473 ms   login=549  create=924   <- sbx: the sandbox service is at capacity
+  test:58 FAIL total=    1490 ms   login=558  create=930   <- sbx: the sandbox service is at capacity
+  test:59 FAIL total=    1472 ms   login=552  create=919   <- sbx: the sandbox service is at capacity
+  test:60 FAIL total=    1456 ms   login=551  create=904   <- sbx: the sandbox service is at capacity
+  test:61 FAIL total=    1436 ms   login=542  create=885   <- sbx: the sandbox service is at capacity
+  test:62 FAIL total=    1424 ms   login=544  create=879   <- sbx: the sandbox service is at capacity
+  test:63 FAIL total=    1586 ms   login=545  create=1040   <- sbx: the sandbox service is at capacity
+  test:64 FAIL total=    1574 ms   login=549  create=1023   <- sbx: the sandbox service is at capacity
+  test:65 FAIL total=    1614 ms   login=563  create=1042   <- sbx: the sandbox service is at capacity
+  test:66 FAIL total=    1538 ms   login=560  create=973   <- sbx: the sandbox service is at capacity
+  test:67 FAIL total=    2026 ms   login=629  create=1396   <- sbx: the sandbox service is at capacity
+  test:68 FAIL total=    1511 ms   login=615  create=895   <- sbx: the sandbox service is at capacity
+  test:69 FAIL total=    1939 ms   login=600  create=1320   <- sbx: the sandbox service is at capacity
+  test:70 FAIL total=    1602 ms   login=596  create=1005   <- sbx: the sandbox service is at capacity
+  test:71 FAIL total=    1726 ms   login=582  create=1142   <- sbx: the sandbox service is at capacity
+  test:72 FAIL total=    1751 ms   login=571  create=1177   <- sbx: the sandbox service is at capacity
+  test:73 FAIL total=    1890 ms   login=570  create=1316   <- sbx: the sandbox service is at capacity
+  test:74 FAIL total=    1676 ms   login=551  create=1123   <- sbx: the sandbox service is at capacity
+  test:75 FAIL total=    1421 ms   login=555  create=863   <- sbx: the sandbox service is at capacity
+  test:76 FAIL total=    1774 ms   login=544  create=1226   <- sbx: the sandbox service is at capacity
+  test:77 FAIL total=    1807 ms   login=545  create=1261   <- sbx: the sandbox service is at capacity
+  test:78 FAIL total=    1382 ms   login=545  create=837   <- sbx: the sandbox service is at capacity
+  test:79 FAIL total=    1442 ms   login=557  create=885   <- sbx: the sandbox service is at capacity
+  test:80 FAIL total=    1717 ms   login=538  create=1178   <- sbx: the sandbox service is at capacity
+  -> 30/80 ok, wall 16.1s, per-user total p50 14727 ms
+
+-----------------------------------------------------------------------------------
+concurrency 90: users test:1..test:90, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 90...
+per-user totals:
+  test:1  ok   total=    7738 ms   create=276  run_sleep_a=432  run_sleep_b=3019  ls=2232  rm=1778
+  test:2  ok   total=    6051 ms   create=271  run_sleep_a=818  run_sleep_b=1358  ls=2618  rm=986
+  test:3  ok   total=    9112 ms   create=257  run_sleep_a=744  run_sleep_b=1422  ls=3017  rm=3672
+  test:4  ok   total=    9216 ms   create=1002  run_sleep_a=3546  run_sleep_b=1325  ls=2811  rm=532
+  test:5  ok   total=    7716 ms   create=529  run_sleep_a=3956  run_sleep_b=532  ls=1532  rm=1167
+  test:6  ok   total=    6630 ms   create=404  run_sleep_a=646  run_sleep_b=1495  ls=1972  rm=2112
+  test:7  ok   total=    9187 ms   create=466  run_sleep_a=3188  run_sleep_b=2204  ls=2281  rm=1048
+  test:8  ok   total=    7854 ms   create=600  run_sleep_a=3017  run_sleep_b=1417  ls=2198  rm=622
+  test:9  ok   total=    8357 ms   create=787  run_sleep_a=1943  run_sleep_b=2219  ls=1411  rm=1995
+  test:10 ok   total=    7457 ms   create=779  run_sleep_a=1991  run_sleep_b=1690  ls=1331  rm=1667
+  test:11 ok   total=    7810 ms   create=944  run_sleep_a=1499  run_sleep_b=2907  ls=1051  rm=1410
+  test:12 ok   total=    7447 ms   create=626  run_sleep_a=792  run_sleep_b=3340  ls=1557  rm=1133
+  test:13 ok   total=    6682 ms   create=885  run_sleep_a=2028  run_sleep_b=466  ls=1108  rm=2195
+  test:14 ok   total=    5634 ms   create=783  run_sleep_a=2351  run_sleep_b=410  ls=867  rm=1223
+  test:15 ok   total=    8283 ms   create=904  run_sleep_a=2718  run_sleep_b=899  ls=2281  rm=1481
+  test:16 ok   total=    9661 ms   create=967  run_sleep_a=3138  run_sleep_b=3396  ls=1579  rm=582
+  test:17 ok   total=    8539 ms   create=825  run_sleep_a=3272  run_sleep_b=2600  ls=781  rm=1061
+  test:18 ok   total=    6642 ms   create=562  run_sleep_a=454  run_sleep_b=1587  ls=2527  rm=1512
+  test:19 ok   total=    7482 ms   create=885  run_sleep_a=1179  run_sleep_b=2350  ls=2224  rm=842
+  test:20 ok   total=    8616 ms   create=3183  run_sleep_a=1444  run_sleep_b=2599  ls=959  rm=431
+  test:21 ok   total=    8317 ms   create=748  run_sleep_a=2395  run_sleep_b=509  ls=2450  rm=2214
+  test:22 ok   total=    9019 ms   create=1558  run_sleep_a=1822  run_sleep_b=2201  ls=2892  rm=545
+  test:23 ok   total=    9323 ms   create=665  run_sleep_a=2799  run_sleep_b=2769  ls=2212  rm=879
+  test:24 ok   total=    9734 ms   create=2347  run_sleep_a=2535  run_sleep_b=3551  ls=1106  rm=195
+  test:25 ok   total=    7311 ms   create=730  run_sleep_a=2658  run_sleep_b=942  ls=1029  rm=1951
+  test:26 ok   total=    7233 ms   create=719  run_sleep_a=1697  run_sleep_b=2188  ls=1916  rm=712
+  test:27 ok   total=    8852 ms   create=647  run_sleep_a=3298  run_sleep_b=2279  ls=1563  rm=1065
+  test:28 ok   total=    8884 ms   create=2494  run_sleep_a=1308  run_sleep_b=2498  ls=2128  rm=457
+  test:29 ok   total=    4799 ms   create=824  run_sleep_a=2205  run_sleep_b=823  ls=328  rm=619
+  test:30 ok   total=    7526 ms   create=596  run_sleep_a=2611  run_sleep_b=1235  ls=1430  rm=1654
+  test:31 ok   total=    8550 ms   create=624  run_sleep_a=3640  run_sleep_b=1832  ls=1058  rm=1395
+  test:32 ok   total=    8446 ms   create=707  run_sleep_a=1394  run_sleep_b=1853  ls=638  rm=3855
+  test:33 ok   total=    7133 ms   create=2367  run_sleep_a=2177  run_sleep_b=710  ls=967  rm=912
+  test:34 ok   total=    9436 ms   create=3390  run_sleep_a=3501  run_sleep_b=1857  ls=384  rm=304
+  test:35 ok   total=    7073 ms   create=911  run_sleep_a=1163  run_sleep_b=977  ls=1321  rm=2700
+  test:36 ok   total=    9367 ms   create=611  run_sleep_a=1733  run_sleep_b=4080  ls=2290  rm=653
+  test:37 ok   total=    7228 ms   create=1863  run_sleep_a=1420  run_sleep_b=2073  ls=1463  rm=409
+  test:38 ok   total=    9364 ms   create=3236  run_sleep_a=2207  run_sleep_b=945  ls=2361  rm=615
+  test:39 ok   total=    8156 ms   create=656  run_sleep_a=2627  run_sleep_b=1799  ls=869  rm=2204
+  test:40 ok   total=    8672 ms   create=1384  run_sleep_a=1985  run_sleep_b=1316  ls=1261  rm=2726
+  test:41 ok   total=    6073 ms   create=742  run_sleep_a=1554  run_sleep_b=1847  ls=1483  rm=447
+  test:42 ok   total=    7071 ms   create=1953  run_sleep_a=1430  run_sleep_b=584  ls=1289  rm=1814
+  test:43 ok   total=    9303 ms   create=4964  run_sleep_a=2079  run_sleep_b=1543  ls=475  rm=242
+  test:44 ok   total=    7346 ms   create=533  run_sleep_a=1315  run_sleep_b=2270  ls=1797  rm=1430
+  test:45 ok   total=    7892 ms   create=1407  run_sleep_a=1169  run_sleep_b=3970  ls=692  rm=655
+  test:46 ok   total=    8686 ms   create=2807  run_sleep_a=1390  run_sleep_b=2771  ls=884  rm=834
+  test:47 ok   total=    8881 ms   create=497  run_sleep_a=2448  run_sleep_b=2217  ls=1184  rm=2534
+  test:48 ok   total=    8815 ms   create=461  run_sleep_a=2417  run_sleep_b=2186  ls=1868  rm=1883
+  test:49 ok   total=    7930 ms   create=484  run_sleep_a=1250  run_sleep_b=2233  ls=1766  rm=2196
+  test:50 ok   total=    8504 ms   create=1678  run_sleep_a=2201  run_sleep_b=1185  ls=1154  rm=2285
+  test:51 ok   total=    8603 ms   create=2465  run_sleep_a=2284  run_sleep_b=1413  ls=794  rm=1647
+  test:52 ok   total=    9171 ms   create=1792  run_sleep_a=2183  run_sleep_b=2198  ls=1544  rm=1454
+  test:53 ok   total=    9113 ms   create=3420  run_sleep_a=1332  run_sleep_b=2302  ls=1089  rm=971
+  test:54 ok   total=    9160 ms   create=3050  run_sleep_a=2670  run_sleep_b=2131  ls=781  rm=529
+  test:55 ok   total=    9220 ms   create=2721  run_sleep_a=2402  run_sleep_b=2488  ls=1398  rm=210
+  test:56 ok   total=    9109 ms   create=2189  run_sleep_a=2221  run_sleep_b=2196  ls=1878  rm=626
+  test:57 ok   total=    8030 ms   create=714  run_sleep_a=1961  run_sleep_b=2102  ls=1173  rm=2079
+  test:58 ok   total=    8517 ms   create=3306  run_sleep_a=1466  run_sleep_b=1644  ls=1620  rm=481
+  test:59 ok   total=    8843 ms   create=3922  run_sleep_a=1093  run_sleep_b=2258  ls=1024  rm=546
+  test:60 ok   total=    8415 ms   create=2914  run_sleep_a=2758  run_sleep_b=1240  ls=704  rm=798
+  test:61 ok   total=    9028 ms   create=2906  run_sleep_a=2345  run_sleep_b=2177  ls=1318  rm=283
+  test:62 ok   total=    5810 ms   create=1502  run_sleep_a=947  run_sleep_b=481  ls=2087  rm=793
+  test:63 ok   total=    8827 ms   create=2406  run_sleep_a=1869  run_sleep_b=3551  ls=509  rm=491
+  test:64 ok   total=    8854 ms   create=1805  run_sleep_a=2320  run_sleep_b=2186  ls=1283  rm=1261
+  test:65 ok   total=    7932 ms   create=1655  run_sleep_a=2229  run_sleep_b=1203  ls=1789  rm=1056
+  test:66 ok   total=    7786 ms   create=1639  run_sleep_a=1021  run_sleep_b=1766  ls=2204  rm=1155
+  test:67 ok   total=    8837 ms   create=2357  run_sleep_a=2456  run_sleep_b=1955  ls=1386  rm=683
+  test:68 ok   total=    8340 ms   create=1483  run_sleep_a=2562  run_sleep_b=2193  ls=1534  rm=568
+  test:69 ok   total=    6725 ms   create=1108  run_sleep_a=549  run_sleep_b=1306  ls=1642  rm=2120
+  test:70 ok   total=    8711 ms   create=2694  run_sleep_a=1137  run_sleep_b=2099  ls=920  rm=1861
+  test:71 ok   total=    7518 ms   create=1483  run_sleep_a=2286  run_sleep_b=2298  ls=609  rm=841
+  test:72 ok   total=    8872 ms   create=2676  run_sleep_a=1851  run_sleep_b=2357  ls=1410  rm=577
+  test:73 ok   total=    7413 ms   create=1314  run_sleep_a=1680  run_sleep_b=2864  ls=915  rm=639
+  test:74 ok   total=    7557 ms   create=2377  run_sleep_a=2306  run_sleep_b=675  ls=1547  rm=651
+  test:75 ok   total=    8087 ms   create=1136  run_sleep_a=2839  run_sleep_b=1427  ls=1519  rm=1166
+  test:76 ok   total=    8964 ms   create=3907  run_sleep_a=2762  run_sleep_b=1432  ls=688  rm=175
+  test:77 ok   total=    8549 ms   create=3478  run_sleep_a=1889  run_sleep_b=1502  ls=1267  rm=413
+  test:78 ok   total=    8702 ms   create=1315  run_sleep_a=2971  run_sleep_b=2214  ls=1667  rm=535
+  test:79 ok   total=    8626 ms   create=2774  run_sleep_a=2791  run_sleep_b=1266  ls=1202  rm=594
+  test:80 ok   total=    8470 ms   create=1718  run_sleep_a=3066  run_sleep_b=586  ls=2302  rm=798
+  test:81 ok   total=    8472 ms   create=1044  run_sleep_a=2355  run_sleep_b=2691  ls=1696  rm=685
+  test:82 ok   total=    8685 ms   create=2698  run_sleep_a=1669  run_sleep_b=2154  ls=1471  rm=693
+  test:83 ok   total=    8417 ms   create=1447  run_sleep_a=3114  run_sleep_b=1115  ls=2404  rm=336
+  test:84 ok   total=    7992 ms   create=1208  run_sleep_a=1053  run_sleep_b=1507  ls=2183  rm=2041
+  test:85 ok   total=    8065 ms   create=1605  run_sleep_a=1912  run_sleep_b=2117  ls=1099  rm=1331
+  test:86 ok   total=    8446 ms   create=2147  run_sleep_a=1916  run_sleep_b=2597  ls=488  rm=1297
+  test:87 ok   total=    4616 ms   create=905  run_sleep_a=665  run_sleep_b=616  ls=1130  rm=1299
+  test:88 ok   total=    8560 ms   create=1031  run_sleep_a=3070  run_sleep_b=1842  ls=1806  rm=811
+  test:89 ok   total=    8371 ms   create=993  run_sleep_a=2786  run_sleep_b=2820  ls=1232  rm=541
+  test:90 ok   total=    8057 ms   create=1242  run_sleep_a=2304  run_sleep_b=1648  ls=377  rm=2486
+  calibration: 90/90 ok, per-op p50 912-2177 ms, whole sequence 8417 ms
+per-user totals:
+  test:1  ok   total=   15934 ms   login=542  create=1184  run_sleep_a=7066  run_sleep_b=3717  ls=874  rm=2550
+  test:2  ok   total=   14460 ms   login=543  create=1160  run_sleep_a=5304  run_sleep_b=4386  ls=687  rm=2379
+  test:3  ok   total=   12053 ms   login=534  create=783  run_sleep_a=3820  run_sleep_b=3854  ls=679  rm=2381
+  test:4  ok   total=   11822 ms   login=539  create=781  run_sleep_a=3403  run_sleep_b=4069  ls=680  rm=2351
+  test:5  ok   total=   11994 ms   login=542  create=802  run_sleep_a=3816  run_sleep_b=3800  ls=679  rm=2355
+  test:6  ok   total=   12042 ms   login=536  create=789  run_sleep_a=3789  run_sleep_b=3856  ls=680  rm=2393
+  test:7  ok   total=   15018 ms   login=546  create=787  run_sleep_a=7204  run_sleep_b=3419  ls=710  rm=2351
+  test:8  ok   total=   15334 ms   login=542  create=790  run_sleep_a=7337  run_sleep_b=3600  ls=687  rm=2377
+  test:9  ok   total=   12330 ms   login=537  create=799  run_sleep_a=4587  run_sleep_b=3257  ls=676  rm=2473
+  test:10 ok   total=   13447 ms   login=534  create=802  run_sleep_a=5015  run_sleep_b=4051  ls=692  rm=2353
+  test:11 ok   total=   14235 ms   login=531  create=815  run_sleep_a=5440  run_sleep_b=4362  ls=691  rm=2395
+  test:12 ok   total=   14144 ms   login=538  create=823  run_sleep_a=5170  run_sleep_b=4549  ls=694  rm=2369
+  test:13 ok   total=   14748 ms   login=537  create=829  run_sleep_a=6623  run_sleep_b=3687  ls=691  rm=2380
+  test:14 ok   total=   13061 ms   login=544  create=822  run_sleep_a=4793  run_sleep_b=3736  ls=688  rm=2478
+  test:15 ok   total=   14390 ms   login=538  create=834  run_sleep_a=5729  run_sleep_b=4241  ls=682  rm=2365
+  test:16 ok   total=   14730 ms   login=541  create=838  run_sleep_a=6545  run_sleep_b=3702  ls=698  rm=2405
+  test:17 ok   total=   12417 ms   login=542  create=838  run_sleep_a=4578  run_sleep_b=3304  ls=673  rm=2482
+  test:18 ok   total=   13980 ms   login=542  create=937  run_sleep_a=4915  run_sleep_b=4555  ls=683  rm=2346
+  test:19 ok   total=   14903 ms   login=539  create=833  run_sleep_a=7065  run_sleep_b=3414  ls=703  rm=2348
+  test:20 ok   total=   12926 ms   login=533  create=1014  run_sleep_a=4547  run_sleep_b=3737  ls=682  rm=2412
+  test:21 FAIL total=    3391 ms   login=535  create=2856   <- sbx: the sandbox service is at capacity
+  test:22 ok   total=   13783 ms   login=534  create=823  run_sleep_a=5009  run_sleep_b=4405  ls=672  rm=2340
+  test:23 FAIL total=    1595 ms   login=545  create=1050   <- sbx: the sandbox service is at capacity
+  test:24 ok   total=   14220 ms   login=540  create=809  run_sleep_a=5412  run_sleep_b=4364  ls=692  rm=2402
+  test:25 ok   total=   15194 ms   login=536  create=835  run_sleep_a=7144  run_sleep_b=3628  ls=694  rm=2355
+  test:26 ok   total=   13711 ms   login=535  create=810  run_sleep_a=4903  run_sleep_b=4412  ls=708  rm=2344
+  test:27 ok   total=   13993 ms   login=546  create=885  run_sleep_a=4973  run_sleep_b=4509  ls=694  rm=2385
+  test:28 ok   total=   14617 ms   login=538  create=987  run_sleep_a=6373  run_sleep_b=3627  ls=698  rm=2393
+  test:29 ok   total=   14251 ms   login=547  create=996  run_sleep_a=5577  run_sleep_b=4119  ls=679  rm=2333
+  test:30 ok   total=   12829 ms   login=541  create=875  run_sleep_a=4575  run_sleep_b=3747  ls=689  rm=2401
+  test:31 ok   total=   13241 ms   login=535  create=940  run_sleep_a=4658  run_sleep_b=4087  ls=669  rm=2350
+  test:32 FAIL total=    3487 ms   login=538  create=2949   <- sbx: the sandbox service is at capacity
+  test:33 FAIL total=    1542 ms   login=539  create=1003   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    3245 ms   login=542  create=2702   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1550 ms   login=544  create=1005   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1801 ms   login=539  create=1261   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    2399 ms   login=542  create=1857   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    1410 ms   login=537  create=872   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1695 ms   login=541  create=1153   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1790 ms   login=538  create=1251   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1476 ms   login=544  create=932   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    1491 ms   login=538  create=952   <- sbx: the sandbox service is at capacity
+  test:43 ok   total=   13942 ms   login=537  create=786  run_sleep_a=5209  run_sleep_b=4348  ls=680  rm=2382
+  test:44 FAIL total=    1386 ms   login=539  create=847   <- sbx: the sandbox service is at capacity
+  test:45 FAIL total=    2783 ms   login=543  create=2240   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1515 ms   login=541  create=974   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    1574 ms   login=539  create=1034   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    1462 ms   login=539  create=922   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1368 ms   login=537  create=830   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    1394 ms   login=540  create=854   <- sbx: the sandbox service is at capacity
+  test:51 FAIL total=    1525 ms   login=534  create=991   <- sbx: the sandbox service is at capacity
+  test:52 FAIL total=    3202 ms   login=544  create=2658   <- sbx: the sandbox service is at capacity
+  test:53 FAIL total=    1537 ms   login=539  create=998   <- sbx: the sandbox service is at capacity
+  test:54 FAIL total=    2813 ms   login=542  create=2270   <- sbx: the sandbox service is at capacity
+  test:55 FAIL total=    1515 ms   login=549  create=966   <- sbx: the sandbox service is at capacity
+  test:56 FAIL total=    2502 ms   login=542  create=1959   <- sbx: the sandbox service is at capacity
+  test:57 FAIL total=    1442 ms   login=538  create=904   <- sbx: the sandbox service is at capacity
+  test:58 FAIL total=    3247 ms   login=545  create=2702   <- sbx: the sandbox service is at capacity
+  test:59 FAIL total=    2473 ms   login=963  create=1509   <- sbx: the sandbox service is at capacity
+  test:60 FAIL total=    2725 ms   login=949  create=1775   <- sbx: the sandbox service is at capacity
+  test:61 FAIL total=    1392 ms   login=562  create=830   <- sbx: the sandbox service is at capacity
+  test:62 FAIL total=    1516 ms   login=559  create=956   <- sbx: the sandbox service is at capacity
+  test:63 FAIL total=    2950 ms   login=553  create=2397   <- sbx: the sandbox service is at capacity
+  test:64 FAIL total=    2008 ms   login=547  create=1461   <- sbx: the sandbox service is at capacity
+  test:65 FAIL total=    1447 ms   login=542  create=905   <- sbx: the sandbox service is at capacity
+  test:66 FAIL total=    1325 ms   login=546  create=779   <- sbx: the sandbox service is at capacity
+  test:67 FAIL total=    2820 ms   login=543  create=2277   <- sbx: the sandbox service is at capacity
+  test:68 FAIL total=    1414 ms   login=540  create=872   <- sbx: the sandbox service is at capacity
+  test:69 FAIL total=    3124 ms   login=546  create=2577   <- sbx: the sandbox service is at capacity
+  test:70 FAIL total=    1453 ms   login=541  create=911   <- sbx: the sandbox service is at capacity
+  test:71 FAIL total=    1962 ms   login=543  create=1419   <- sbx: the sandbox service is at capacity
+  test:72 FAIL total=    2324 ms   login=542  create=1781   <- sbx: the sandbox service is at capacity
+  test:73 FAIL total=    2338 ms   login=537  create=1800   <- sbx: the sandbox service is at capacity
+  test:74 FAIL total=    2262 ms   login=541  create=1719   <- sbx: the sandbox service is at capacity
+  test:75 FAIL total=    1916 ms   login=538  create=1372   <- sbx: the sandbox service is at capacity
+  test:76 FAIL total=    3035 ms   login=543  create=2491   <- sbx: the sandbox service is at capacity
+  test:77 FAIL total=    2254 ms   login=550  create=1695   <- sbx: the sandbox service is at capacity
+  test:78 FAIL total=    1786 ms   login=550  create=1235   <- sbx: the sandbox service is at capacity
+  test:79 FAIL total=    2981 ms   login=543  create=2430   <- sbx: the sandbox service is at capacity
+  test:80 FAIL total=    2981 ms   login=553  create=2427   <- sbx: the sandbox service is at capacity
+  test:81 FAIL total=    2950 ms   login=552  create=2397   <- sbx: the sandbox service is at capacity
+  test:82 FAIL total=    1867 ms   login=551  create=1315   <- sbx: the sandbox service is at capacity
+  test:83 FAIL total=    2592 ms   login=548  create=2043   <- sbx: the sandbox service is at capacity
+  test:84 FAIL total=    2844 ms   login=552  create=2292   <- sbx: the sandbox service is at capacity
+  test:85 FAIL total=    1538 ms   login=549  create=989   <- sbx: the sandbox service is at capacity
+  test:86 FAIL total=    1647 ms   login=558  create=1088   <- sbx: the sandbox service is at capacity
+  test:87 FAIL total=    2230 ms   login=546  create=1684   <- sbx: the sandbox service is at capacity
+  test:88 FAIL total=    1883 ms   login=549  create=1333   <- sbx: the sandbox service is at capacity
+  test:89 FAIL total=    2438 ms   login=551  create=1887   <- sbx: the sandbox service is at capacity
+  test:90 FAIL total=    1493 ms   login=555  create=938   <- sbx: the sandbox service is at capacity
+failures (60):
+  test:21 FAIL total=    3391 ms   login=535  create=2856   <- sbx: the sandbox service is at capacity
+  test:23 FAIL total=    1595 ms   login=545  create=1050   <- sbx: the sandbox service is at capacity
+  test:32 FAIL total=    3487 ms   login=538  create=2949   <- sbx: the sandbox service is at capacity
+  test:33 FAIL total=    1542 ms   login=539  create=1003   <- sbx: the sandbox service is at capacity
+  test:34 FAIL total=    3245 ms   login=542  create=2702   <- sbx: the sandbox service is at capacity
+  test:35 FAIL total=    1550 ms   login=544  create=1005   <- sbx: the sandbox service is at capacity
+  test:36 FAIL total=    1801 ms   login=539  create=1261   <- sbx: the sandbox service is at capacity
+  test:37 FAIL total=    2399 ms   login=542  create=1857   <- sbx: the sandbox service is at capacity
+  test:38 FAIL total=    1410 ms   login=537  create=872   <- sbx: the sandbox service is at capacity
+  test:39 FAIL total=    1695 ms   login=541  create=1153   <- sbx: the sandbox service is at capacity
+  test:40 FAIL total=    1790 ms   login=538  create=1251   <- sbx: the sandbox service is at capacity
+  test:41 FAIL total=    1476 ms   login=544  create=932   <- sbx: the sandbox service is at capacity
+  test:42 FAIL total=    1491 ms   login=538  create=952   <- sbx: the sandbox service is at capacity
+  test:44 FAIL total=    1386 ms   login=539  create=847   <- sbx: the sandbox service is at capacity
+  test:45 FAIL total=    2783 ms   login=543  create=2240   <- sbx: the sandbox service is at capacity
+  test:46 FAIL total=    1515 ms   login=541  create=974   <- sbx: the sandbox service is at capacity
+  test:47 FAIL total=    1574 ms   login=539  create=1034   <- sbx: the sandbox service is at capacity
+  test:48 FAIL total=    1462 ms   login=539  create=922   <- sbx: the sandbox service is at capacity
+  test:49 FAIL total=    1368 ms   login=537  create=830   <- sbx: the sandbox service is at capacity
+  test:50 FAIL total=    1394 ms   login=540  create=854   <- sbx: the sandbox service is at capacity
+  test:51 FAIL total=    1525 ms   login=534  create=991   <- sbx: the sandbox service is at capacity
+  test:52 FAIL total=    3202 ms   login=544  create=2658   <- sbx: the sandbox service is at capacity
+  test:53 FAIL total=    1537 ms   login=539  create=998   <- sbx: the sandbox service is at capacity
+  test:54 FAIL total=    2813 ms   login=542  create=2270   <- sbx: the sandbox service is at capacity
+  test:55 FAIL total=    1515 ms   login=549  create=966   <- sbx: the sandbox service is at capacity
+  test:56 FAIL total=    2502 ms   login=542  create=1959   <- sbx: the sandbox service is at capacity
+  test:57 FAIL total=    1442 ms   login=538  create=904   <- sbx: the sandbox service is at capacity
+  test:58 FAIL total=    3247 ms   login=545  create=2702   <- sbx: the sandbox service is at capacity
+  test:59 FAIL total=    2473 ms   login=963  create=1509   <- sbx: the sandbox service is at capacity
+  test:60 FAIL total=    2725 ms   login=949  create=1775   <- sbx: the sandbox service is at capacity
+  test:61 FAIL total=    1392 ms   login=562  create=830   <- sbx: the sandbox service is at capacity
+  test:62 FAIL total=    1516 ms   login=559  create=956   <- sbx: the sandbox service is at capacity
+  test:63 FAIL total=    2950 ms   login=553  create=2397   <- sbx: the sandbox service is at capacity
+  test:64 FAIL total=    2008 ms   login=547  create=1461   <- sbx: the sandbox service is at capacity
+  test:65 FAIL total=    1447 ms   login=542  create=905   <- sbx: the sandbox service is at capacity
+  test:66 FAIL total=    1325 ms   login=546  create=779   <- sbx: the sandbox service is at capacity
+  test:67 FAIL total=    2820 ms   login=543  create=2277   <- sbx: the sandbox service is at capacity
+  test:68 FAIL total=    1414 ms   login=540  create=872   <- sbx: the sandbox service is at capacity
+  test:69 FAIL total=    3124 ms   login=546  create=2577   <- sbx: the sandbox service is at capacity
+  test:70 FAIL total=    1453 ms   login=541  create=911   <- sbx: the sandbox service is at capacity
+  test:71 FAIL total=    1962 ms   login=543  create=1419   <- sbx: the sandbox service is at capacity
+  test:72 FAIL total=    2324 ms   login=542  create=1781   <- sbx: the sandbox service is at capacity
+  test:73 FAIL total=    2338 ms   login=537  create=1800   <- sbx: the sandbox service is at capacity
+  test:74 FAIL total=    2262 ms   login=541  create=1719   <- sbx: the sandbox service is at capacity
+  test:75 FAIL total=    1916 ms   login=538  create=1372   <- sbx: the sandbox service is at capacity
+  test:76 FAIL total=    3035 ms   login=543  create=2491   <- sbx: the sandbox service is at capacity
+  test:77 FAIL total=    2254 ms   login=550  create=1695   <- sbx: the sandbox service is at capacity
+  test:78 FAIL total=    1786 ms   login=550  create=1235   <- sbx: the sandbox service is at capacity
+  test:79 FAIL total=    2981 ms   login=543  create=2430   <- sbx: the sandbox service is at capacity
+  test:80 FAIL total=    2981 ms   login=553  create=2427   <- sbx: the sandbox service is at capacity
+  test:81 FAIL total=    2950 ms   login=552  create=2397   <- sbx: the sandbox service is at capacity
+  test:82 FAIL total=    1867 ms   login=551  create=1315   <- sbx: the sandbox service is at capacity
+  test:83 FAIL total=    2592 ms   login=548  create=2043   <- sbx: the sandbox service is at capacity
+  test:84 FAIL total=    2844 ms   login=552  create=2292   <- sbx: the sandbox service is at capacity
+  test:85 FAIL total=    1538 ms   login=549  create=989   <- sbx: the sandbox service is at capacity
+  test:86 FAIL total=    1647 ms   login=558  create=1088   <- sbx: the sandbox service is at capacity
+  test:87 FAIL total=    2230 ms   login=546  create=1684   <- sbx: the sandbox service is at capacity
+  test:88 FAIL total=    1883 ms   login=549  create=1333   <- sbx: the sandbox service is at capacity
+  test:89 FAIL total=    2438 ms   login=551  create=1887   <- sbx: the sandbox service is at capacity
+  test:90 FAIL total=    1493 ms   login=555  create=938   <- sbx: the sandbox service is at capacity
+  -> 30/90 ok, wall 15.9s, per-user total p50 13980 ms
+
+-----------------------------------------------------------------------------------
+concurrency 100: users test:1..test:100, all at once
+-----------------------------------------------------------------------------------
+  calibrating: null 'mocactl' at concurrency 100...
+per-user totals:
+  test:1   ok   total=    8767 ms   create=263  run_sleep_a=2599  run_sleep_b=2229  ls=1036  rm=2640
+  test:2   ok   total=    6098 ms   create=372  run_sleep_a=488  run_sleep_b=896  ls=2384  rm=1958
+  test:3   ok   total=    8551 ms   create=581  run_sleep_a=3335  run_sleep_b=2723  ls=449  rm=1462
+  test:4   ok   total=    9384 ms   create=398  run_sleep_a=875  run_sleep_b=4582  ls=2279  rm=1250
+  test:5   ok   total=    8541 ms   create=515  run_sleep_a=2285  run_sleep_b=2288  ls=1458  rm=1994
+  test:6   ok   total=   10043 ms   create=552  run_sleep_a=2390  run_sleep_b=2104  ls=3518  rm=1480
+  test:7   ok   total=    8569 ms   create=1173  run_sleep_a=1656  run_sleep_b=1040  ls=2668  rm=2033
+  test:8   ok   total=   10795 ms   create=809  run_sleep_a=5006  run_sleep_b=2354  ls=2118  rm=508
+  test:9   ok   total=    9431 ms   create=349  run_sleep_a=2958  run_sleep_b=1086  ls=2150  rm=2887
+  test:10  ok   total=    9789 ms   create=489  run_sleep_a=4659  run_sleep_b=2246  ls=1380  rm=1015
+  test:11  ok   total=    8582 ms   create=587  run_sleep_a=2020  run_sleep_b=2611  ls=1306  rm=2059
+  test:12  ok   total=    9709 ms   create=507  run_sleep_a=1707  run_sleep_b=2998  ls=2204  rm=2293
+  test:13  ok   total=    7895 ms   create=384  run_sleep_a=930  run_sleep_b=3429  ls=2626  rm=525
+  test:14  ok   total=    7457 ms   create=480  run_sleep_a=1971  run_sleep_b=2366  ls=1502  rm=1138
+  test:15  ok   total=    9361 ms   create=529  run_sleep_a=3677  run_sleep_b=1121  ls=2195  rm=1839
+  test:16  ok   total=    9109 ms   create=1270  run_sleep_a=3953  run_sleep_b=3110  ls=326  rm=450
+  test:17  ok   total=    8877 ms   create=436  run_sleep_a=3285  run_sleep_b=1225  ls=1318  rm=2612
+  test:18  ok   total=   10105 ms   create=1632  run_sleep_a=3009  run_sleep_b=3590  ls=869  rm=1004
+  test:19  ok   total=    6830 ms   create=392  run_sleep_a=3320  run_sleep_b=1443  ls=1028  rm=647
+  test:20  ok   total=   10115 ms   create=1188  run_sleep_a=2960  run_sleep_b=3061  ls=1399  rm=1507
+  test:21  ok   total=    7747 ms   create=884  run_sleep_a=1755  run_sleep_b=3183  ls=1065  rm=860
+  test:22  ok   total=   10108 ms   create=2591  run_sleep_a=3981  run_sleep_b=419  ls=2139  rm=978
+  test:23  ok   total=   10082 ms   create=1191  run_sleep_a=4178  run_sleep_b=2803  ls=384  rm=1526
+  test:24  ok   total=   10177 ms   create=2471  run_sleep_a=2714  run_sleep_b=2147  ls=1921  rm=924
+  test:25  ok   total=   10562 ms   create=282  run_sleep_a=5844  run_sleep_b=3447  ls=536  rm=453
+  test:26  ok   total=   10226 ms   create=3963  run_sleep_a=3323  run_sleep_b=1532  ls=1020  rm=387
+  test:27  ok   total=    9930 ms   create=1925  run_sleep_a=2581  run_sleep_b=3568  ls=454  rm=1401
+  test:28  ok   total=    8989 ms   create=1333  run_sleep_a=2997  run_sleep_b=1744  ls=699  rm=2215
+  test:29  ok   total=   10437 ms   create=2481  run_sleep_a=2967  run_sleep_b=2720  ls=1623  rm=645
+  test:30  ok   total=    9095 ms   create=1047  run_sleep_a=2293  run_sleep_b=2272  ls=2913  rm=569
+  test:31  ok   total=   10237 ms   create=1022  run_sleep_a=4262  run_sleep_b=2370  ls=2209  rm=374
+  test:32  ok   total=    9851 ms   create=1920  run_sleep_a=1640  run_sleep_b=1108  ls=1630  rm=3552
+  test:33  ok   total=   10065 ms   create=2324  run_sleep_a=1697  run_sleep_b=2248  ls=2997  rm=799
+  test:34  ok   total=    9752 ms   create=2394  run_sleep_a=1546  run_sleep_b=2827  ls=843  rm=2142
+  test:35  ok   total=   10114 ms   create=3502  run_sleep_a=474  run_sleep_b=2339  ls=3475  rm=323
+  test:36  ok   total=   10391 ms   create=3855  run_sleep_a=2199  run_sleep_b=2264  ls=1669  rm=405
+  test:37  ok   total=    9836 ms   create=892  run_sleep_a=1423  run_sleep_b=3976  ls=1847  rm=1698
+  test:38  ok   total=    8387 ms   create=833  run_sleep_a=4041  run_sleep_b=2301  ls=395  rm=817
+  test:39  ok   total=    9033 ms   create=2383  run_sleep_a=1940  run_sleep_b=1753  ls=754  rm=2201
+  test:40  ok   total=   10034 ms   create=502  run_sleep_a=2378  run_sleep_b=2975  ls=3061  rm=1118
+  test:41  ok   total=    9460 ms   create=1212  run_sleep_a=2764  run_sleep_b=2292  ls=2582  rm=609
+  test:42  ok   total=   10347 ms   create=2882  run_sleep_a=1868  run_sleep_b=2219  ls=2956  rm=424
+  test:43  ok   total=    9757 ms   create=3315  run_sleep_a=1247  run_sleep_b=2246  ls=1423  rm=1526
+  test:44  ok   total=   10525 ms   create=3700  run_sleep_a=2781  run_sleep_b=3354  ls=509  rm=181
+  test:45  ok   total=    8781 ms   create=1542  run_sleep_a=788  run_sleep_b=2150  ls=2111  rm=2190
+  test:46  ok   total=   10472 ms   create=3501  run_sleep_a=2448  run_sleep_b=2576  ls=1752  rm=194
+  test:47  ok   total=    8609 ms   create=2303  run_sleep_a=2604  run_sleep_b=2185  ls=333  rm=1184
+  test:48  ok   total=    9508 ms   create=847  run_sleep_a=3209  run_sleep_b=2337  ls=2202  rm=914
+  test:49  ok   total=    9640 ms   create=3464  run_sleep_a=1080  run_sleep_b=672  ls=3050  rm=1372
+  test:50  ok   total=   10018 ms   create=2812  run_sleep_a=1599  run_sleep_b=2142  ls=1450  rm=2015
+  test:51  ok   total=    8595 ms   create=2313  run_sleep_a=2454  run_sleep_b=487  ls=1135  rm=2207
+  test:52  ok   total=    8519 ms   create=3946  run_sleep_a=929  run_sleep_b=1955  ls=1077  rm=612
+  test:53  ok   total=    9464 ms   create=2122  run_sleep_a=2232  run_sleep_b=2828  ls=1315  rm=968
+  test:54  ok   total=    9939 ms   create=3550  run_sleep_a=2637  run_sleep_b=1105  ls=1681  rm=965
+  test:55  ok   total=    7600 ms   create=1495  run_sleep_a=647  run_sleep_b=996  ls=3334  rm=1127
+  test:56  ok   total=    9539 ms   create=2108  run_sleep_a=1092  run_sleep_b=2269  ls=2287  rm=1783
+  test:57  ok   total=    7660 ms   create=1056  run_sleep_a=1533  run_sleep_b=2211  ls=1328  rm=1531
+  test:58  ok   total=   10106 ms   create=3415  run_sleep_a=1818  run_sleep_b=2197  ls=1940  rm=735
+  test:59  ok   total=    9469 ms   create=3307  run_sleep_a=2590  run_sleep_b=1707  ls=399  rm=1466
+  test:60  ok   total=    9424 ms   create=1911  run_sleep_a=3371  run_sleep_b=528  ls=1975  rm=1639
+  test:61  ok   total=   10078 ms   create=3241  run_sleep_a=2977  run_sleep_b=1658  ls=1659  rm=544
+  test:62  ok   total=    9178 ms   create=2601  run_sleep_a=2574  run_sleep_b=2726  ls=762  rm=516
+  test:63  ok   total=   10060 ms   create=3459  run_sleep_a=1522  run_sleep_b=1601  ls=3032  rm=446
+  test:64  ok   total=    9335 ms   create=2221  run_sleep_a=2149  run_sleep_b=1776  ls=1086  rm=2103
+  test:65  ok   total=    9695 ms   create=2992  run_sleep_a=2194  run_sleep_b=2181  ls=1912  rm=416
+  test:66  ok   total=    9529 ms   create=2434  run_sleep_a=2231  run_sleep_b=2198  ls=1076  rm=1590
+  test:67  ok   total=    7904 ms   create=1089  run_sleep_a=741  run_sleep_b=1637  ls=1274  rm=3162
+  test:68  ok   total=    9231 ms   create=2405  run_sleep_a=1461  run_sleep_b=2554  ls=2402  rm=409
+  test:69  ok   total=    6992 ms   create=1261  run_sleep_a=680  run_sleep_b=2218  ls=585  rm=2247
+  test:70  ok   total=    9400 ms   create=1424  run_sleep_a=1845  run_sleep_b=2833  ls=2438  rm=858
+  test:71  ok   total=    9485 ms   create=2673  run_sleep_a=1737  run_sleep_b=2839  ls=1294  rm=943
+  test:72  ok   total=    7445 ms   create=1723  run_sleep_a=1296  run_sleep_b=1596  ls=2199  rm=631
+  test:73  ok   total=    9465 ms   create=782  run_sleep_a=3409  run_sleep_b=1884  ls=2340  rm=1049
+  test:74  ok   total=    9423 ms   create=2956  run_sleep_a=2487  run_sleep_b=2217  ls=825  rm=937
+  test:75  ok   total=    9210 ms   create=2949  run_sleep_a=2297  run_sleep_b=537  ls=1979  rm=1448
+  test:76  ok   total=    9881 ms   create=2572  run_sleep_a=1447  run_sleep_b=3477  ls=2040  rm=346
+  test:77  ok   total=    9483 ms   create=2806  run_sleep_a=3282  run_sleep_b=2218  ls=749  rm=428
+  test:78  ok   total=    8815 ms   create=2494  run_sleep_a=1520  run_sleep_b=1429  ls=2267  rm=1106
+  test:79  ok   total=    9188 ms   create=2365  run_sleep_a=2749  run_sleep_b=922  ls=2230  rm=921
+  test:80  ok   total=    9834 ms   create=2361  run_sleep_a=2022  run_sleep_b=3829  ls=1022  rm=600
+  test:81  ok   total=    7604 ms   create=1018  run_sleep_a=1354  run_sleep_b=2031  ls=2200  rm=1001
+  test:82  ok   total=    9803 ms   create=4066  run_sleep_a=2274  run_sleep_b=2363  ls=738  rm=361
+  test:83  ok   total=    9795 ms   create=2204  run_sleep_a=2411  run_sleep_b=2295  ls=2297  rm=588
+  test:84  ok   total=    9659 ms   create=2763  run_sleep_a=3475  run_sleep_b=1555  ls=1415  rm=451
+  test:85  ok   total=    9203 ms   create=2339  run_sleep_a=2960  run_sleep_b=2529  ls=857  rm=517
+  test:86  ok   total=    9353 ms   create=1265  run_sleep_a=2682  run_sleep_b=3262  ls=1815  rm=329
+  test:87  ok   total=    8001 ms   create=1736  run_sleep_a=467  run_sleep_b=1981  ls=3221  rm=595
+  test:88  ok   total=    8384 ms   create=1602  run_sleep_a=3107  run_sleep_b=690  ls=1862  rm=1123
+  test:89  ok   total=    9296 ms   create=2165  run_sleep_a=2212  run_sleep_b=2704  ls=561  rm=1653
+  test:90  ok   total=    9467 ms   create=2891  run_sleep_a=1557  run_sleep_b=2382  ls=2013  rm=624
+  test:91  ok   total=    9197 ms   create=1535  run_sleep_a=2319  run_sleep_b=1547  ls=1708  rm=2087
+  test:92  ok   total=    9551 ms   create=2200  run_sleep_a=979  run_sleep_b=2249  ls=1893  rm=2230
+  test:93  ok   total=    9500 ms   create=459  run_sleep_a=1923  run_sleep_b=2288  ls=3734  rm=1096
+  test:94  ok   total=    7987 ms   create=1515  run_sleep_a=1398  run_sleep_b=2253  ls=1072  rm=1750
+  test:95  ok   total=    8942 ms   create=1475  run_sleep_a=1330  run_sleep_b=2939  ls=2288  rm=910
+  test:96  ok   total=    9236 ms   create=1313  run_sleep_a=1694  run_sleep_b=2195  ls=3615  rm=419
+  test:97  ok   total=    7219 ms   create=2073  run_sleep_a=2022  run_sleep_b=1058  ls=839  rm=1228
+  test:98  ok   total=    8880 ms   create=2829  run_sleep_a=1316  run_sleep_b=651  ls=2203  rm=1882
+  test:99  ok   total=    9597 ms   create=3763  run_sleep_a=432  run_sleep_b=2965  ls=2039  rm=398
+  test:100 ok   total=    9574 ms   create=4312  run_sleep_a=759  run_sleep_b=971  ls=3017  rm=516
+  calibration: 100/100 ok, per-op p50 1004-2246 ms, whole sequence 9464 ms
+per-user totals:
+  test:1   ok   total=   12649 ms   login=547  create=786  run_sleep_a=4477  run_sleep_b=3455  ls=870  rm=2513
+  test:2   ok   total=   12355 ms   login=543  create=797  run_sleep_a=4448  run_sleep_b=3380  ls=685  rm=2500
+  test:3   ok   total=   12043 ms   login=543  create=824  run_sleep_a=3597  run_sleep_b=3993  ls=709  rm=2376
+  test:4   ok   total=   12822 ms   login=541  create=952  run_sleep_a=4768  run_sleep_b=3471  ls=705  rm=2384
+  test:5   ok   total=   14890 ms   login=537  create=970  run_sleep_a=6109  run_sleep_b=4192  ls=708  rm=2373
+  test:6   ok   total=   12788 ms   login=539  create=929  run_sleep_a=4776  run_sleep_b=3460  ls=705  rm=2378
+  test:7   ok   total=   13527 ms   login=549  create=949  run_sleep_a=5054  run_sleep_b=3886  ls=720  rm=2367
+  test:8   ok   total=   13494 ms   login=551  create=975  run_sleep_a=5012  run_sleep_b=3908  ls=711  rm=2336
+  test:9   ok   total=   13509 ms   login=546  create=952  run_sleep_a=5018  run_sleep_b=3890  ls=723  rm=2380
+  test:10  ok   total=   12765 ms   login=539  create=991  run_sleep_a=4679  run_sleep_b=3460  ls=722  rm=2373
+  test:11  ok   total=   14297 ms   login=542  create=1010  run_sleep_a=5195  run_sleep_b=4461  ls=718  rm=2369
+  test:12  ok   total=   14162 ms   login=546  create=1010  run_sleep_a=5170  run_sleep_b=4392  ls=700  rm=2345
+  test:13  ok   total=   14773 ms   login=544  create=1118  run_sleep_a=5847  run_sleep_b=4210  ls=706  rm=2348
+  test:14  ok   total=   14479 ms   login=539  create=1115  run_sleep_a=5364  run_sleep_b=4394  ls=689  rm=2378
+  test:15  ok   total=   14039 ms   login=547  create=1098  run_sleep_a=5018  run_sleep_b=4331  ls=704  rm=2342
+  test:16  ok   total=   14464 ms   login=550  create=1121  run_sleep_a=5334  run_sleep_b=4409  ls=683  rm=2367
+  test:17  ok   total=   14296 ms   login=543  create=1070  run_sleep_a=5069  run_sleep_b=4555  ls=707  rm=2352
+  test:18  ok   total=   14321 ms   login=541  create=1062  run_sleep_a=5068  run_sleep_b=4566  ls=712  rm=2370
+  test:19  ok   total=   14727 ms   login=538  create=1129  run_sleep_a=5776  run_sleep_b=4199  ls=701  rm=2384
+  test:20  ok   total=   14309 ms   login=545  create=1070  run_sleep_a=5172  run_sleep_b=4428  ls=711  rm=2383
+  test:21  ok   total=   14273 ms   login=538  create=1021  run_sleep_a=5102  run_sleep_b=4540  ls=708  rm=2363
+  test:22  FAIL total=    1923 ms   login=544  create=1378   <- sbx: the sandbox service is at capacity
+  test:23  FAIL total=    1911 ms   login=541  create=1370   <- sbx: the sandbox service is at capacity
+  test:24  FAIL total=    1900 ms   login=537  create=1363   <- sbx: the sandbox service is at capacity
+  test:25  FAIL total=    1888 ms   login=540  create=1347   <- sbx: the sandbox service is at capacity
+  test:26  ok   total=   14205 ms   login=545  create=1023  run_sleep_a=5010  run_sleep_b=4502  ls=712  rm=2411
+  test:27  ok   total=   14861 ms   login=548  create=1066  run_sleep_a=6596  run_sleep_b=3577  ls=720  rm=2353
+  test:28  ok   total=   14795 ms   login=554  create=1054  run_sleep_a=6565  run_sleep_b=3571  ls=700  rm=2350
+  test:29  ok   total=   15607 ms   login=543  create=1126  run_sleep_a=6928  run_sleep_b=3936  ls=698  rm=2376
+  test:30  ok   total=   15244 ms   login=553  create=1160  run_sleep_a=6807  run_sleep_b=3644  ls=701  rm=2375
+  test:31  ok   total=   15630 ms   login=547  create=1173  run_sleep_a=6855  run_sleep_b=4000  ls=705  rm=2350
+  test:32  FAIL total=    1839 ms   login=571  create=1267   <- sbx: the sandbox service is at capacity
+  test:33  ok   total=   15404 ms   login=553  create=1106  run_sleep_a=6880  run_sleep_b=3818  ls=686  rm=2361
+  test:34  ok   total=   15561 ms   login=547  create=1074  run_sleep_a=6928  run_sleep_b=3980  ls=684  rm=2346
+  test:35  ok   total=   14762 ms   login=551  create=1097  run_sleep_a=6457  run_sleep_b=3576  ls=729  rm=2351
+  test:36  FAIL total=    1579 ms   login=539  create=1039   <- sbx: the sandbox service is at capacity
+  test:37  FAIL total=    1684 ms   login=544  create=1140   <- sbx: the sandbox service is at capacity
+  test:38  FAIL total=    1773 ms   login=557  create=1216   <- sbx: the sandbox service is at capacity
+  test:39  FAIL total=    1616 ms   login=554  create=1062   <- sbx: the sandbox service is at capacity
+  test:40  FAIL total=    1671 ms   login=550  create=1119   <- sbx: the sandbox service is at capacity
+  test:41  FAIL total=    1737 ms   login=548  create=1189   <- sbx: the sandbox service is at capacity
+  test:42  FAIL total=    1646 ms   login=550  create=1095   <- sbx: the sandbox service is at capacity
+  test:43  FAIL total=    1636 ms   login=559  create=1076   <- sbx: the sandbox service is at capacity
+  test:44  FAIL total=    1601 ms   login=540  create=1060   <- sbx: the sandbox service is at capacity
+  test:45  FAIL total=    1567 ms   login=552  create=1014   <- sbx: the sandbox service is at capacity
+  test:46  FAIL total=    1579 ms   login=551  create=1027   <- sbx: the sandbox service is at capacity
+  test:47  FAIL total=    1582 ms   login=558  create=1023   <- sbx: the sandbox service is at capacity
+  test:48  FAIL total=    1644 ms   login=566  create=1078   <- sbx: the sandbox service is at capacity
+  test:49  FAIL total=    1635 ms   login=553  create=1082   <- sbx: the sandbox service is at capacity
+  test:50  FAIL total=    1622 ms   login=568  create=1053   <- sbx: the sandbox service is at capacity
+  test:51  FAIL total=    1610 ms   login=564  create=1046   <- sbx: the sandbox service is at capacity
+  test:52  FAIL total=    1596 ms   login=557  create=1039   <- sbx: the sandbox service is at capacity
+  test:53  FAIL total=    1745 ms   login=629  create=1116   <- sbx: the sandbox service is at capacity
+  test:54  FAIL total=    1630 ms   login=617  create=1007   <- sbx: the sandbox service is at capacity
+  test:55  FAIL total=    1541 ms   login=610  create=930   <- sbx: the sandbox service is at capacity
+  test:56  FAIL total=    1541 ms   login=599  create=940   <- sbx: the sandbox service is at capacity
+  test:57  FAIL total=    1510 ms   login=584  create=925   <- sbx: the sandbox service is at capacity
+  test:58  FAIL total=    1679 ms   login=585  create=1094   <- sbx: the sandbox service is at capacity
+  test:59  FAIL total=    1666 ms   login=572  create=1093   <- sbx: the sandbox service is at capacity
+  test:60  FAIL total=    1667 ms   login=565  create=1101   <- sbx: the sandbox service is at capacity
+  test:61  FAIL total=    1510 ms   login=558  create=951   <- sbx: the sandbox service is at capacity
+  test:62  FAIL total=    1643 ms   login=552  create=1090   <- sbx: the sandbox service is at capacity
+  test:63  FAIL total=    1627 ms   login=548  create=1078   <- sbx: the sandbox service is at capacity
+  test:64  FAIL total=    1639 ms   login=727  create=911   <- sbx: the sandbox service is at capacity
+  test:65  FAIL total=    1835 ms   login=708  create=1127   <- sbx: the sandbox service is at capacity
+  test:66  FAIL total=    1814 ms   login=702  create=1111   <- sbx: the sandbox service is at capacity
+  test:67  FAIL total=    1615 ms   login=701  create=913   <- sbx: the sandbox service is at capacity
+  test:68  FAIL total=    1614 ms   login=686  create=926   <- sbx: the sandbox service is at capacity
+  test:69  FAIL total=    1821 ms   login=674  create=1146   <- sbx: the sandbox service is at capacity
+  test:70  FAIL total=    1789 ms   login=664  create=1125   <- sbx: the sandbox service is at capacity
+  test:71  FAIL total=    1758 ms   login=649  create=1108   <- sbx: the sandbox service is at capacity
+  test:72  FAIL total=    1741 ms   login=636  create=1104   <- sbx: the sandbox service is at capacity
+  test:73  FAIL total=    1723 ms   login=617  create=1104   <- sbx: the sandbox service is at capacity
+  test:74  FAIL total=    1665 ms   login=595  create=1069   <- sbx: the sandbox service is at capacity
+  test:75  FAIL total=    1483 ms   login=557  create=925   <- sbx: the sandbox service is at capacity
+  test:76  FAIL total=    1646 ms   login=576  create=1070   <- sbx: the sandbox service is at capacity
+  test:77  FAIL total=    1897 ms   login=771  create=1126   <- sbx: the sandbox service is at capacity
+  test:78  FAIL total=    1941 ms   login=754  create=1187   <- sbx: the sandbox service is at capacity
+  test:79  FAIL total=    1895 ms   login=739  create=1155   <- sbx: the sandbox service is at capacity
+  test:80  FAIL total=    1843 ms   login=713  create=1130   <- sbx: the sandbox service is at capacity
+  test:81  FAIL total=    2043 ms   login=1081  create=961   <- sbx: the sandbox service is at capacity
+  test:82  FAIL total=    1935 ms   login=690  create=1233   <- sbx: the sandbox service is at capacity
+  test:83  FAIL total=    1947 ms   login=684  create=1257   <- sbx: the sandbox service is at capacity
+  test:84  FAIL total=    1789 ms   login=679  create=1101   <- sbx: the sandbox service is at capacity
+  test:85  FAIL total=    1991 ms   login=1026  create=964   <- sbx: the sandbox service is at capacity
+  test:86  FAIL total=    1978 ms   login=1012  create=965   <- sbx: the sandbox service is at capacity
+  test:87  FAIL total=    1967 ms   login=1008  create=952   <- sbx: the sandbox service is at capacity
+  test:88  FAIL total=    1842 ms   login=647  create=1192   <- sbx: the sandbox service is at capacity
+  test:89  FAIL total=    1798 ms   login=621  create=1176   <- sbx: the sandbox service is at capacity
+  test:90  FAIL total=    1819 ms   login=610  create=1209   <- sbx: the sandbox service is at capacity
+  test:91  FAIL total=    1747 ms   login=607  create=1120   <- sbx: the sandbox service is at capacity
+  test:92  FAIL total=    1880 ms   login=721  create=1159   <- sbx: the sandbox service is at capacity
+  test:93  FAIL total=    1723 ms   login=629  create=1093   <- sbx: the sandbox service is at capacity
+  test:94  FAIL total=    1847 ms   login=819  create=1027   <- sbx: the sandbox service is at capacity
+  test:95  FAIL total=    1841 ms   login=679  create=1162   <- sbx: the sandbox service is at capacity
+  test:96  FAIL total=    1766 ms   login=627  create=1139   <- sbx: the sandbox service is at capacity
+  test:97  FAIL total=    1733 ms   login=612  create=1120   <- sbx: the sandbox service is at capacity
+  test:98  FAIL total=    1736 ms   login=599  create=1136   <- sbx: the sandbox service is at capacity
+  test:99  FAIL total=    1711 ms   login=675  create=1035   <- sbx: the sandbox service is at capacity
+  test:100 FAIL total=    1700 ms   login=644  create=1055   <- sbx: the sandbox service is at capacity
+failures (70):
+  test:22  FAIL total=    1923 ms   login=544  create=1378   <- sbx: the sandbox service is at capacity
+  test:23  FAIL total=    1911 ms   login=541  create=1370   <- sbx: the sandbox service is at capacity
+  test:24  FAIL total=    1900 ms   login=537  create=1363   <- sbx: the sandbox service is at capacity
+  test:25  FAIL total=    1888 ms   login=540  create=1347   <- sbx: the sandbox service is at capacity
+  test:32  FAIL total=    1839 ms   login=571  create=1267   <- sbx: the sandbox service is at capacity
+  test:36  FAIL total=    1579 ms   login=539  create=1039   <- sbx: the sandbox service is at capacity
+  test:37  FAIL total=    1684 ms   login=544  create=1140   <- sbx: the sandbox service is at capacity
+  test:38  FAIL total=    1773 ms   login=557  create=1216   <- sbx: the sandbox service is at capacity
+  test:39  FAIL total=    1616 ms   login=554  create=1062   <- sbx: the sandbox service is at capacity
+  test:40  FAIL total=    1671 ms   login=550  create=1119   <- sbx: the sandbox service is at capacity
+  test:41  FAIL total=    1737 ms   login=548  create=1189   <- sbx: the sandbox service is at capacity
+  test:42  FAIL total=    1646 ms   login=550  create=1095   <- sbx: the sandbox service is at capacity
+  test:43  FAIL total=    1636 ms   login=559  create=1076   <- sbx: the sandbox service is at capacity
+  test:44  FAIL total=    1601 ms   login=540  create=1060   <- sbx: the sandbox service is at capacity
+  test:45  FAIL total=    1567 ms   login=552  create=1014   <- sbx: the sandbox service is at capacity
+  test:46  FAIL total=    1579 ms   login=551  create=1027   <- sbx: the sandbox service is at capacity
+  test:47  FAIL total=    1582 ms   login=558  create=1023   <- sbx: the sandbox service is at capacity
+  test:48  FAIL total=    1644 ms   login=566  create=1078   <- sbx: the sandbox service is at capacity
+  test:49  FAIL total=    1635 ms   login=553  create=1082   <- sbx: the sandbox service is at capacity
+  test:50  FAIL total=    1622 ms   login=568  create=1053   <- sbx: the sandbox service is at capacity
+  test:51  FAIL total=    1610 ms   login=564  create=1046   <- sbx: the sandbox service is at capacity
+  test:52  FAIL total=    1596 ms   login=557  create=1039   <- sbx: the sandbox service is at capacity
+  test:53  FAIL total=    1745 ms   login=629  create=1116   <- sbx: the sandbox service is at capacity
+  test:54  FAIL total=    1630 ms   login=617  create=1007   <- sbx: the sandbox service is at capacity
+  test:55  FAIL total=    1541 ms   login=610  create=930   <- sbx: the sandbox service is at capacity
+  test:56  FAIL total=    1541 ms   login=599  create=940   <- sbx: the sandbox service is at capacity
+  test:57  FAIL total=    1510 ms   login=584  create=925   <- sbx: the sandbox service is at capacity
+  test:58  FAIL total=    1679 ms   login=585  create=1094   <- sbx: the sandbox service is at capacity
+  test:59  FAIL total=    1666 ms   login=572  create=1093   <- sbx: the sandbox service is at capacity
+  test:60  FAIL total=    1667 ms   login=565  create=1101   <- sbx: the sandbox service is at capacity
+  test:61  FAIL total=    1510 ms   login=558  create=951   <- sbx: the sandbox service is at capacity
+  test:62  FAIL total=    1643 ms   login=552  create=1090   <- sbx: the sandbox service is at capacity
+  test:63  FAIL total=    1627 ms   login=548  create=1078   <- sbx: the sandbox service is at capacity
+  test:64  FAIL total=    1639 ms   login=727  create=911   <- sbx: the sandbox service is at capacity
+  test:65  FAIL total=    1835 ms   login=708  create=1127   <- sbx: the sandbox service is at capacity
+  test:66  FAIL total=    1814 ms   login=702  create=1111   <- sbx: the sandbox service is at capacity
+  test:67  FAIL total=    1615 ms   login=701  create=913   <- sbx: the sandbox service is at capacity
+  test:68  FAIL total=    1614 ms   login=686  create=926   <- sbx: the sandbox service is at capacity
+  test:69  FAIL total=    1821 ms   login=674  create=1146   <- sbx: the sandbox service is at capacity
+  test:70  FAIL total=    1789 ms   login=664  create=1125   <- sbx: the sandbox service is at capacity
+  test:71  FAIL total=    1758 ms   login=649  create=1108   <- sbx: the sandbox service is at capacity
+  test:72  FAIL total=    1741 ms   login=636  create=1104   <- sbx: the sandbox service is at capacity
+  test:73  FAIL total=    1723 ms   login=617  create=1104   <- sbx: the sandbox service is at capacity
+  test:74  FAIL total=    1665 ms   login=595  create=1069   <- sbx: the sandbox service is at capacity
+  test:75  FAIL total=    1483 ms   login=557  create=925   <- sbx: the sandbox service is at capacity
+  test:76  FAIL total=    1646 ms   login=576  create=1070   <- sbx: the sandbox service is at capacity
+  test:77  FAIL total=    1897 ms   login=771  create=1126   <- sbx: the sandbox service is at capacity
+  test:78  FAIL total=    1941 ms   login=754  create=1187   <- sbx: the sandbox service is at capacity
+  test:79  FAIL total=    1895 ms   login=739  create=1155   <- sbx: the sandbox service is at capacity
+  test:80  FAIL total=    1843 ms   login=713  create=1130   <- sbx: the sandbox service is at capacity
+  test:81  FAIL total=    2043 ms   login=1081  create=961   <- sbx: the sandbox service is at capacity
+  test:82  FAIL total=    1935 ms   login=690  create=1233   <- sbx: the sandbox service is at capacity
+  test:83  FAIL total=    1947 ms   login=684  create=1257   <- sbx: the sandbox service is at capacity
+  test:84  FAIL total=    1789 ms   login=679  create=1101   <- sbx: the sandbox service is at capacity
+  test:85  FAIL total=    1991 ms   login=1026  create=964   <- sbx: the sandbox service is at capacity
+  test:86  FAIL total=    1978 ms   login=1012  create=965   <- sbx: the sandbox service is at capacity
+  test:87  FAIL total=    1967 ms   login=1008  create=952   <- sbx: the sandbox service is at capacity
+  test:88  FAIL total=    1842 ms   login=647  create=1192   <- sbx: the sandbox service is at capacity
+  test:89  FAIL total=    1798 ms   login=621  create=1176   <- sbx: the sandbox service is at capacity
+  test:90  FAIL total=    1819 ms   login=610  create=1209   <- sbx: the sandbox service is at capacity
+  test:91  FAIL total=    1747 ms   login=607  create=1120   <- sbx: the sandbox service is at capacity
+  test:92  FAIL total=    1880 ms   login=721  create=1159   <- sbx: the sandbox service is at capacity
+  test:93  FAIL total=    1723 ms   login=629  create=1093   <- sbx: the sandbox service is at capacity
+  test:94  FAIL total=    1847 ms   login=819  create=1027   <- sbx: the sandbox service is at capacity
+  test:95  FAIL total=    1841 ms   login=679  create=1162   <- sbx: the sandbox service is at capacity
+  test:96  FAIL total=    1766 ms   login=627  create=1139   <- sbx: the sandbox service is at capacity
+  test:97  FAIL total=    1733 ms   login=612  create=1120   <- sbx: the sandbox service is at capacity
+  test:98  FAIL total=    1736 ms   login=599  create=1136   <- sbx: the sandbox service is at capacity
+  test:99  FAIL total=    1711 ms   login=675  create=1035   <- sbx: the sandbox service is at capacity
+  test:100 FAIL total=    1700 ms   login=644  create=1055   <- sbx: the sandbox service is at capacity
+  -> 30/100 ok, wall 16.0s, per-user total p50 14297 ms
+
+================================================================================================
+E19 ladder: what a user waits for, by how many users are active at once
+================================================================================================
+ conc     ok  fail   wall_s  measured  CORRECTED   local  vsC1corr   vs_C1  health     login    create run_sleep run_sleep        ls        rm
+    1      1     0     11.3     11340      10692     648     1.00x   1.00x      ok       548       781      3491      3276       725      2518
+   10     10     0     12.4     11726      10514    1213     0.98x   1.03x      ok       541       965      3794      3525       685      2406
+   20     20     0     13.9     13345      11517    1828     1.08x   1.18x      ok       540      1198      4424      3929       687      2371
+   30     30     0     17.0     14730      11860    2870     1.11x   1.30x      ok       537       834      4955      4768       704      2368
+   40     30    10     15.8     14164      10098    4066     0.94x   1.25x    SUSP       541       979      4809      4018       685      2333
+   50     30    20     15.8     14104       9640    4464     0.90x   1.24x    SUSP       540       797      5077      3884       702      2359
+   60     30    30     16.7     14714       8884    5830     0.83x   1.30x    SUSP       546       829      5272      4352       709      2375
+   70     30    40     18.1     15652       7791    7861     0.73x   1.38x    SUSP       543       835      5891      4610       712      2369
+   80     30    50     16.1     14727       7247    7480     0.68x   1.30x    SUSP       545      1243      5219      3975       706      2407
+   90     30    60     15.9     13980       6381    7599     0.60x   1.23x    SUSP       542       823      5015      3854       687      2379
+  100     30    70     16.0     14297       5138    9158     0.48x   1.26x    SUSP       558      1054      5170      3980       706      2369
+------------------------------------------------------------------------------------------------
+conc = users active at once. total_p50/p90 = the whole lifecycle, per user.
+corrected = total_p50 minus the null calibration at the same concurrency (`local`),
+  so it is a LOWER bound on the service's own time: see the note under each rung.
+vs_C1 = total_p50 against the uncontended rung. The op columns are that op's p50.
+all times milliseconds unless named _s. ladder wall 257.0s.
+widest gap: C=70 at 15652 ms against 11340 ms at C=1 (1.38x)
+levels with failures: C=40 (10/40), C=50 (20/50), C=60 (30/60), C=70 (40/70), C=80 (50/80), C=90 (60/90), C=100 (70/100)
+
+================================================================================================
+WHAT THE NUMBERS SAY   (concurrency 1 -> 100)
+================================================================================================
+  measured lifecycle          11340 ->     14297 ms    1.26x      +2957 ms   what the stopwatch saw
+  CORRECTED lifecycle         10692 ->      5138 ms    0.48x      -5553 ms   the service's share (lower bound)
+  client start-up cost          648 ->      9158 ms   14.14x      +8510 ms   the driver's share
+
+  => the apparent degradation is CLIENT-SIDE.
+     Local start-up grew +8510 ms while the measurement grew +2957 ms,
+     and the service's own share went -5553 ms (down).
+     Conclusion: this ladder does NOT show the service degrading.
+     local share of the lifecycle: 6% at C=1 -> 64% at C=100
+
+  capacity: first refusal at C=40; users served at every failing level: 30
+     a refusal is a count, not a latency: unaffected by client-side cost
+
+  client health: 7 SUSPECT, 4 TRUSTWORTHY
+     trustworthy levels: C <= 30  (quote latencies at or below this)
+
+concurrency 1:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 1)
+operation        measured    local  corrected   local %
+login                 548        -          -  not a subprocess
+create                781      150        631       19%
+run_sleep_a          3491      126       3365        4%
+run_sleep_b          3276      126       3150        4%
+ls                    725      123        602       17%
+rm                   2518      123       2395        5%
+-----------------------------------------------------------------------------------
+lifecycle           11340      648      10692        6%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: TRUSTWORTHY
+  child CPU 1.1 s over 11.3 s wall on 18 cores  ->  1% of the machine
+  load peak 2.87 (mean 2.82), 0.16 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 531
+  no client-side limit detected: the latencies above are the service's to explain
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         3491     1000      126      2365     68%
+  run_sleep_b         3276     1000      126      2150     66%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 10:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 10)
+operation        measured    local  corrected   local %
+login                 541        -          -  not a subprocess
+create                965      206        759       21%
+run_sleep_a          3794      280       3515        7%
+run_sleep_b          3525      250       3275        7%
+ls                    685      257        428       38%
+rm                   2406      220       2186        9%
+-----------------------------------------------------------------------------------
+lifecycle           11726     1213      10514       10%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: TRUSTWORTHY
+  child CPU 10.4 s over 12.4 s wall on 18 cores  ->  5% of the machine
+  load peak 3.07 (mean 2.92), 0.17 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 5314
+  no client-side limit detected: the latencies above are the service's to explain
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         3794     1000      280      2515     66%
+  run_sleep_b         3525     1000      250      2275     65%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 20:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 20)
+operation        measured    local  corrected   local %
+login                 540        -          -  not a subprocess
+create               1198      458        740       38%
+run_sleep_a          4424      384       4040        9%
+run_sleep_b          3929      328       3602        8%
+ls                    687      399        289       58%
+rm                   2371      261       2110       11%
+-----------------------------------------------------------------------------------
+lifecycle           13345     1828      11517       14%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: TRUSTWORTHY
+  child CPU 19.4 s over 13.9 s wall on 18 cores  ->  8% of the machine
+  load peak 3.86 (mean 3.62), 0.21 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 10618
+  no client-side limit detected: the latencies above are the service's to explain
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         4424     1000      384      3040     69%
+  run_sleep_b         3929     1000      328      2602     66%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 30:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 30)
+operation        measured    local  corrected   local %
+login                 537        -          -  not a subprocess
+create                834      629        206       75%
+run_sleep_a          4955      662       4292       13%
+run_sleep_b          4768      577       4190       12%
+ls                    704      627         78       89%
+rm                   2368      375       1993       16%
+-----------------------------------------------------------------------------------
+lifecycle           14730     2870      11860       19%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: TRUSTWORTHY
+  child CPU 31.8 s over 17.0 s wall on 18 cores  ->  10% of the machine
+  load peak 3.87 (mean 3.53), 0.21 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 15928
+  no client-side limit detected: the latencies above are the service's to explain
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         4955     1000      662      3292     66%
+  run_sleep_b         4768     1000      577      3190     67%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 40:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 40)
+operation        measured    local  corrected   local %
+login                 541        -          -  not a subprocess
+create                979      815        164       83%
+run_sleep_a          4809     1187       3622       25%
+run_sleep_b          4018      823       3195       20%
+ls                    685      745        -60      109%
+rm                   2333      496       1837       21%
+-----------------------------------------------------------------------------------
+lifecycle           14164     4066      10098       29%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: SUSPECT
+  child CPU 31.8 s over 15.8 s wall on 18 cores  ->  11% of the machine
+  load peak 6.59 (mean 6.44), 0.37 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 16972
+  ! calibration says 29% of the lifecycle was local start-up
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         4809     1000     1187      2622     55%
+  run_sleep_b         4018     1000      823      2195     55%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 50:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 50)
+operation        measured    local  corrected   local %
+login                 540        -          -  not a subprocess
+create                797     1053       -256      132%
+run_sleep_a          5077     1077       4000       21%
+run_sleep_b          3884      845       3039       22%
+ls                    702      971       -269      138%
+rm                   2359      517       1842       22%
+-----------------------------------------------------------------------------------
+lifecycle           14104     4464       9640       32%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: SUSPECT
+  child CPU 34.8 s over 15.8 s wall on 18 cores  ->  12% of the machine
+  load peak 7.38 (mean 7.12), 0.41 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 18020
+  ! calibration says 32% of the lifecycle was local start-up
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         5077     1000     1077      3000     59%
+  run_sleep_b         3884     1000      845      2039     52%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 60:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 60)
+operation        measured    local  corrected   local %
+login                 546        -          -  not a subprocess
+create                829     1147       -318      138%
+run_sleep_a          5272     1478       3793       28%
+run_sleep_b          4352     1462       2890       34%
+ls                    709      988       -279      139%
+rm                   2375      754       1621       32%
+-----------------------------------------------------------------------------------
+lifecycle           14714     5830       8884       40%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: SUSPECT
+  child CPU 38.0 s over 16.7 s wall on 18 cores  ->  13% of the machine
+  load peak 9.74 (mean 9.03), 0.54 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 19061
+  ! calibration says 40% of the lifecycle was local start-up
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         5272     1000     1478      2793     53%
+  run_sleep_b         4352     1000     1462      1890     43%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 70:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 70)
+operation        measured    local  corrected   local %
+login                 543        -          -  not a subprocess
+create                835     1724       -889      206%
+run_sleep_a          5891     1844       4047       31%
+run_sleep_b          4610     1791       2819       39%
+ls                    712     1601       -890      225%
+rm                   2369      902       1468       38%
+-----------------------------------------------------------------------------------
+lifecycle           15652     7861       7791       50%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: SUSPECT
+  child CPU 40.9 s over 18.1 s wall on 18 cores  ->  13% of the machine
+  load peak 12.62 (mean 11.92), 0.70 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 20101
+  ! calibration says 50% of the lifecycle was local start-up
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         5891     1000     1844      3047     52%
+  run_sleep_b         4610     1000     1791      1819     39%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 80:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 80)
+operation        measured    local  corrected   local %
+login                 545        -          -  not a subprocess
+create               1243     1475       -232      119%
+run_sleep_a          5219     1564       3655       30%
+run_sleep_b          3975     1903       2072       48%
+ls                    706     1462       -756      207%
+rm                   2407     1076       1331       45%
+-----------------------------------------------------------------------------------
+lifecycle           14727     7480       7247       51%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: SUSPECT
+  child CPU 40.6 s over 16.1 s wall on 18 cores  ->  14% of the machine
+  load peak 12.79 (mean 12.01), 0.71 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 21133
+  ! calibration says 51% of the lifecycle was local start-up
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         5219     1000     1564      2655     51%
+  run_sleep_b         3975     1000     1903      1072     27%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 90:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 90)
+operation        measured    local  corrected   local %
+login                 542        -          -  not a subprocess
+create                823     1242       -419      151%
+run_sleep_a          5015     2177       2838       43%
+run_sleep_b          3854     1857       1996       48%
+ls                    687     1410       -722      205%
+rm                   2379      912       1467       38%
+-----------------------------------------------------------------------------------
+lifecycle           13980     7599       6381       54%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: SUSPECT
+  child CPU 41.3 s over 15.9 s wall on 18 cores  ->  14% of the machine
+  load peak 12.79 (mean 11.97), 0.71 per core;  max child RSS 118 MB;  pageouts 0;  child major faults 22188
+  ! calibration says 54% of the lifecycle was local start-up
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         5015     1000     2177      1838     37%
+  run_sleep_b         3854     1000     1857       996     26%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+concurrency 100:
+
+-----------------------------------------------------------------------------------
+measured vs corrected (minus null 'mocactl' calibration at concurrency 100)
+operation        measured    local  corrected   local %
+login                 558        -          -  not a subprocess
+create               1054     1925       -872      183%
+run_sleep_a          5170     2231       2938       43%
+run_sleep_b          3980     2246       1734       56%
+ls                    706     1752      -1046      248%
+rm                   2369     1004       1365       42%
+-----------------------------------------------------------------------------------
+lifecycle           14297     9158       5138       64%
+corrected is a LOWER bound on the service's time: the calibration runs its processes
+back to back with no network wait, so it over-states the local cost. Measured is an
+upper bound. The service's true figure lies between the two columns.
+
+-----------------------------------------------------------------------------------
+client health: SUSPECT
+  child CPU 44.6 s over 16.0 s wall on 18 cores  ->  16% of the machine
+  load peak 14.98 (mean 14.34), 0.83 per core;  max child RSS 119 MB;  pageouts 0;  child major faults 23227
+  ! calibration says 64% of the lifecycle was local start-up
+
+  where a `run -- sleep 1` call's time goes (p50):
+  op              measured  sandbox  startup  protocol  prot %
+  run_sleep_a         5170     1000     2231      1939     37%
+  run_sleep_b         3980     1000     2246       734     18%
+  sandbox = the sleep the service actually performed; startup = the null calibration;
+  protocol = what is left: token fetch, TLS, gRPC connect, exec set-up, per call.
+
+wrote results/epic1/ladder-c100/ladder.json and one directory per level
+
+console log: results/epic1/ladder-c100/console.txt
